@@ -1,0 +1,74 @@
+/*!
+ * © 2019 Atypon Systems LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { NodeSpec } from 'prosemirror-model'
+import { ManuscriptNode } from '../types'
+
+interface Attrs {
+  id: string
+  contents: string
+}
+
+export interface FootnotesElementNode extends ManuscriptNode {
+  attrs: Attrs
+}
+
+const createBodyElement = (node: FootnotesElementNode) => {
+  const dom = document.createElement('div')
+  dom.className = 'csl-bib-body'
+  dom.id = node.attrs.id
+
+  return dom
+}
+
+const parseBodyElement = (node: FootnotesElementNode): HTMLDivElement => {
+  // return document.createRange().createContextualFragment(node.attrs.contents)
+  //   .firstChild as HTMLDivElement
+
+  const dom = document.createElement('div')
+  dom.innerHTML = node.attrs.contents // TODO: sanitize?
+  return (dom.firstChild as HTMLDivElement) || createBodyElement(node)
+}
+
+export const footnotesElement: NodeSpec = {
+  atom: true,
+  attrs: {
+    id: { default: '' },
+    // collateByKind: { default: 'footnote' },
+    contents: { default: '' },
+  },
+  group: 'block element',
+  parseDOM: [
+    {
+      tag: 'div.footnotes',
+      getAttrs: p => {
+        const dom = p as HTMLDivElement
+
+        return {
+          // collateByKind: dom.getAttribute('collateByKind'),
+          contents: dom.innerHTML,
+        }
+      },
+    },
+  ],
+  toDOM: node => {
+    const footnotesElementNode = node as FootnotesElementNode
+
+    return footnotesElementNode.attrs.contents
+      ? parseBodyElement(footnotesElementNode)
+      : createBodyElement(footnotesElementNode)
+  },
+}
