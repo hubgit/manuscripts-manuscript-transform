@@ -61,7 +61,7 @@ const nodes = (document: Document): NodeSpecs => ({
     const xref = document.createElement('xref')
     xref.setAttribute('ref-type', 'bibr')
     xref.setAttribute('rid', normalizeID(node.attrs.rid))
-    xref.textContent = node.attrs.contents
+    xref.innerHTML = node.attrs.contents
 
     return xref
   },
