@@ -573,7 +573,7 @@ const fixBody = (
               graphic.setAttributeNS(
                 'http://www.w3.org/1999/xlink',
                 'xlink:href',
-                `Data/${containedObject._id}`
+                `Data/${normalizeID(containedObject._id)}`
               )
               fig.appendChild(graphic)
 
