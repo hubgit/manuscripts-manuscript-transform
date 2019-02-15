@@ -21,12 +21,12 @@ import { parseProjectBundle, ProjectBundle } from '../project-bundle'
 
 describe('jats', () => {
   test('export', () => {
-    const { doc, manuscript, modelMap } = parseProjectBundle(
+    const { doc, modelMap } = parseProjectBundle(
       projectDump as ProjectBundle,
       JSDOM.fragment
     )
 
-    const result = serializeToJATS(doc.content, manuscript, modelMap)
+    const result = serializeToJATS(doc.content, modelMap)
 
     expect(result).toMatchSnapshot('jats-export')
   })

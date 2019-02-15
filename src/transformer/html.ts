@@ -17,7 +17,6 @@
 import {
   Affiliation,
   Contributor,
-  Manuscript,
   Model,
   ObjectTypes,
 } from '@manuscripts/manuscripts-json-schema'
@@ -29,13 +28,12 @@ import {
   TableNode,
 } from '../schema'
 import { hasObjectType } from './object-types'
+import { findManuscript } from './project-bundle'
 import { xmlSerializer } from './serializer'
 
-const buildFront = (
-  document: Document,
-  manuscript: Manuscript,
-  modelMap: Map<string, Model>
-) => {
+const buildFront = (document: Document, modelMap: Map<string, Model>) => {
+  const manuscript = findManuscript(modelMap)
+
   const front = document.createElement('header')
 
   const articleMeta = document.createElement('div')
@@ -161,7 +159,6 @@ const buildBack = (document: Document) => {
 
 export const serializeToHTML = (
   fragment: ManuscriptFragment,
-  manuscript: Manuscript,
   modelMap: Map<string, Model>
 ) => {
   const doc = document.implementation.createDocument(
@@ -173,7 +170,7 @@ export const serializeToHTML = (
   const article = doc.createElement('article')
   doc.documentElement.appendChild(article)
 
-  const front = buildFront(doc, manuscript, modelMap)
+  const front = buildFront(doc, modelMap)
   article.appendChild(front)
 
   const body = buildBody(doc, fragment)

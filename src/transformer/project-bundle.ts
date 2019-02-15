@@ -31,14 +31,6 @@ export const parseProjectBundle = (
   projectBundle: ProjectBundle,
   parseFragment?: (contents: string) => DocumentFragment
 ) => {
-  const manuscript = projectBundle.data.find(
-    hasObjectType<Manuscript>(ObjectTypes.Manuscript)
-  )
-
-  if (!manuscript) {
-    throw new Error('Manuscript not found')
-  }
-
   const modelMap: Map<string, Model> = new Map()
 
   for (const component of projectBundle.data) {
@@ -49,5 +41,17 @@ export const parseProjectBundle = (
 
   const doc = decoder.createArticleNode()
 
-  return { doc, manuscript, modelMap }
+  return { doc, modelMap }
+}
+
+const isManuscript = hasObjectType<Manuscript>(ObjectTypes.Manuscript)
+
+export const findManuscript = (modelMap: Map<string, Model>): Manuscript => {
+  for (const model of modelMap.values()) {
+    if (isManuscript(model)) {
+      return model
+    }
+  }
+
+  throw new Error('No manuscript found')
 }

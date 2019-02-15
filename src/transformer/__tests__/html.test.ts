@@ -21,12 +21,12 @@ import { parseProjectBundle, ProjectBundle } from '../project-bundle'
 
 describe('html', () => {
   test('export', () => {
-    const { doc, manuscript, modelMap } = parseProjectBundle(
+    const { doc, modelMap } = parseProjectBundle(
       projectDump as ProjectBundle,
       JSDOM.fragment
     )
 
-    const result = serializeToHTML(doc.content, manuscript, modelMap)
+    const result = serializeToHTML(doc.content, modelMap)
 
     expect(result).toMatchSnapshot('html-export')
   })

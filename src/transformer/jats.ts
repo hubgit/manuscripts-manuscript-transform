@@ -20,7 +20,6 @@ import {
   Citation,
   Contributor,
   Figure,
-  Manuscript,
   Model,
   ObjectTypes,
 } from '@manuscripts/manuscripts-json-schema'
@@ -38,6 +37,7 @@ import {
 // import { serializeTableToHTML } from './html'
 import { isNodeType } from './node-types'
 import { hasObjectType } from './object-types'
+import { findManuscript } from './project-bundle'
 import { xmlSerializer } from './serializer'
 
 interface Attrs {
@@ -159,11 +159,9 @@ const marks = (): MarkSpecs => ({
   underline: () => ['underline'],
 })
 
-const buildFront = (
-  document: Document,
-  manuscript: Manuscript,
-  modelMap: Map<string, Model>
-) => {
+const buildFront = (document: Document, modelMap: Map<string, Model>) => {
+  const manuscript = findManuscript(modelMap)
+
   const front = document.createElement('front')
 
   const journalMeta = document.createElement('journal-meta')
@@ -597,9 +595,8 @@ const fixBody = (
 
 export const serializeToJATS = (
   fragment: ManuscriptFragment,
-  manuscript: Manuscript,
   modelMap: Map<string, Model>
-) => {
+): string => {
   const doc = document.implementation.createDocument(
     null, // 'http://jats.nlm.nih.gov/publishing/1.1/JATS-journalpublishing1.dtd'
     'article',
@@ -625,7 +622,7 @@ export const serializeToJATS = (
   //   'http://www.niso.org/schemas/ali/1.0/'
   // )
 
-  const front = buildFront(doc, manuscript, modelMap)
+  const front = buildFront(doc, modelMap)
   article.appendChild(front)
 
   const body = buildBody(doc, fragment)
