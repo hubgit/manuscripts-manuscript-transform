@@ -53,8 +53,8 @@ type MarkSpecs = {
 const normalizeID = (id: string) => id.replace(/:/g, '_')
 
 const nodes = (document: Document): NodeSpecs => ({
-  bibliography_element: () => ['ref-list'], // TODO: remove
-  bibliography_section: () => ['ref-list', 0],
+  bibliography_element: () => ' ', // TODO: remove
+  bibliography_section: node => ['ref-list', { id: normalizeID(node.attrs.rid) }, 0],
   bullet_list: () => ['list', { 'list-type': 'bullet' }, 0],
   caption: () => ['caption', ['p', 0]],
   citation: node => {
