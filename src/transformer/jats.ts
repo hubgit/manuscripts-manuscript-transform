@@ -54,7 +54,11 @@ const normalizeID = (id: string) => id.replace(/:/g, '_')
 
 const nodes = (document: Document): NodeSpecs => ({
   bibliography_element: () => ' ', // TODO: remove
-  bibliography_section: node => ['ref-list', { id: normalizeID(node.attrs.rid) }, 0],
+  bibliography_section: node => [
+    'ref-list',
+    { id: normalizeID(node.attrs.id) },
+    0,
+  ],
   bullet_list: () => ['list', { 'list-type': 'bullet' }, 0],
   caption: () => ['caption', ['p', 0]],
   citation: node => {
