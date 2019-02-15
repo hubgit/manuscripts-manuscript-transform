@@ -65,7 +65,7 @@ const nodes = (document: Document): NodeSpecs => ({
     const xref = document.createElement('xref')
     xref.setAttribute('ref-type', 'bibr')
     xref.setAttribute('rid', normalizeID(node.attrs.rid))
-    xref.innerHTML = node.attrs.contents
+    xref.textContent = node.attrs.contents.replace(/&amp;/g, '&') // TODO: decode all HTML entities?
 
     return xref
   },
