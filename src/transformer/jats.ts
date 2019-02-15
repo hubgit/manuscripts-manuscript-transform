@@ -170,11 +170,17 @@ const buildFront = (
   front.appendChild(journalMeta)
 
   const journalID = document.createElement('journal-id')
-  journalID.textContent = '1'
+  journalID.setAttribute('journal-id-type', 'publisher-id')
   journalMeta.appendChild(journalID)
 
+  const journalTitleGroup = document.createElement('journal-title-group')
+  journalMeta.appendChild(journalTitleGroup)
+
+  const journalTitle = document.createElement('journal-title')
+  journalTitleGroup.appendChild(journalTitle)
+
   const issn = document.createElement('issn')
-  issn.textContent = '1234-5678'
+  issn.setAttribute('pub-type', 'epub')
   journalMeta.appendChild(issn)
 
   const articleMeta = document.createElement('article-meta')
@@ -329,6 +335,9 @@ const buildFront = (
   pubDate.appendChild(pubDateYear)
 
   articleMeta.appendChild(pubDate)
+
+  const elocationID = document.createElement('elocation-id')
+  articleMeta.appendChild(elocationID)
 
   return front
 }
