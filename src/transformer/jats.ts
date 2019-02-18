@@ -53,7 +53,7 @@ type MarkSpecs = {
 const normalizeID = (id: string) => id.replace(/:/g, '_')
 
 const nodes = (document: Document): NodeSpecs => ({
-  bibliography_element: () => ' ', // TODO: remove
+  bibliography_element: () => '',
   bibliography_section: node => [
     'ref-list',
     { id: normalizeID(node.attrs.id) },
@@ -77,7 +77,7 @@ const nodes = (document: Document): NodeSpecs => ({
 
     return xref
   },
-  doc: () => ['div', 0],
+  doc: () => '',
   equation: node => {
     const formula = document.createElement('disp-formula')
 
@@ -92,7 +92,7 @@ const nodes = (document: Document): NodeSpecs => ({
   figure_element: node => ['fig-group', { id: normalizeID(node.attrs.id) }, 0],
   footnote: node => ['fn', { id: normalizeID(node.attrs.id) }, 0],
   footnotes_element: node => ['fn-group', { id: normalizeID(node.attrs.id) }],
-  hard_break: () => 'break',
+  hard_break: () => ['break'],
   inline_equation: node => {
     const formula = document.createElement('inline-formula')
 
