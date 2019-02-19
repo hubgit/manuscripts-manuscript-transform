@@ -128,11 +128,11 @@ export const listItem: NodeSpec = {
   toDOM: node => {
     const listItemNode = node as ListItemNode
 
-    const attrs = listItemNode.attrs.placeholder
-      ? {
-          'data-placeholder-text': listItemNode.attrs.placeholder,
-        }
-      : undefined
+    const attrs: { [key: string]: string } = {}
+
+    if (listItemNode.attrs.placeholder) {
+      attrs['data-placeholder-text'] = listItemNode.attrs.placeholder
+    }
 
     return ['li', attrs, 0]
   },
