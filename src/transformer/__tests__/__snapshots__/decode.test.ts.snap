@@ -486,6 +486,9 @@ Object {
               },
               "content": Array [
                 Object {
+                  "attrs": Object {
+                    "placeholder": "",
+                  },
                   "content": Array [
                     Object {
                       "attrs": Object {
@@ -520,7 +523,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "thead_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -560,7 +563,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tbody_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -600,7 +603,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tbody_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -640,7 +643,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tfoot_row",
+                  "type": "table_row",
                 },
               ],
               "type": "table",
@@ -674,6 +677,9 @@ Object {
               },
               "content": Array [
                 Object {
+                  "attrs": Object {
+                    "placeholder": "",
+                  },
                   "content": Array [
                     Object {
                       "attrs": Object {
@@ -702,7 +708,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "thead_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -730,7 +736,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tbody_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -758,7 +764,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tbody_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -786,7 +792,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tfoot_row",
+                  "type": "table_row",
                 },
               ],
               "type": "table",
@@ -820,6 +826,9 @@ Object {
               },
               "content": Array [
                 Object {
+                  "attrs": Object {
+                    "placeholder": "",
+                  },
                   "content": Array [
                     Object {
                       "attrs": Object {
@@ -842,7 +851,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "thead_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -870,7 +879,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tbody_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -898,7 +907,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tbody_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -926,7 +935,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tfoot_row",
+                  "type": "table_row",
                 },
               ],
               "type": "table",
@@ -960,6 +969,9 @@ Object {
               },
               "content": Array [
                 Object {
+                  "attrs": Object {
+                    "placeholder": "",
+                  },
                   "content": Array [
                     Object {
                       "attrs": Object {
@@ -982,7 +994,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "thead_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -1010,7 +1022,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tbody_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -1038,7 +1050,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tbody_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -1066,7 +1078,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tfoot_row",
+                  "type": "table_row",
                 },
               ],
               "type": "table",
@@ -1722,6 +1734,9 @@ Object {
               },
               "content": Array [
                 Object {
+                  "attrs": Object {
+                    "placeholder": "",
+                  },
                   "content": Array [
                     Object {
                       "attrs": Object {
@@ -1756,7 +1771,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "thead_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -1796,7 +1811,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tbody_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -1836,7 +1851,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tbody_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -1876,7 +1891,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tfoot_row",
+                  "type": "table_row",
                 },
               ],
               "type": "table",
@@ -1910,6 +1925,9 @@ Object {
               },
               "content": Array [
                 Object {
+                  "attrs": Object {
+                    "placeholder": "",
+                  },
                   "content": Array [
                     Object {
                       "attrs": Object {
@@ -1938,7 +1956,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "thead_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -1966,7 +1984,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tbody_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -1994,7 +2012,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tbody_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -2022,7 +2040,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tfoot_row",
+                  "type": "table_row",
                 },
               ],
               "type": "table",
@@ -2086,6 +2104,9 @@ Object {
               },
               "content": Array [
                 Object {
+                  "attrs": Object {
+                    "placeholder": "",
+                  },
                   "content": Array [
                     Object {
                       "attrs": Object {
@@ -2108,7 +2129,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "thead_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -2136,7 +2157,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tbody_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -2164,7 +2185,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tbody_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -2192,7 +2213,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tfoot_row",
+                  "type": "table_row",
                 },
               ],
               "type": "table",
@@ -2902,6 +2923,9 @@ Object {
               },
               "content": Array [
                 Object {
+                  "attrs": Object {
+                    "placeholder": "",
+                  },
                   "content": Array [
                     Object {
                       "attrs": Object {
@@ -2936,7 +2960,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "thead_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -2976,7 +3000,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tbody_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -3016,7 +3040,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tbody_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -3056,7 +3080,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tfoot_row",
+                  "type": "table_row",
                 },
               ],
               "type": "table",
@@ -3090,6 +3114,9 @@ Object {
               },
               "content": Array [
                 Object {
+                  "attrs": Object {
+                    "placeholder": "",
+                  },
                   "content": Array [
                     Object {
                       "attrs": Object {
@@ -3118,7 +3145,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "thead_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -3146,7 +3173,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tbody_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -3174,7 +3201,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tbody_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -3202,7 +3229,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tfoot_row",
+                  "type": "table_row",
                 },
               ],
               "type": "table",
@@ -3236,6 +3263,9 @@ Object {
               },
               "content": Array [
                 Object {
+                  "attrs": Object {
+                    "placeholder": "",
+                  },
                   "content": Array [
                     Object {
                       "attrs": Object {
@@ -3258,7 +3288,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "thead_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -3286,7 +3316,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tbody_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -3314,7 +3344,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tbody_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -3342,7 +3372,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tfoot_row",
+                  "type": "table_row",
                 },
               ],
               "type": "table",
@@ -3376,6 +3406,9 @@ Object {
               },
               "content": Array [
                 Object {
+                  "attrs": Object {
+                    "placeholder": "",
+                  },
                   "content": Array [
                     Object {
                       "attrs": Object {
@@ -3398,7 +3431,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "thead_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -3426,7 +3459,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tbody_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -3454,7 +3487,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tbody_row",
+                  "type": "table_row",
                 },
                 Object {
                   "attrs": Object {
@@ -3482,7 +3515,7 @@ Object {
                       "type": "table_cell",
                     },
                   ],
-                  "type": "tfoot_row",
+                  "type": "table_row",
                 },
               ],
               "type": "table",

@@ -51,7 +51,7 @@ export interface TableNode extends ManuscriptNode {
 }
 
 export const table: TableNodeSpec = {
-  content: 'thead_row tbody_row+ tfoot_row',
+  content: 'table_row{3,}',
   tableRole: 'table',
   isolating: true,
   group: 'block',
@@ -83,64 +83,19 @@ export const table: TableNodeSpec = {
   },
 }
 
-export interface TableHeaderRowNode extends ManuscriptNode {
-  attrs: {
-    id: string
-  }
-}
-
-export const tableHeaderRow: TableNodeSpec = {
-  content: 'table_cell+',
-  tableRole: 'header',
-  parseDOM: [
-    {
-      tag: 'tr.thead',
-      priority: 100,
-    },
-    {
-      tag: 'thead > tr',
-      priority: 90,
-    },
-  ],
-  toDOM: () => {
-    return [
-      'tr',
-      {
-        class: 'thead',
-        // 'data-placeholder-text': node.attrs.placeholder || undefined,
-      },
-      0,
-    ]
-  },
-}
-
-export interface TableBodyRowNode extends ManuscriptNode {
+export interface TableRowNode extends ManuscriptNode {
   attrs: {
     placeholder: string
   }
 }
 
-export const tableBodyRow: TableNodeSpec = {
+export const tableRow: TableNodeSpec = {
   content: 'table_cell+',
   tableRole: 'row',
   attrs: {
     placeholder: { default: '' },
   },
   parseDOM: [
-    {
-      tag: 'tr.tbody',
-      priority: 100,
-      // getAttrs: (dom: HTMLTableRowElement) => ({
-      //   placeholder: dom.getAttribute('data-placeholder-text'),
-      // }),
-    },
-    {
-      tag: 'tbody > tr',
-      priority: 90,
-      // getAttrs: (dom: HTMLTableRowElement) => ({
-      //   placeholder: dom.getAttribute('data-placeholder-text'),
-      // }),
-    },
     {
       tag: 'tr',
       priority: 80,
@@ -150,51 +105,12 @@ export const tableBodyRow: TableNodeSpec = {
     },
   ],
   toDOM: node => {
-    const tableBodyRowNode = node as TableBodyRowNode
+    const tableRowNode = node as TableRowNode
 
-    const attrs: { [key: string]: string } = {
-      class: 'tbody',
-    }
+    const attrs: { [key: string]: string } = {}
 
-    if (tableBodyRowNode.attrs.placeholder) {
-      attrs['data-placeholder-text'] = tableBodyRowNode.attrs.placeholder
-    }
-
-    return ['tr', attrs, 0]
-  },
-}
-
-export interface TableFooterRowNode extends ManuscriptNode {
-  attrs: {
-    placeholder: string
-  }
-}
-
-export const tableFooterRow: TableNodeSpec = {
-  content: 'table_cell+',
-  tableRole: 'footer',
-  attrs: {
-    placeholder: { default: '' },
-  },
-  parseDOM: [
-    {
-      tag: 'tr.tfoot',
-      priority: 100,
-    },
-    {
-      tag: 'tfoot > tr',
-      priority: 90,
-    },
-  ],
-  toDOM: node => {
-    const tableFooterRowNode = node as TableFooterRowNode
-
-    const attrs: { [key: string]: string } = {
-      class: 'tfoot',
-    }
-
-    if (tableFooterRowNode.attrs.placeholder) {
-      attrs['data-placeholder-text'] = tableFooterRowNode.attrs.placeholder
+    if (tableRowNode.attrs.placeholder) {
+      attrs['data-placeholder-text'] = tableRowNode.attrs.placeholder
     }
 
     return ['tr', attrs, 0]

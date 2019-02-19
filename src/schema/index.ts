@@ -50,13 +50,7 @@ import { placeholder } from './nodes/placeholder'
 import { placeholderElement } from './nodes/placeholder_element'
 import { section } from './nodes/section'
 import { sectionTitle } from './nodes/section_title'
-import {
-  table,
-  tableBodyRow,
-  tableCell,
-  tableFooterRow,
-  tableHeaderRow,
-} from './nodes/table'
+import { table, tableCell, tableRow } from './nodes/table'
 import { tableElement } from './nodes/table_element'
 import { text } from './nodes/text'
 import { tocElement } from './nodes/toc_element'
@@ -136,10 +130,8 @@ export const schema = new Schema<Nodes, Marks>({
     table,
     table_cell: tableCell,
     table_element: tableElement,
-    tbody_row: tableBodyRow,
+    table_row: tableRow,
     text,
-    tfoot_row: tableFooterRow,
-    thead_row: tableHeaderRow,
     toc_element: tocElement,
     toc_section: tocSection,
   },

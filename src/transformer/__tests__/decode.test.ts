@@ -19,10 +19,10 @@ import {
   ObjectTypes,
   Section,
 } from '@manuscripts/manuscripts-json-schema'
+import { JSDOM } from 'jsdom'
 import { ManuscriptNode, ManuscriptNodeType, schema } from '../../schema'
 import { Decoder, getModelData, sortSectionsByPriority } from '../decode'
 import { createTestDoc, createTestModelMap } from './__helpers__/doc'
-import { JSDOM } from 'jsdom'
 
 const countDescendantsOfType = (
   node: ManuscriptNode,

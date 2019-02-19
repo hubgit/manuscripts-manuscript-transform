@@ -143,10 +143,8 @@ const nodes = (document: Document): NodeSpecs => ({
   // table: node => serializeTableToHTML(node as TableNode),
   table_element: node => ['table-wrap', { id: normalizeID(node.attrs.id) }, 0],
   table_cell: () => ['td', 0],
-  tbody_row: () => ['tr', 0],
+  table_row: () => ['tr', 0],
   text: node => node.text!,
-  tfoot_row: () => ['tr', 0],
-  thead_row: () => ['tr', 0],
   toc_element: node => ['div', { id: normalizeID(node.attrs.id) }],
   toc_section: node => ['sec', { id: normalizeID(node.attrs.id) }, 0],
 })
@@ -501,6 +499,56 @@ const buildBack = (document: Document, modelMap: Map<string, Model>) => {
   return back
 }
 
+const fixTable = (
+  document: Document,
+  node: ManuscriptNode,
+  table: ChildNode
+) => {
+  const rows = Array.from(table.childNodes)
+
+  const theadRows = rows.splice(0, 1)
+  const tfootRows = rows.splice(-1, 1)
+
+  // thead
+  if (node.attrs.suppressHeader) {
+    for (const row of theadRows) {
+      table.removeChild(row)
+    }
+  } else {
+    const thead = document.createElement('thead')
+
+    for (const row of theadRows) {
+      thead.appendChild(row)
+    }
+
+    table.appendChild(thead)
+  }
+
+  // tbody
+  const tbody = document.createElement('tbody')
+
+  for (const row of rows) {
+    tbody.appendChild(row)
+  }
+
+  table.appendChild(tbody)
+
+  // tfoot
+  if (node.attrs.suppressFooter) {
+    for (const row of tfootRows) {
+      table.removeChild(row)
+    }
+  } else {
+    const tfoot = document.createElement('tfoot')
+
+    for (const row of tfootRows) {
+      tfoot.appendChild(row)
+    }
+
+    table.appendChild(tfoot)
+  }
+}
+
 const fixBody = (
   document: Document,
   fragment: ManuscriptFragment,
@@ -546,8 +594,20 @@ const fixBody = (
 
         if (tableElement) {
           for (const childNode of tableElement.childNodes) {
-            if (childNode.nodeName === 'caption') {
-              tableElement.insertBefore(childNode, tableElement.firstChild)
+            switch (childNode.nodeName) {
+              case 'caption': {
+                if (node.attrs.suppressCaption) {
+                  tableElement.removeChild(childNode)
+                } else {
+                  tableElement.insertBefore(childNode, tableElement.firstChild)
+                }
+                break
+              }
+
+              case 'table': {
+                fixTable(document, node, childNode)
+                break
+              }
             }
           }
         }

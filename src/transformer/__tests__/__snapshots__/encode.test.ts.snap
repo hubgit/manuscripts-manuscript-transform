@@ -104,6 +104,7 @@ Map {
   },
   "MPSection:77786D47-6060-4FBC-BC13-5FA754968D6A" => Object {
     "_id": "MPSection:77786D47-6060-4FBC-BC13-5FA754968D6A",
+    "category": undefined,
     "elementIDs": Array [
       "MPParagraphElement:150780D7-CFED-4529-9398-77B5C7625044",
       "MPParagraphElement:60C13548-23C0-4348-FE98-0510E0B61B18",
@@ -116,6 +117,7 @@ Map {
     ],
     "priority": 2,
     "title": "First section",
+    "titleSuppressed": undefined,
   },
   "MPParagraphElement:150780D7-CFED-4529-9398-77B5C7625044" => Object {
     "_id": "MPParagraphElement:150780D7-CFED-4529-9398-77B5C7625044",
@@ -148,6 +150,7 @@ Map {
   },
   "MPSection:F8EE617B-484B-4CF2-F1CA-014F5307D5CF" => Object {
     "_id": "MPSection:F8EE617B-484B-4CF2-F1CA-014F5307D5CF",
+    "category": undefined,
     "elementIDs": Array [
       "MPParagraphElement:4DF93A63-D44D-41CF-AF54-23712B8703FA",
       "MPListElement:D1C6E3B5-C549-47B8-B051-1F534E8AA7E7",
@@ -214,6 +217,7 @@ Map {
     "elementType": "figure",
     "figureStyle": "MPFigureStyle:12916784-C8A2-414E-919D-490172E82B25",
     "objectType": "MPFigureElement",
+    "suppressCaption": undefined,
   },
   "MPFigureElement:B32BDEC8-E816-4946-C0BB-0404AF2F0C29" => Object {
     "_id": "MPFigureElement:B32BDEC8-E816-4946-C0BB-0404AF2F0C29",
@@ -233,6 +237,9 @@ Map {
     "elementType": "table",
     "objectType": "MPTableElement",
     "paragraphStyle": "MPParagraphStyle:7EAB5784-717B-4672-BD59-8CA324FB0637",
+    "suppressCaption": undefined,
+    "suppressFooter": undefined,
+    "suppressHeader": undefined,
     "tableStyle": "MPTableStyle:08C0E93B-848D-491F-8EB2-A8A0B17714BA",
   },
   "MPTable:509A944E-994C-4867-AE55-593628C5DBD5" => Object {
@@ -247,6 +254,8 @@ Map {
     "elementType": "table",
     "objectType": "MPTableElement",
     "paragraphStyle": "MPParagraphStyle:7EAB5784-717B-4672-BD59-8CA324FB0637",
+    "suppressCaption": undefined,
+    "suppressFooter": undefined,
     "suppressHeader": true,
     "tableStyle": "MPTableStyle:08C0E93B-848D-491F-8EB2-A8A0B17714BA",
   },
@@ -262,7 +271,9 @@ Map {
     "elementType": "table",
     "objectType": "MPTableElement",
     "paragraphStyle": "MPParagraphStyle:7EAB5784-717B-4672-BD59-8CA324FB0637",
+    "suppressCaption": undefined,
     "suppressFooter": true,
+    "suppressHeader": undefined,
     "tableStyle": "MPTableStyle:08C0E93B-848D-491F-8EB2-A8A0B17714BA",
   },
   "MPTable:2A2413E2-71F5-4B6C-F513-7B44748E49A8" => Object {
@@ -277,6 +288,9 @@ Map {
     "elementType": "table",
     "objectType": "MPTableElement",
     "paragraphStyle": "MPParagraphStyle:7EAB5784-717B-4672-BD59-8CA324FB0637",
+    "suppressCaption": undefined,
+    "suppressFooter": undefined,
+    "suppressHeader": undefined,
     "tableStyle": "MPTableStyle:08C0E93B-848D-491F-8EB2-A8A0B17714BA",
   },
   "MPTable:6C045963-404A-4E1E-FF81-B40E9772A6A6" => Object {

@@ -72,10 +72,8 @@ export type Nodes =
   | 'table'
   | 'table_cell'
   | 'table_element'
-  | 'tbody_row'
+  | 'table_row'
   | 'text'
-  | 'tfoot_row'
-  | 'thead_row'
   | 'toc_element'
   | 'toc_section'
 

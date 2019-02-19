@@ -36,7 +36,12 @@ import {
 } from '@manuscripts/manuscripts-json-schema'
 import { DOMSerializer } from 'prosemirror-model'
 import { iterateChildren } from '../lib/utils'
-import { ManuscriptNode, ManuscriptNodeType, schema } from '../schema'
+import {
+  ManuscriptNode,
+  ManuscriptNodeType,
+  schema,
+  TableElementNode,
+} from '../schema'
 import { isSectionNode } from '../schema/nodes/section'
 import { PlaceholderElement } from './models'
 import { nodeTypesMap } from './node-types'
@@ -84,8 +89,6 @@ const svgDefs = (svg: string): string | undefined => {
   return defs ? xmlSerializer.serializeToString(defs) : undefined
 }
 
-const tags = ['thead', 'tbody', 'tfoot']
-
 const tableRowDisplayStyle = (tagName: string, parent: ManuscriptNode) => {
   switch (tagName) {
     case 'thead':
@@ -101,7 +104,8 @@ const tableRowDisplayStyle = (tagName: string, parent: ManuscriptNode) => {
 
 const buildTableSection = (
   tagName: string,
-  inputRows: NodeListOf<Element>
+  inputRows: HTMLTableRowElement[],
+  parent: ManuscriptNode
 ): HTMLTableSectionElement => {
   const section = document.createElement(tagName) as HTMLTableSectionElement
 
@@ -123,12 +127,18 @@ const buildTableSection = (
     }
   }
 
+  const displayStyle = tableRowDisplayStyle(tagName, parent)
+
+  if (displayStyle) {
+    section.style.display = displayStyle
+  }
+
   return section
 }
 
 const tableContents = (
   node: ManuscriptNode,
-  parent: ManuscriptNode
+  parent: TableElementNode
 ): string => {
   const input = serializer.serializeNode(node) as HTMLTableElement
 
@@ -148,19 +158,14 @@ const tableContents = (
 
   output.setAttribute('data-contained-object-id', node.attrs.id)
 
-  for (const tagName of tags) {
-    const rows = input.querySelectorAll(`tr.${tagName}`)
+  const rows = Array.from(input.querySelectorAll('tr'))
 
-    const section = buildTableSection(tagName, rows)
+  const thead = rows.splice(0, 1)
+  const tfoot = rows.splice(-1, 1)
 
-    const displayStyle = tableRowDisplayStyle(tagName, parent)
-
-    if (displayStyle) {
-      section.style.display = displayStyle
-    }
-
-    output.appendChild(section)
-  }
+  output.appendChild(buildTableSection('thead', thead, parent))
+  output.appendChild(buildTableSection('tbody', rows, parent))
+  output.appendChild(buildTableSection('tfoot', tfoot, parent))
 
   return xmlSerializer.serializeToString(output)
 }
@@ -298,7 +303,7 @@ const encoders: NodeEncoderMap = {
     elementType: 'p',
     contents: contents(node), // TODO: can't serialize citations?
     paragraphStyle: node.attrs.paragraphStyle || undefined,
-    placeholderInnerHTML: node.attrs.placeholder || undefined,
+    placeholderInnerHTML: node.attrs.placeholder || '',
   }),
   placeholder_element: (): Partial<PlaceholderElement> => ({
     elementType: 'p',
@@ -314,7 +319,7 @@ const encoders: NodeEncoderMap = {
     titleSuppressed: node.attrs.titleSuppressed || undefined,
   }),
   table: (node, parent): Partial<Table> => ({
-    contents: tableContents(node, parent),
+    contents: tableContents(node, parent as TableElementNode),
   }),
   table_element: (node): Partial<TableElement> => ({
     containedObjectID: attributeOfNodeType(node, 'table', 'id'),
@@ -343,7 +348,8 @@ const encoders: NodeEncoderMap = {
 
 const removeEmpty = (data: Partial<Model>) => {
   for (const [key, value] of Object.entries(data)) {
-    if (value === undefined || value === '') {
+    // || value === undefined
+    if (value === '') {
       delete (data as { [key: string]: string })[key]
     }
   }
