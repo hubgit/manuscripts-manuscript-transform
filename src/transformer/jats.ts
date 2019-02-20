@@ -524,15 +524,6 @@ const fixTable = (
     table.appendChild(thead)
   }
 
-  // tbody
-  const tbody = document.createElement('tbody')
-
-  for (const row of rows) {
-    tbody.appendChild(row)
-  }
-
-  table.appendChild(tbody)
-
   // tfoot
   if (node.attrs.suppressFooter) {
     for (const row of tfootRows) {
@@ -547,6 +538,15 @@ const fixTable = (
 
     table.appendChild(tfoot)
   }
+
+  // tbody
+  const tbody = document.createElement('tbody')
+
+  for (const row of rows) {
+    tbody.appendChild(row)
+  }
+
+  table.appendChild(tbody)
 }
 
 const fixBody = (
