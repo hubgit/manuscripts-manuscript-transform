@@ -346,17 +346,6 @@ const encoders: NodeEncoderMap = {
   }),
 }
 
-const removeEmpty = (data: Partial<Model>) => {
-  for (const [key, value] of Object.entries(data)) {
-    // || value === undefined
-    if (value === '') {
-      delete (data as { [key: string]: string })[key]
-    }
-  }
-
-  return data
-}
-
 const modelData = (
   node: ManuscriptNode,
   parent: ManuscriptNode,
@@ -367,9 +356,7 @@ const modelData = (
 
   if (!encoder) throw new Error(`Unhandled model: ${node.type.name}`)
 
-  const data = encoder(node, parent, path, priority)
-
-  return removeEmpty(data)
+  return encoder(node, parent, path, priority)
 }
 
 export const modelFromNode = (

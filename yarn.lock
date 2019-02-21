@@ -663,10 +663,10 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@manuscripts/examples@^0.0.2":
-  version "0.0.2"
-  resolved "https://atypon-npm-registry.herokuapp.com/@manuscripts%2fexamples/-/examples-0.0.2.tgz#bc7354d1dc704bf03c4b9d4e0f4c1054c70bbc73"
-  integrity sha512-kctNmYWfzk0M3Rxe5+UNdnMYM5pGL1ZFwE0+izMfpVegm3744Sbeg/0JUXrHXvaHIwT8JOzdOCi6WO6oBlejlA==
+"@manuscripts/examples@^0.0.4":
+  version "0.0.4"
+  resolved "https://atypon-npm-registry.herokuapp.com/@manuscripts%2fexamples/-/examples-0.0.4.tgz#b0abdbb4c4324e9ea65f4be5f53ef8e729ecc0ca"
+  integrity sha512-c1TuCBfMTRtoB3+PUlONcUeSYkt57U34sqnb0G2buDkvpDZfApc80OPzoUJe5FA3qVyNsjdw8+eSB3fcPpEqBw==
 
 "@manuscripts/manuscripts-json-schema@^1.7.3":
   version "1.7.3"
