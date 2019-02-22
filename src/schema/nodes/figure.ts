@@ -17,53 +17,49 @@
 import { NodeSpec } from 'prosemirror-model'
 import { ManuscriptNode } from '../types'
 
-export interface FigureElementNode extends ManuscriptNode {
+export interface FigureNode extends ManuscriptNode {
   attrs: {
-    columns: number
-    figureLayout: string
-    figureStyle: string
     id: string
     label: string
-    rows: number
-    suppressCaption: boolean
+    src: string
+    contentType: string
   }
 }
 
-export const figureElement: NodeSpec = {
-  content: '(figure | placeholder)+ figcaption',
+export const figure: NodeSpec = {
+  content: 'figcaption',
   attrs: {
-    figureLayout: { default: '' },
-    figureStyle: { default: '' },
     id: { default: '' },
     label: { default: '' },
-    suppressCaption: { default: false },
+    src: { default: '' },
+    contentType: { default: '' },
   },
   selectable: false,
   group: 'block element',
   parseDOM: [
     {
-      tag: 'figure.figure-group',
+      tag: 'figure',
+      context: 'figure_element/', // TODO: match any figure?
       getAttrs: p => {
         const dom = p as HTMLElement
+        // const img = dom.querySelector('img')
+
+        // TODO: parse contentType?
 
         return {
           id: dom.getAttribute('id'),
-          figureStyle: dom.getAttribute('data-figure-style'),
-          figureLayout: dom.getAttribute('data-figure-layout'),
+          // src: img ? img.getAttribute('src') : '',
         }
       },
     },
   ],
   toDOM: node => {
-    const figureElementNode = node as FigureElementNode
+    const figureNode = node as FigureNode
 
     return [
       'figure',
       {
-        class: 'figure-group',
-        id: figureElementNode.attrs.id,
-        'data-figure-style': figureElementNode.attrs.figureStyle,
-        'data-figure-layout': figureElementNode.attrs.figureLayout,
+        id: figureNode.attrs.id,
       },
       0,
     ]

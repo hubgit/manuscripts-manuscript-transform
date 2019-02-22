@@ -419,18 +419,27 @@ Object {
         },
         Object {
           "attrs": Object {
-            "columns": 1,
-            "containedObjectIDs": Array [
-              "MPFigure:D673DF08-D75E-4061-8EC1-9611EAB302F0",
-            ],
             "figureLayout": "",
             "figureStyle": "MPFigureStyle:12916784-C8A2-414E-919D-490172E82B25",
             "id": "MPFigureElement:A5D68C57-B5BB-4D10-E0C3-ECED717A2AA7",
             "label": "",
-            "rows": 1,
             "suppressCaption": false,
           },
           "content": Array [
+            Object {
+              "attrs": Object {
+                "contentType": "image/png",
+                "id": "MPFigure:D673DF08-D75E-4061-8EC1-9611EAB302F0",
+                "label": "",
+                "src": "",
+              },
+              "content": Array [
+                Object {
+                  "type": "figcaption",
+                },
+              ],
+              "type": "figure",
+            },
             Object {
               "content": Array [
                 Object {
@@ -445,18 +454,27 @@ Object {
         },
         Object {
           "attrs": Object {
-            "columns": 1,
-            "containedObjectIDs": Array [
-              "MPFigure:AD65D628-A904-4DC4-A026-F8F4C08F6557",
-            ],
             "figureLayout": "",
             "figureStyle": "MPFigureStyle:12916784-C8A2-414E-919D-490172E82B25",
             "id": "MPFigureElement:B32BDEC8-E816-4946-C0BB-0404AF2F0C29",
             "label": "",
-            "rows": 1,
             "suppressCaption": true,
           },
           "content": Array [
+            Object {
+              "attrs": Object {
+                "contentType": "image/png",
+                "id": "MPFigure:AD65D628-A904-4DC4-A026-F8F4C08F6557",
+                "label": "",
+                "src": "",
+              },
+              "content": Array [
+                Object {
+                  "type": "figcaption",
+                },
+              ],
+              "type": "figure",
+            },
             Object {
               "content": Array [
                 Object {
@@ -1693,18 +1711,27 @@ Object {
         },
         Object {
           "attrs": Object {
-            "columns": 1,
-            "containedObjectIDs": Array [
-              "MPFigure:AD65D628-A904-4DC4-A026-F8F4C08F6557",
-            ],
             "figureLayout": "",
             "figureStyle": "MPFigureStyle:12916784-C8A2-414E-919D-490172E82B25",
             "id": "MPFigureElement:B32BDEC8-E816-4946-C0BB-0404AF2F0C29",
             "label": "",
-            "rows": 1,
             "suppressCaption": true,
           },
           "content": Array [
+            Object {
+              "attrs": Object {
+                "contentType": "image/png",
+                "id": "MPFigure:AD65D628-A904-4DC4-A026-F8F4C08F6557",
+                "label": "",
+                "src": "",
+              },
+              "content": Array [
+                Object {
+                  "type": "figcaption",
+                },
+              ],
+              "type": "figure",
+            },
             Object {
               "content": Array [
                 Object {
@@ -2856,18 +2883,27 @@ Object {
         },
         Object {
           "attrs": Object {
-            "columns": 1,
-            "containedObjectIDs": Array [
-              "MPFigure:D673DF08-D75E-4061-8EC1-9611EAB302F0",
-            ],
             "figureLayout": "",
             "figureStyle": "MPFigureStyle:12916784-C8A2-414E-919D-490172E82B25",
             "id": "MPFigureElement:A5D68C57-B5BB-4D10-E0C3-ECED717A2AA7",
             "label": "",
-            "rows": 1,
             "suppressCaption": false,
           },
           "content": Array [
+            Object {
+              "attrs": Object {
+                "contentType": "image/png",
+                "id": "MPFigure:D673DF08-D75E-4061-8EC1-9611EAB302F0",
+                "label": "",
+                "src": "",
+              },
+              "content": Array [
+                Object {
+                  "type": "figcaption",
+                },
+              ],
+              "type": "figure",
+            },
             Object {
               "content": Array [
                 Object {
@@ -2882,18 +2918,27 @@ Object {
         },
         Object {
           "attrs": Object {
-            "columns": 1,
-            "containedObjectIDs": Array [
-              "MPFigure:AD65D628-A904-4DC4-A026-F8F4C08F6557",
-            ],
             "figureLayout": "",
             "figureStyle": "MPFigureStyle:12916784-C8A2-414E-919D-490172E82B25",
             "id": "MPFigureElement:B32BDEC8-E816-4946-C0BB-0404AF2F0C29",
             "label": "",
-            "rows": 1,
             "suppressCaption": true,
           },
           "content": Array [
+            Object {
+              "attrs": Object {
+                "contentType": "image/png",
+                "id": "MPFigure:AD65D628-A904-4DC4-A026-F8F4C08F6557",
+                "label": "",
+                "src": "",
+              },
+              "content": Array [
+                Object {
+                  "type": "figcaption",
+                },
+              ],
+              "type": "figure",
+            },
             Object {
               "content": Array [
                 Object {

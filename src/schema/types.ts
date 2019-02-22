@@ -53,6 +53,7 @@ export type Nodes =
   | 'equation'
   | 'equation_element'
   | 'figcaption'
+  | 'figure'
   | 'figure_element'
   | 'footnote'
   | 'footnotes_element'

@@ -19,6 +19,7 @@ import {
   Element,
   Equation,
   EquationElement,
+  Figure,
   FigureElement,
   FootnotesElement,
   ListElement,
@@ -41,6 +42,7 @@ import {
   EquationNode,
   FigCaptionNode,
   FigureElementNode,
+  FigureNode,
   FootnotesElementNode,
   ListingElementNode,
   ListingNode,
@@ -161,16 +163,55 @@ export class Decoder {
           })
         : figcaptionNode
 
-      // TODO: actual figure nodes in here?
+      // TODO: use layout to prefill figures?
+
+      const figures: Array<
+        FigureNode | PlaceholderNode
+      > = model.containedObjectIDs
+        ? model.containedObjectIDs.map(id => {
+            const figcaptionNode: FigCaptionNode = schema.nodes.figcaption.create()
+
+            if (!id) {
+              return schema.nodes.figure.createAndFill() as FigureNode
+            }
+
+            const figureModel = this.getModel<Figure>(id)
+
+            if (!figureModel) {
+              return schema.nodes.placeholder.create({
+                id,
+                label: 'A figure',
+              }) as PlaceholderNode
+            }
+
+            const figcaption: FigCaptionNode = figureModel.title
+              ? this.parseContents(
+                  `<figcaption>${figureModel.title}</figcaption>`,
+                  {
+                    topNode: figcaptionNode,
+                  }
+                )
+              : figcaptionNode
+
+            return schema.nodes.figure.create(
+              {
+                id: figureModel._id,
+                contentType: figureModel.contentType,
+                src: figureModel.src,
+              },
+              [figcaption]
+            ) as FigureNode
+          })
+        : []
 
       return schema.nodes.figure_element.createChecked(
         {
           id: model._id,
-          containedObjectIDs: model.containedObjectIDs,
+          figureLayout: model.figureLayout,
           figureStyle: model.figureStyle,
           suppressCaption: Boolean(model.suppressCaption),
         },
-        figcaption
+        [...figures, figcaption]
       ) as FigureElementNode
     },
     [ObjectTypes.EquationElement]: data => {

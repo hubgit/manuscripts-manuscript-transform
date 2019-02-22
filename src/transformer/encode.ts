@@ -19,6 +19,7 @@ import {
   Citation,
   Equation,
   EquationElement,
+  Figure,
   FigureElement,
   Footnote,
   FootnotesElement,
@@ -37,12 +38,13 @@ import {
 import { DOMSerializer } from 'prosemirror-model'
 import { iterateChildren } from '../lib/utils'
 import {
+  isSectionNode,
   ManuscriptNode,
   ManuscriptNodeType,
+  Nodes,
   schema,
   TableElementNode,
 } from '../schema'
-import { isSectionNode } from '../schema/nodes/section'
 import { PlaceholderElement } from './models'
 import { nodeTypesMap } from './node-types'
 import { buildSectionCategory } from './section-category'
@@ -211,6 +213,22 @@ const inlineContentsOfNodeType = (
   return ''
 }
 
+const containedFigureIDs = (node: ManuscriptNode): string[] => {
+  const figureNodeType = node.type.schema.nodes.figure
+
+  const ids: string[] = []
+
+  for (let i = 0; i < node.childCount; i++) {
+    const childNode = node.child(i)
+
+    if (childNode.type === figureNodeType) {
+      ids.push(childNode.attrs.id)
+    }
+  }
+
+  return ids
+}
+
 type NodeEncoder = (
   node: ManuscriptNode,
   parent: ManuscriptNode,
@@ -218,9 +236,7 @@ type NodeEncoder = (
   priority: PrioritizedValue
 ) => Partial<Model>
 
-interface NodeEncoderMap {
-  [key: string]: NodeEncoder
-}
+type NodeEncoderMap = { [key in Nodes]?: NodeEncoder }
 
 const encoders: NodeEncoderMap = {
   bibliography_element: (node): Partial<BibliographyElement> => ({
@@ -273,12 +289,19 @@ const encoders: NodeEncoderMap = {
     elementType: 'p',
     suppressCaption: Boolean(node.attrs.suppressCaption) || undefined,
   }),
+  figure: (node): Partial<Figure> => ({
+    title:
+      inlineContentsOfNodeType(node, node.type.schema.nodes.figcaption) ||
+      undefined,
+    contentType: node.attrs.contentType || undefined,
+  }),
   figure_element: (node): Partial<FigureElement> => ({
-    containedObjectIDs: node.attrs.containedObjectIDs,
+    containedObjectIDs: containedFigureIDs(node),
     caption: inlineContentsOfNodeType(node, node.type.schema.nodes.figcaption),
     elementType: 'figure',
     suppressCaption: Boolean(node.attrs.suppressCaption) || undefined,
     figureStyle: node.attrs.figureStyle || undefined,
+    figureLayout: node.attrs.figureLayout || undefined,
   }),
   footnote: (node, parent): Partial<Footnote> => ({
     containingObject: parent.attrs.id,
@@ -352,7 +375,7 @@ const modelData = (
   path: string[],
   priority: PrioritizedValue
 ): Partial<Model> => {
-  const encoder = encoders[node.type.name]
+  const encoder = encoders[node.type.name as Nodes]
 
   if (!encoder) throw new Error(`Unhandled model: ${node.type.name}`)
 

@@ -19,13 +19,11 @@ import {
   BibliographyItem,
   Citation,
   Contributor,
-  Figure,
   Model,
   ObjectTypes,
 } from '@manuscripts/manuscripts-json-schema'
 import { DOMOutputSpec, DOMSerializer } from 'prosemirror-model'
 import {
-  FigureElementNode,
   ManuscriptFragment,
   ManuscriptMark,
   ManuscriptNode,
@@ -52,114 +50,171 @@ type MarkSpecs = {
 
 const normalizeID = (id: string) => id.replace(/:/g, '_')
 
-const nodes = (document: Document): NodeSpecs => ({
-  bibliography_element: () => '',
-  bibliography_section: node => [
-    'ref-list',
-    { id: normalizeID(node.attrs.id) },
-    0,
-  ],
-  bullet_list: () => ['list', { 'list-type': 'bullet' }, 0],
-  caption: () => ['caption', ['p', 0]],
-  citation: node => {
-    const xref = document.createElement('xref')
-    xref.setAttribute('ref-type', 'bibr')
-    xref.setAttribute('rid', normalizeID(node.attrs.rid))
-    xref.textContent = node.attrs.contents.replace(/&amp;/g, '&') // TODO: decode all HTML entities?
+const createSerializer = (document: Document) => {
+  let serializer: DOMSerializer<ManuscriptSchema>
 
-    return xref
-  },
-  cross_reference: node => {
-    const xref = document.createElement('xref')
-    xref.setAttribute('ref-type', 'fig')
-    xref.setAttribute('rid', normalizeID(node.attrs.rid))
-    xref.textContent = node.attrs.label
+  const nodes: NodeSpecs = {
+    bibliography_element: () => '',
+    bibliography_section: node => [
+      'ref-list',
+      { id: normalizeID(node.attrs.id) },
+      0,
+    ],
+    bullet_list: () => ['list', { 'list-type': 'bullet' }, 0],
+    caption: () => ['caption', ['p', 0]],
+    citation: node => {
+      const xref = document.createElement('xref')
+      xref.setAttribute('ref-type', 'bibr')
+      xref.setAttribute('rid', normalizeID(node.attrs.rid))
+      xref.textContent = node.attrs.contents.replace(/&amp;/g, '&') // TODO: decode all HTML entities?
 
-    return xref
-  },
-  doc: () => '',
-  equation: node => {
-    const formula = document.createElement('disp-formula')
+      return xref
+    },
+    cross_reference: node => {
+      const xref = document.createElement('xref')
+      xref.setAttribute('ref-type', 'fig')
+      xref.setAttribute('rid', normalizeID(node.attrs.rid))
+      xref.textContent = node.attrs.label
 
-    const math = document.createElement('tex-math')
-    math.textContent = node.attrs.TeXRepresentation
-    formula.appendChild(math)
+      return xref
+    },
+    doc: () => '',
+    equation: node => {
+      const formula = document.createElement('disp-formula')
 
-    return formula
-  },
-  equation_element: node => ['fig', { id: normalizeID(node.attrs.id) }, 0],
-  figcaption: () => ['caption', ['p', 0]],
-  figure_element: node => ['fig-group', { id: normalizeID(node.attrs.id) }, 0],
-  footnote: node => ['fn', { id: normalizeID(node.attrs.id) }, 0],
-  footnotes_element: node => ['fn-group', { id: normalizeID(node.attrs.id) }],
-  hard_break: () => ['break'],
-  inline_equation: node => {
-    const formula = document.createElement('inline-formula')
+      const math = document.createElement('tex-math')
+      math.textContent = node.attrs.TeXRepresentation
+      formula.appendChild(math)
 
-    const math = document.createElement('tex-math')
-    math.textContent = node.attrs.TeXRepresentation
-    formula.appendChild(math)
+      return formula
+    },
+    equation_element: node => ['fig', { id: normalizeID(node.attrs.id) }, 0],
+    figcaption: () => ['caption', ['p', 0]],
+    figure: node => {
+      const fig = document.createElement('fig')
+      fig.setAttribute('id', normalizeID(node.attrs.id))
 
-    return formula
-  },
-  inline_footnote: node => {
-    const xref = document.createElement('xref')
-    xref.setAttribute('ref-type', 'fn')
-    xref.setAttribute('rid', normalizeID(node.attrs.rid))
-    xref.textContent = node.attrs.contents
+      if (node.attrs.label) {
+        const label = document.createElement('label')
+        label.textContent = node.attrs.label
+        fig.appendChild(label)
+      }
 
-    return xref
-  },
-  list_item: () => ['list-item', 0],
-  listing: node => {
-    const code = document.createElement('code')
-    code.setAttribute('id', normalizeID(node.attrs.id))
-    code.setAttribute('language', node.attrs.languageKey)
-    code.textContent = node.attrs.contents
+      const figcaptionNodeType = node.type.schema.nodes.figcaption
 
-    return code
-  },
-  listing_element: node => ['fig', { id: normalizeID(node.attrs.id) }, 0],
-  manuscript: node => ['article', { id: normalizeID(node.attrs.id) }, 0],
-  ordered_list: () => ['list', { 'list-type': 'ordered' }, 0],
-  paragraph: node => {
-    const attrs: Attrs = {}
+      node.forEach(childNode => {
+        if (childNode.type === figcaptionNodeType) {
+          fig.appendChild(serializer.serializeNode(childNode, { document }))
+        }
+      })
 
-    if (node.attrs.id) {
-      attrs.id = normalizeID(node.attrs.id)
-    }
+      const graphic = document.createElement('graphic')
+      graphic.setAttributeNS(
+        'http://www.w3.org/1999/xlink',
+        'xlink:href',
+        `Data/${normalizeID(node.attrs.id)}`
+      )
 
-    return ['p', attrs, 0]
-  },
-  placeholder: () => {
-    throw new Error('Placeholder!')
-  },
-  placeholder_element: () => {
-    throw new Error('Placeholder element!')
-  },
-  section: node => ['sec', { id: normalizeID(node.attrs.id) }, 0],
-  section_title: () => ['title', 0],
-  table: node => ['table', { id: normalizeID(node.attrs.id) }, 0],
-  // table: node => serializeTableToHTML(node as TableNode),
-  table_element: node => ['table-wrap', { id: normalizeID(node.attrs.id) }, 0],
-  table_cell: () => ['td', 0],
-  table_row: () => ['tr', 0],
-  text: node => node.text!,
-  toc_element: node => ['div', { id: normalizeID(node.attrs.id) }],
-  toc_section: node => ['sec', { id: normalizeID(node.attrs.id) }, 0],
-})
+      if (node.attrs.contentType) {
+        const [mimeType, mimeSubType] = node.attrs.contentType.split('/')
 
-const marks = (): MarkSpecs => ({
-  bold: () => ['bold'],
-  code: () => ['code', { position: 'anchor' }], // TODO: inline?
-  italic: () => ['italic'],
-  link: node => ['a', { href: node.attrs.href }],
-  smallcaps: () => ['sc'],
-  strikethrough: () => ['strike'],
-  superscript: () => ['sup'],
-  subscript: () => ['sub'],
-  underline: () => ['underline'],
-})
+        if (mimeType) {
+          graphic.setAttribute('mimetype', mimeType)
+
+          if (mimeSubType) {
+            graphic.setAttribute('mime-subtype', mimeSubType)
+          }
+        }
+      }
+
+      fig.appendChild(graphic)
+
+      return fig
+    },
+    figure_element: node => [
+      'fig-group',
+      { id: normalizeID(node.attrs.id) },
+      0,
+    ],
+    footnote: node => ['fn', { id: normalizeID(node.attrs.id) }, 0],
+    footnotes_element: node => ['fn-group', { id: normalizeID(node.attrs.id) }],
+    hard_break: () => ['break'],
+    inline_equation: node => {
+      const formula = document.createElement('inline-formula')
+
+      const math = document.createElement('tex-math')
+      math.textContent = node.attrs.TeXRepresentation
+      formula.appendChild(math)
+
+      return formula
+    },
+    inline_footnote: node => {
+      const xref = document.createElement('xref')
+      xref.setAttribute('ref-type', 'fn')
+      xref.setAttribute('rid', normalizeID(node.attrs.rid))
+      xref.textContent = node.attrs.contents
+
+      return xref
+    },
+    list_item: () => ['list-item', 0],
+    listing: node => {
+      const code = document.createElement('code')
+      code.setAttribute('id', normalizeID(node.attrs.id))
+      code.setAttribute('language', node.attrs.languageKey)
+      code.textContent = node.attrs.contents
+
+      return code
+    },
+    listing_element: node => ['fig', { id: normalizeID(node.attrs.id) }, 0],
+    manuscript: node => ['article', { id: normalizeID(node.attrs.id) }, 0],
+    ordered_list: () => ['list', { 'list-type': 'ordered' }, 0],
+    paragraph: node => {
+      const attrs: Attrs = {}
+
+      if (node.attrs.id) {
+        attrs.id = normalizeID(node.attrs.id)
+      }
+
+      return ['p', attrs, 0]
+    },
+    placeholder: () => {
+      throw new Error('Placeholder!')
+    },
+    placeholder_element: () => {
+      throw new Error('Placeholder element!')
+    },
+    section: node => ['sec', { id: normalizeID(node.attrs.id) }, 0],
+    section_title: () => ['title', 0],
+    table: node => ['table', { id: normalizeID(node.attrs.id) }, 0],
+    // table: node => serializeTableToHTML(node as TableNode),
+    table_element: node => [
+      'table-wrap',
+      { id: normalizeID(node.attrs.id) },
+      0,
+    ],
+    table_cell: () => ['td', 0],
+    table_row: () => ['tr', 0],
+    text: node => node.text!,
+    toc_element: node => ['div', { id: normalizeID(node.attrs.id) }],
+    toc_section: node => ['sec', { id: normalizeID(node.attrs.id) }, 0],
+  }
+
+  const marks: MarkSpecs = {
+    bold: () => ['bold'],
+    code: () => ['code', { position: 'anchor' }], // TODO: inline?
+    italic: () => ['italic'],
+    link: node => ['a', { href: node.attrs.href }],
+    smallcaps: () => ['sc'],
+    strikethrough: () => ['strike'],
+    superscript: () => ['sup'],
+    subscript: () => ['sub'],
+    underline: () => ['underline'],
+  }
+
+  serializer = new DOMSerializer<ManuscriptSchema>(nodes, marks)
+
+  return serializer
+}
 
 const buildFront = (document: Document, modelMap: Map<string, Model>) => {
   const manuscript = findManuscript(modelMap)
@@ -343,15 +398,14 @@ const buildFront = (document: Document, modelMap: Map<string, Model>) => {
 }
 
 const buildBody = (document: Document, fragment: ManuscriptFragment) => {
-  const serializer = new DOMSerializer<ManuscriptSchema>(
-    nodes(document),
-    marks()
-  )
+  const serializer = createSerializer(document)
 
   const content = serializer.serializeFragment(fragment, { document })
 
   const body = document.createElement('body')
   body.appendChild(content)
+
+  fixBody(document, fragment)
 
   return body
 }
@@ -549,18 +603,7 @@ const fixTable = (
   table.appendChild(tbody)
 }
 
-const fixBody = (
-  document: Document,
-  fragment: ManuscriptFragment,
-  modelMap: Map<string, Model>
-) => {
-  const figures = Array.from(modelMap.values()).filter(
-    hasObjectType<Figure>(ObjectTypes.Figure)
-  )
-
-  let figureIndex = 0
-
-  // tslint:disable:cyclomatic-complexity
+const fixBody = (document: Document, fragment: ManuscriptFragment) => {
   fragment.descendants(node => {
     if (node.attrs.id) {
       // remove suppressed titles
@@ -612,47 +655,6 @@ const fixBody = (
           }
         }
       }
-
-      // add figures to figure groups
-      if (isNodeType<FigureElementNode>(node, 'figure_element')) {
-        const figureElement = document.querySelector(
-          `#${normalizeID(node.attrs.id)}`
-        )
-
-        if (figureElement) {
-          const containedObjects = node.attrs.containedObjectIDs.map(
-            containedObjectID =>
-              figures.find(model => model._id === containedObjectID)
-          )
-
-          containedObjects.forEach(containedObject => {
-            if (containedObject) {
-              const fig = document.createElement('fig')
-              fig.setAttribute('id', normalizeID(containedObject._id))
-
-              const label = document.createElement('label')
-              label.textContent = `Figure ${++figureIndex}` // TODO: label from settings
-              fig.appendChild(label)
-
-              const [mimeType, mimeSubType] = containedObject.contentType.split(
-                '/'
-              )
-
-              const graphic = document.createElement('graphic')
-              graphic.setAttribute('mimetype', mimeType)
-              graphic.setAttribute('mime-subtype', mimeSubType)
-              graphic.setAttributeNS(
-                'http://www.w3.org/1999/xlink',
-                'xlink:href',
-                `Data/${normalizeID(containedObject._id)}`
-              )
-              fig.appendChild(graphic)
-
-              figureElement.appendChild(fig)
-            }
-          })
-        }
-      }
     }
   })
 }
@@ -662,7 +664,7 @@ export const serializeToJATS = (
   modelMap: Map<string, Model>
 ): string => {
   const doc = document.implementation.createDocument(
-    null, // 'http://jats.nlm.nih.gov/publishing/1.1/JATS-journalpublishing1.dtd'
+    null, // 'http://jats.nlm.nih.gov/archiving/1.1/JATS-archive-oasis-article1-mathml3.dtd'
     'article',
     document.implementation.createDocumentType(
       'article',
@@ -679,13 +681,6 @@ export const serializeToJATS = (
     'http://www.w3.org/1999/xlink'
   )
 
-  // for PMC
-  // article.setAttributeNS(
-  //   'http://www.w3.org/2000/xmlns/',
-  //   'xmlns:ali',
-  //   'http://www.niso.org/schemas/ali/1.0/'
-  // )
-
   const front = buildFront(doc, modelMap)
   article.appendChild(front)
 
@@ -694,8 +689,6 @@ export const serializeToJATS = (
 
   const back = buildBack(doc, modelMap)
   article.appendChild(back)
-
-  fixBody(doc, fragment, modelMap)
 
   return xmlSerializer.serializeToString(doc)
 }
