@@ -14,31 +14,31 @@
  * limitations under the License.
  */
 
-import { Nodes, schema } from '../schema'
-import { ManuscriptNode, ManuscriptNodeType } from '../schema/types'
+import { ObjectTypes } from '@manuscripts/manuscripts-json-schema'
+import { ManuscriptNode, ManuscriptNodeType, Nodes, schema } from '../schema'
 
 export const nodeTypesMap: Map<ManuscriptNodeType, string> = new Map([
-  [schema.nodes.bibliography_element, 'MPBibliographyElement'],
-  [schema.nodes.bibliography_section, 'MPSection'],
-  [schema.nodes.bullet_list, 'MPListElement'],
-  [schema.nodes.citation, 'MPCitation'],
+  [schema.nodes.bibliography_element, ObjectTypes.BibliographyElement],
+  [schema.nodes.bibliography_section, ObjectTypes.Section],
+  [schema.nodes.bullet_list, ObjectTypes.ListElement],
+  [schema.nodes.citation, ObjectTypes.Citation],
   [schema.nodes.cross_reference, 'MPAuxiliaryObjectReference'],
-  [schema.nodes.equation, 'MPEquation'],
-  [schema.nodes.equation_element, 'MPEquationElement'],
-  // [schema.nodes.figure, 'MPFigure'],
-  [schema.nodes.figure_element, 'MPFigureElement'],
-  [schema.nodes.footnote, 'MPFootnote'],
-  [schema.nodes.footnotes_element, 'MPFootnotesElement'],
-  [schema.nodes.inline_equation, 'MPInlineMathFragment'],
-  [schema.nodes.listing, 'MPListing'],
-  [schema.nodes.listing_element, 'MPListingElement'],
-  [schema.nodes.ordered_list, 'MPListElement'],
-  [schema.nodes.paragraph, 'MPParagraphElement'],
-  [schema.nodes.section, 'MPSection'],
-  [schema.nodes.table, 'MPTable'],
-  [schema.nodes.table_element, 'MPTableElement'],
-  [schema.nodes.toc_element, 'MPTOCElement'],
-  [schema.nodes.toc_section, 'MPSection'],
+  [schema.nodes.equation, ObjectTypes.Equation],
+  [schema.nodes.equation_element, ObjectTypes.EquationElement],
+  [schema.nodes.figure, ObjectTypes.Figure],
+  [schema.nodes.figure_element, ObjectTypes.FigureElement],
+  [schema.nodes.footnote, ObjectTypes.Footnote],
+  [schema.nodes.footnotes_element, ObjectTypes.FootnotesElement],
+  [schema.nodes.inline_equation, ObjectTypes.InlineMathFragment],
+  [schema.nodes.listing, ObjectTypes.Listing],
+  [schema.nodes.listing_element, ObjectTypes.ListingElement],
+  [schema.nodes.ordered_list, ObjectTypes.ListElement],
+  [schema.nodes.paragraph, ObjectTypes.ParagraphElement],
+  [schema.nodes.section, ObjectTypes.Section],
+  [schema.nodes.table, ObjectTypes.Table],
+  [schema.nodes.table_element, ObjectTypes.TableElement],
+  [schema.nodes.toc_element, ObjectTypes.TOCElement],
+  [schema.nodes.toc_section, ObjectTypes.Section],
 ])
 
 const elementNodeTypes: ManuscriptNodeType[] = [
