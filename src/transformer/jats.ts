@@ -313,31 +313,31 @@ const buildFront = (document: Document, modelMap: Map<string, Model>) => {
     }
   }
 
-  const now = new Date()
-  const isodate = now.toISOString().replace(/T.*/, '')
-  const [isoyear, isomonth, isoday] = isodate.split('-')
-
-  const pubDate = document.createElement('pub-date')
-  pubDate.setAttribute('pub-type', 'epreprint')
-  pubDate.setAttribute('date-type', 'preprint')
-  pubDate.setAttribute('iso-8601-date', isodate)
-
-  const pubDateDay = document.createElement('day')
-  pubDateDay.textContent = isoday
-  pubDate.appendChild(pubDateDay)
-
-  const pubDateMonth = document.createElement('month')
-  pubDateMonth.textContent = isomonth
-  pubDate.appendChild(pubDateMonth)
-
-  const pubDateYear = document.createElement('year')
-  pubDateYear.textContent = isoyear
-  pubDate.appendChild(pubDateYear)
-
-  articleMeta.appendChild(pubDate)
-
-  const elocationID = document.createElement('elocation-id')
-  articleMeta.appendChild(elocationID)
+  // const now = new Date()
+  // const isodate = now.toISOString().replace(/T.*/, '')
+  // const [isoyear, isomonth, isoday] = isodate.split('-')
+  //
+  // const pubDate = document.createElement('pub-date')
+  // pubDate.setAttribute('pub-type', 'epreprint')
+  // pubDate.setAttribute('date-type', 'preprint')
+  // pubDate.setAttribute('iso-8601-date', isodate)
+  //
+  // const pubDateDay = document.createElement('day')
+  // pubDateDay.textContent = isoday
+  // pubDate.appendChild(pubDateDay)
+  //
+  // const pubDateMonth = document.createElement('month')
+  // pubDateMonth.textContent = isomonth
+  // pubDate.appendChild(pubDateMonth)
+  //
+  // const pubDateYear = document.createElement('year')
+  // pubDateYear.textContent = isoyear
+  // pubDate.appendChild(pubDateYear)
+  //
+  // articleMeta.appendChild(pubDate)
+  //
+  // const elocationID = document.createElement('elocation-id')
+  // articleMeta.appendChild(elocationID)
 
   return front
 }
