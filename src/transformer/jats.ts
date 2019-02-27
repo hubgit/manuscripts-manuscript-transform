@@ -664,12 +664,12 @@ export const serializeToJATS = (
   modelMap: Map<string, Model>
 ): string => {
   const doc = document.implementation.createDocument(
-    null, // 'http://jats.nlm.nih.gov/archiving/1.1/JATS-archive-oasis-article1-mathml3.dtd'
+    null,
     'article',
     document.implementation.createDocumentType(
       'article',
-      '-//NLM//DTD JATS (Z39.96) Journal Archiving and Interchange DTD with OASIS Tables with MathML3 v1.2d2 20180401//EN',
-      'http://jats.nlm.nih.gov/archiving/1.2d2/JATS-archive-oasis-article1-mathml3.dtd'
+      '-//NLM//DTD JATS (Z39.96) Journal Archiving and Interchange DTD with OASIS Tables with MathML3 v1.2d1 20170631//EN',
+      'http://jats.nlm.nih.gov/archiving/1.2d1/JATS-archive-oasis-article1-mathml3.dtd'
     )
   )
 
