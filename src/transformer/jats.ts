@@ -27,6 +27,7 @@ import {
   ManuscriptFragment,
   ManuscriptMark,
   ManuscriptNode,
+  ManuscriptNodeType,
   ManuscriptSchema,
   Marks,
   Nodes,
@@ -88,7 +89,8 @@ const createSerializer = (document: Document) => {
 
       return formula
     },
-    equation_element: node => ['fig', { id: normalizeID(node.attrs.id) }, 0],
+    equation_element: node =>
+      createFigureElement(node, 'fig', node.type.schema.nodes.equation),
     figcaption: () => ['caption', ['p', 0]],
     figure: node => {
       const fig = document.createElement('fig')
@@ -131,11 +133,8 @@ const createSerializer = (document: Document) => {
 
       return fig
     },
-    figure_element: node => [
-      'fig-group',
-      { id: normalizeID(node.attrs.id) },
-      0,
-    ],
+    figure_element: node =>
+      createFigureElement(node, 'fig-group', node.type.schema.nodes.figure),
     footnote: node => ['fn', { id: normalizeID(node.attrs.id) }, 0],
     footnotes_element: node => ['fn-group', { id: normalizeID(node.attrs.id) }],
     hard_break: () => ['break'],
@@ -165,7 +164,8 @@ const createSerializer = (document: Document) => {
 
       return code
     },
-    listing_element: node => ['fig', { id: normalizeID(node.attrs.id) }, 0],
+    listing_element: node =>
+      createFigureElement(node, 'fig', node.type.schema.nodes.listing),
     manuscript: node => ['article', { id: normalizeID(node.attrs.id) }, 0],
     ordered_list: () => ['list', { 'list-type': 'ordered' }, 0],
     paragraph: node => {
@@ -187,11 +187,8 @@ const createSerializer = (document: Document) => {
     section_title: () => ['title', 0],
     table: node => ['table', { id: normalizeID(node.attrs.id) }, 0],
     // table: node => serializeTableToHTML(node as TableNode),
-    table_element: node => [
-      'table-wrap',
-      { id: normalizeID(node.attrs.id) },
-      0,
-    ],
+    table_element: node =>
+      createFigureElement(node, 'table-wrap', node.type.schema.nodes.table),
     table_cell: () => ['td', 0],
     table_row: () => ['tr', 0],
     text: node => node.text!,
@@ -212,6 +209,37 @@ const createSerializer = (document: Document) => {
   }
 
   serializer = new DOMSerializer<ManuscriptSchema>(nodes, marks)
+
+  const createFigureElement = (
+    node: ManuscriptNode,
+    nodeName: string,
+    contentNodeType: ManuscriptNodeType
+  ) => {
+    const fig = document.createElement(nodeName)
+    fig.setAttribute('id', normalizeID(node.attrs.id))
+
+    if (node.attrs.label) {
+      const label = document.createElement('label')
+      label.textContent = node.attrs.label
+      fig.appendChild(label)
+    }
+
+    const figcaptionNodeType = node.type.schema.nodes.figcaption
+
+    node.forEach(childNode => {
+      if (childNode.type === figcaptionNodeType) {
+        fig.appendChild(serializer.serializeNode(childNode, { document }))
+      }
+    })
+
+    node.forEach(childNode => {
+      if (childNode.type === contentNodeType) {
+        fig.appendChild(serializer.serializeNode(childNode, { document }))
+      }
+    })
+
+    return fig
+  }
 
   return serializer
 }
