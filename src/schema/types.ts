@@ -26,6 +26,7 @@ import {
 import {
   EditorState,
   NodeSelection,
+  Plugin,
   TextSelection,
   Transaction,
 } from 'prosemirror-state'
@@ -90,5 +91,6 @@ export type ManuscriptTextSelection = TextSelection<ManuscriptSchema>
 export type ManuscriptMarkType = MarkType<ManuscriptSchema>
 export type ManuscriptNodeType = NodeType<ManuscriptSchema>
 export type ManuscriptNodeView = NodeView<ManuscriptSchema>
+export type ManuscriptPlugin = Plugin<ManuscriptSchema>
 export type ManuscriptSlice = Slice<ManuscriptSchema>
 export type ManuscriptTransaction = Transaction<ManuscriptSchema>
