@@ -34,6 +34,7 @@ import {
   Section,
   UserProfileAffiliation,
 } from '@manuscripts/manuscripts-json-schema'
+import * as CSL from '../types/csl'
 import { generateID } from './id'
 import {
   AuxiliaryObjectReference,
@@ -63,26 +64,6 @@ export type BuildEmbedded<T extends EmbeddedModel, O> = Pick<
   _id: string
   objectType: O
 }
-
-type Year = string | number
-type Month = string | number
-type Day = string | number
-
-type DatePart = [Year, Month, Day]
-
-interface DateOptional {
-  'date-parts'?: [DatePart] | [DatePart, DatePart]
-  // season?: '1' | '2' | '3' | '4'
-  season?: 1 | 2 | 3 | 4
-  circa?: boolean
-  literal?: string
-  raw?: string
-}
-
-export type StructuredDate = {
-  // 'date-parts': [DatePart] | [DatePart, DatePart]
-  'date-parts': Array<Array<string | number>>
-} & DateOptional
 
 export const buildProject = (owner: string): Build<Project> => ({
   _id: generateID(ObjectTypes.Project),
@@ -137,7 +118,7 @@ export const buildBibliographicName = (
 })
 
 export const buildBibliographicDate = (
-  data: Partial<StructuredDate>
+  data: Partial<CSL.Date>
 ): BuildEmbedded<BibliographicDate, ObjectTypes.BibliographicDate> => ({
   ...data,
   _id: generateID(ObjectTypes.BibliographicDate),
