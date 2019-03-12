@@ -19,15 +19,30 @@ import { JSDOM } from 'jsdom'
 import { serializeToJATS } from '../jats'
 import { parseProjectBundle, ProjectBundle } from '../project-bundle'
 
+const projectBundle = projectDump as ProjectBundle
+
 describe('jats', () => {
-  test('export', () => {
-    const { doc, modelMap } = parseProjectBundle(
-      projectDump as ProjectBundle,
-      JSDOM.fragment
-    )
+  test('export latest version', () => {
+    const { doc, modelMap } = parseProjectBundle(projectBundle, JSDOM.fragment)
 
     const result = serializeToJATS(doc.content, modelMap)
 
     expect(result).toMatchSnapshot('jats-export')
+  })
+
+  test('export v1.1', () => {
+    const { doc, modelMap } = parseProjectBundle(projectBundle, JSDOM.fragment)
+
+    const result = serializeToJATS(doc.content, modelMap, '1.1')
+
+    expect(result).toMatchSnapshot('jats-export-1.1')
+  })
+
+  test('export unknown version', () => {
+    const { doc, modelMap } = parseProjectBundle(projectBundle, JSDOM.fragment)
+
+    expect(() => {
+      serializeToJATS(doc.content, modelMap, '1.0')
+    }).toThrow()
   })
 })

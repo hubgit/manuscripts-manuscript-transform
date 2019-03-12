@@ -33,6 +33,7 @@ import {
   Nodes,
   TableElementNode,
 } from '../schema'
+import { selectVersionIds } from './jats-versions'
 // import { serializeTableToHTML } from './html'
 import { isNodeType } from './node-types'
 import { hasObjectType } from './object-types'
@@ -689,15 +690,18 @@ const fixBody = (document: Document, fragment: ManuscriptFragment) => {
 
 export const serializeToJATS = (
   fragment: ManuscriptFragment,
-  modelMap: Map<string, Model>
+  modelMap: Map<string, Model>,
+  version: string = '1.2'
 ): string => {
+  const versionIds = selectVersionIds(version)
+
   const doc = document.implementation.createDocument(
     null,
     'article',
     document.implementation.createDocumentType(
       'article',
-      '-//NLM//DTD JATS (Z39.96) Journal Archiving and Interchange DTD with OASIS Tables with MathML3 v1.2d1 20170631//EN',
-      'http://jats.nlm.nih.gov/archiving/1.2d1/JATS-archive-oasis-article1-mathml3.dtd'
+      versionIds.publicId,
+      versionIds.systemId
     )
   )
 
