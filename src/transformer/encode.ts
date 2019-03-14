@@ -16,7 +16,6 @@
 
 import {
   BibliographyElement,
-  Citation,
   Equation,
   EquationElement,
   Figure,
@@ -28,7 +27,6 @@ import {
   Listing,
   ListingElement,
   Model,
-  ObjectTypes,
   ParagraphElement,
   Section,
   Table,
@@ -256,16 +254,6 @@ const encoders: NodeEncoderMap = {
     elementType: 'ul',
     contents: listContents(node),
     paragraphStyle: node.attrs.paragraphStyle || undefined,
-  }),
-  citation: (node, parent): Partial<Citation> => ({
-    containingObject: parent.attrs.id, // TODO: closest parent with an id?
-    // collationType: 0,
-    // TODO: make this a list of bibliography item ids?
-    embeddedCitationItems: node.attrs.citationItems.map((id: string) => ({
-      id,
-      objectType: ObjectTypes.CitationItem,
-      bibliographyItem: id,
-    })),
   }),
   listing: (node): Partial<Listing> => ({
     contents: inlineContents(node),
