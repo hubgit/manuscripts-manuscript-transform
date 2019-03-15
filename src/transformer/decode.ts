@@ -202,7 +202,7 @@ export class Decoder {
               [figcaption]
             ) as FigureNode
           })
-        : []
+        : [schema.nodes.figure.createAndFill() as FigureNode]
 
       return schema.nodes.figure_element.createChecked(
         {
