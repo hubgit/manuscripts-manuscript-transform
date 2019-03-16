@@ -165,9 +165,8 @@ export class Decoder {
 
       // TODO: use layout to prefill figures?
 
-      const figures: Array<
-        FigureNode | PlaceholderNode
-      > = model.containedObjectIDs
+      const figures: Array<FigureNode | PlaceholderNode> = model
+        .containedObjectIDs.length
         ? model.containedObjectIDs.map(id => {
             const figcaptionNode: FigCaptionNode = schema.nodes.figcaption.create()
 
