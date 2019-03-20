@@ -33,6 +33,7 @@ import {
   Nodes,
   TableElementNode,
 } from '../schema'
+import { generateAttachmentFilename } from './filename'
 import { selectVersionIds } from './jats-versions'
 // import { serializeTableToHTML } from './html'
 import { isNodeType } from './node-types'
@@ -112,10 +113,14 @@ const createSerializer = (document: Document) => {
       })
 
       const graphic = document.createElement('graphic')
+      const filename = generateAttachmentFilename(
+        node.attrs.id,
+        node.attrs.contentType
+      )
       graphic.setAttributeNS(
         'http://www.w3.org/1999/xlink',
         'xlink:href',
-        `Data/${normalizeID(node.attrs.id)}`
+        `Data/${filename}`
       )
 
       if (node.attrs.contentType) {

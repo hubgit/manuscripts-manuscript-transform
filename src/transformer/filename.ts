@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-export * from './builders'
-export * from './decode'
-export * from './document-object-types'
-export * from './encode'
-export * from './filename'
-export * from './html'
-export * from './id'
-export * from './jats'
-export * from './models'
-export * from './node-names'
-export * from './node-title'
-export * from './node-types'
-export * from './object-types'
-export * from './project-bundle'
-export * from './section-category'
-export * from './serializer'
-export * from './timestamp'
+export const generateAttachmentFilename = (
+  id: string,
+  contentType?: string
+) => {
+  const basename = id.replace(':', '_')
+
+  if (!contentType) {
+    return basename
+  }
+
+  const [, mimeSubType] = contentType.split('/')
+
+  return `${basename}.${mimeSubType}`
+}

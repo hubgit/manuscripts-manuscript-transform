@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-export * from './builders'
-export * from './decode'
-export * from './document-object-types'
-export * from './encode'
-export * from './filename'
-export * from './html'
-export * from './id'
-export * from './jats'
-export * from './models'
-export * from './node-names'
-export * from './node-title'
-export * from './node-types'
-export * from './object-types'
-export * from './project-bundle'
-export * from './section-category'
-export * from './serializer'
-export * from './timestamp'
+import { generateAttachmentFilename } from '../filename'
+
+describe('filename', () => {
+  test('generates a filename for an attachment', () => {
+    const result = generateAttachmentFilename('MPFigure:1234-ABCD-EFGH-1234')
+    expect(result).toBe('MPFigure_1234-ABCD-EFGH-1234')
+  })
+
+  test('generates a filename for an attachment with a content type', () => {
+    const result = generateAttachmentFilename(
+      'MPFigure:1234-ABCD-EFGH-1234',
+      'image/png'
+    )
+    expect(result).toBe('MPFigure_1234-ABCD-EFGH-1234.png')
+  })
+})
