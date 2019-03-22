@@ -65,6 +65,12 @@ const htmlContents = (node: ManuscriptNode): string => {
 export const inlineContents = (node: ManuscriptNode): string =>
   (serializer.serializeNode(node) as HTMLElement).innerHTML
 
+export const inlineText = (node: ManuscriptNode): string => {
+  const text = (serializer.serializeNode(node) as HTMLElement).textContent
+
+  return text === null ? '' : text
+}
+
 const listContents = (node: ManuscriptNode): string => {
   const output = serializer.serializeNode(node) as HTMLElement
 
@@ -256,7 +262,7 @@ const encoders: NodeEncoderMap = {
     paragraphStyle: node.attrs.paragraphStyle || undefined,
   }),
   listing: (node): Partial<Listing> => ({
-    contents: inlineContents(node),
+    contents: inlineText(node),
     language: node.attrs.language || undefined,
     languageKey: node.attrs.languageKey || undefined,
   }),
