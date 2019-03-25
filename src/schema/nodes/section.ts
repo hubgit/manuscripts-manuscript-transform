@@ -19,6 +19,7 @@ import { ManuscriptNode } from '../types'
 
 interface Attrs {
   id: string
+  category?: string
   titleSuppressed: boolean
 }
 

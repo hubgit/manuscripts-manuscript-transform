@@ -62,3 +62,6 @@ export const buildSectionCategory = (node: ManuscriptNode) => {
       return node.attrs.category || undefined
   }
 }
+
+export const sectionCategorySuffix = (category: string) =>
+  category.replace(/^MPSectionCategory:/, '')

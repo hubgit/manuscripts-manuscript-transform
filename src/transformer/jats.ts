@@ -39,6 +39,7 @@ import { selectVersionIds } from './jats-versions'
 import { isNodeType } from './node-types'
 import { hasObjectType } from './object-types'
 import { findManuscript } from './project-bundle'
+import { sectionCategorySuffix } from './section-category'
 import { xmlSerializer } from './serializer'
 
 interface Attrs {
@@ -189,7 +190,17 @@ const createSerializer = (document: Document) => {
     placeholder_element: () => {
       throw new Error('Placeholder element!')
     },
-    section: node => ['sec', { id: normalizeID(node.attrs.id) }, 0],
+    section: node => {
+      const attrs: { [key: string]: string } = {
+        id: normalizeID(node.attrs.id),
+      }
+
+      if (node.attrs.category) {
+        attrs['sec-type'] = sectionCategorySuffix(node.attrs.category)
+      }
+
+      return ['sec', attrs, 0]
+    },
     section_title: () => ['title', 0],
     table: node => ['table', { id: normalizeID(node.attrs.id) }, 0],
     // table: node => serializeTableToHTML(node as TableNode),
@@ -693,6 +704,68 @@ const fixBody = (document: Document, fragment: ManuscriptFragment) => {
   })
 }
 
+const moveAbstract = (
+  document: Document,
+  front: HTMLElement,
+  body: HTMLElement
+) => {
+  const sections = body.querySelectorAll(':scope > sec')
+
+  const abstractSection = Array.from(sections).find(section => {
+    if (section.getAttribute('sec-type') === 'abstract') {
+      return true
+    }
+
+    const sectionTitle = section.querySelector(':scope > title')
+
+    if (!sectionTitle) {
+      return false
+    }
+
+    return sectionTitle.textContent === 'Abstract'
+  })
+
+  if (abstractSection && abstractSection.parentNode) {
+    const abstractNode = document.createElement('abstract')
+
+    // TODO: ensure that abstract section schema is valid
+    while (abstractSection.firstChild) {
+      abstractNode.appendChild(abstractSection.firstChild)
+    }
+
+    abstractSection.parentNode.removeChild(abstractSection)
+
+    const articleMeta = front.querySelector(':scope > article-meta')
+
+    if (articleMeta) {
+      insertAbstractNode(articleMeta, abstractNode)
+    }
+  }
+}
+
+// siblings from https://jats.nlm.nih.gov/archiving/tag-library/1.2/element/article-meta.html
+const insertAbstractNode = (articleMeta: Element, abstractNode: Element) => {
+  const siblings = [
+    'kwd-group',
+    'funding-group',
+    'support-group',
+    'conference',
+    'counts',
+    'custom-meta-group',
+  ]
+
+  for (const sibling of siblings) {
+    const siblingNode = articleMeta.querySelector(`:scope > ${sibling}`)
+
+    if (siblingNode) {
+      articleMeta.insertBefore(abstractNode, siblingNode)
+      return
+    }
+  }
+
+  articleMeta.appendChild(abstractNode)
+}
+
 export const serializeToJATS = (
   fragment: ManuscriptFragment,
   modelMap: Map<string, Model>,
@@ -726,6 +799,8 @@ export const serializeToJATS = (
 
   const back = buildBack(doc, modelMap)
   article.appendChild(back)
+
+  moveAbstract(doc, front, body)
 
   return xmlSerializer.serializeToString(doc)
 }

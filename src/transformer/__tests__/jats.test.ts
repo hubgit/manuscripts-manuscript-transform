@@ -15,14 +15,20 @@
  */
 
 import projectDump from '@manuscripts/examples/data/project-dump.json'
+import { Section } from '@manuscripts/manuscripts-json-schema'
 import { JSDOM } from 'jsdom'
 import { serializeToJATS } from '../jats'
 import { parseProjectBundle, ProjectBundle } from '../project-bundle'
 
-const projectBundle = projectDump as ProjectBundle
+const input = projectDump as ProjectBundle
+
+const cloneProjectBundle = (input: ProjectBundle): ProjectBundle =>
+  JSON.parse(JSON.stringify(input))
 
 describe('jats', () => {
   test('export latest version', () => {
+    const projectBundle = cloneProjectBundle(input)
+
     const { doc, modelMap } = parseProjectBundle(projectBundle, JSDOM.fragment)
 
     const result = serializeToJATS(doc.content, modelMap)
@@ -31,6 +37,8 @@ describe('jats', () => {
   })
 
   test('export v1.1', () => {
+    const projectBundle = cloneProjectBundle(input)
+
     const { doc, modelMap } = parseProjectBundle(projectBundle, JSDOM.fragment)
 
     const result = serializeToJATS(doc.content, modelMap, '1.1')
@@ -39,10 +47,74 @@ describe('jats', () => {
   })
 
   test('export unknown version', () => {
+    const projectBundle = cloneProjectBundle(input)
+
     const { doc, modelMap } = parseProjectBundle(projectBundle, JSDOM.fragment)
 
     expect(() => {
       serializeToJATS(doc.content, modelMap, '1.0')
     }).toThrow()
+  })
+
+  test('move abstract to front by section category', () => {
+    const projectBundle = cloneProjectBundle(input)
+
+    const model: Section = {
+      _id: 'MPSection:123',
+      objectType: 'MPSection',
+      createdAt: 0,
+      updatedAt: 0,
+      category: 'MPSectionCategory:abstract',
+      title: 'Foo',
+      manuscriptID: 'MPManuscript:1',
+      containerID: 'MPProject:1',
+      path: ['MPSection:123'],
+      sessionID: 'foo',
+      priority: 0,
+    }
+
+    projectBundle.data.push(model)
+
+    const { doc, modelMap } = parseProjectBundle(projectBundle, JSDOM.fragment)
+
+    const xml = serializeToJATS(doc.content, modelMap)
+
+    const parser = new DOMParser()
+    const resultDoc = parser.parseFromString(xml, 'application/xml')
+
+    const result = resultDoc.querySelector('front > article-meta > abstract')
+
+    expect(result).not.toBeNull()
+  })
+
+  test('move abstract to front by title', () => {
+    const projectBundle = cloneProjectBundle(input)
+
+    const model: Section = {
+      _id: 'MPSection:123',
+      objectType: 'MPSection',
+      createdAt: 0,
+      updatedAt: 0,
+      category: '',
+      title: 'Abstract',
+      manuscriptID: 'MPManuscript:1',
+      containerID: 'MPProject:1',
+      path: ['MPSection:123'],
+      sessionID: 'foo',
+      priority: 3,
+    }
+
+    projectBundle.data.push(model)
+
+    const { doc, modelMap } = parseProjectBundle(projectBundle, JSDOM.fragment)
+
+    const xml = serializeToJATS(doc.content, modelMap)
+
+    const parser = new DOMParser()
+    const resultDoc = parser.parseFromString(xml, 'application/xml')
+
+    const result = resultDoc.querySelector('front > article-meta > abstract')
+
+    expect(result).not.toBeNull()
   })
 })
