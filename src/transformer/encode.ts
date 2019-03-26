@@ -264,7 +264,7 @@ const encoders: NodeEncoderMap = {
   listing: (node): Partial<Listing> => ({
     contents: inlineText(node),
     language: node.attrs.language || undefined,
-    languageKey: node.attrs.languageKey || undefined,
+    languageKey: node.attrs.languageKey || 'null', // TODO: remove this?
   }),
   listing_element: (node): Partial<ListingElement> => ({
     containedObjectID: attributeOfNodeType(node, 'listing', 'id'),
@@ -288,11 +288,13 @@ const encoders: NodeEncoderMap = {
       inlineContentsOfNodeType(node, node.type.schema.nodes.figcaption) ||
       undefined,
     contentType: node.attrs.contentType || undefined,
+    listingAttachment: node.attrs.listingAttachment || undefined,
   }),
   figure_element: (node): Partial<FigureElement> => ({
     containedObjectIDs: containedFigureIDs(node),
     caption: inlineContentsOfNodeType(node, node.type.schema.nodes.figcaption),
     elementType: 'figure',
+    listingID: attributeOfNodeType(node, 'listing', 'id') || undefined,
     suppressCaption: Boolean(node.attrs.suppressCaption) || undefined,
     figureStyle: node.attrs.figureStyle || undefined,
     figureLayout: node.attrs.figureLayout || undefined,
@@ -337,11 +339,13 @@ const encoders: NodeEncoderMap = {
   }),
   table: (node, parent): Partial<Table> => ({
     contents: tableContents(node, parent as TableElementNode),
+    listingAttachment: node.attrs.listingAttachment || undefined,
   }),
   table_element: (node): Partial<TableElement> => ({
     containedObjectID: attributeOfNodeType(node, 'table', 'id'),
     caption: inlineContentsOfNodeType(node, node.type.schema.nodes.figcaption),
     elementType: 'table',
+    listingID: attributeOfNodeType(node, 'listing', 'id') || undefined,
     paragraphStyle: node.attrs.paragraphStyle || undefined,
     suppressCaption: Boolean(node.attrs.suppressCaption) || undefined,
     suppressFooter: Boolean(node.attrs.suppressFooter) || undefined,

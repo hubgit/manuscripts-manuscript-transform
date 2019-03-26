@@ -23,6 +23,7 @@ import {
   ObjectTypes,
 } from '@manuscripts/manuscripts-json-schema'
 import { DOMOutputSpec, DOMSerializer } from 'prosemirror-model'
+import { iterateChildren } from '../lib/utils'
 import {
   ManuscriptFragment,
   ManuscriptMark,
@@ -36,7 +37,7 @@ import {
 import { generateAttachmentFilename } from './filename'
 import { selectVersionIds } from './jats-versions'
 // import { serializeTableToHTML } from './html'
-import { isNodeType } from './node-types'
+import { isExecutableNode, isNodeType } from './node-types'
 import { hasObjectType } from './object-types'
 import { findManuscript } from './project-bundle'
 import { sectionCategorySuffix } from './section-category'
@@ -51,6 +52,8 @@ type NodeSpecs = { [key in Nodes]: (node: ManuscriptNode) => DOMOutputSpec }
 type MarkSpecs = {
   [key in Marks]: (mark: ManuscriptMark, inline: boolean) => DOMOutputSpec
 }
+
+const XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink'
 
 const normalizeID = (id: string) => id.replace(/:/g, '_')
 
@@ -118,11 +121,7 @@ const createSerializer = (document: Document) => {
         node.attrs.id,
         node.attrs.contentType
       )
-      graphic.setAttributeNS(
-        'http://www.w3.org/1999/xlink',
-        'xlink:href',
-        `Data/${filename}`
-      )
+      graphic.setAttributeNS(XLINK_NAMESPACE, 'xlink:href', `Data/${filename}`)
 
       if (node.attrs.contentType) {
         const [mimeType, mimeSubType] = node.attrs.contentType.split('/')
@@ -227,38 +226,111 @@ const createSerializer = (document: Document) => {
 
   serializer = new DOMSerializer<ManuscriptSchema>(nodes, marks)
 
+  // tslint:disable-next-line:cyclomatic-complexity
   const createFigureElement = (
     node: ManuscriptNode,
     nodeName: string,
     contentNodeType: ManuscriptNodeType
   ) => {
-    const fig = document.createElement(nodeName)
-    fig.setAttribute('id', normalizeID(node.attrs.id))
+    const element = document.createElement(nodeName)
+    element.setAttribute('id', normalizeID(node.attrs.id))
 
     if (node.attrs.label) {
       const label = document.createElement('label')
       label.textContent = node.attrs.label
-      fig.appendChild(label)
+      element.appendChild(label)
     }
 
-    const figcaptionNodeType = node.type.schema.nodes.figcaption
+    const figcaptionNode = findChildNodeOfType(
+      node,
+      node.type.schema.nodes.figcaption
+    )
 
-    node.forEach(childNode => {
-      if (childNode.type === figcaptionNodeType) {
-        fig.appendChild(serializer.serializeNode(childNode, { document }))
-      }
-    })
+    if (figcaptionNode) {
+      element.appendChild(
+        serializer.serializeNode(figcaptionNode, { document })
+      )
+    }
 
     node.forEach(childNode => {
       if (childNode.type === contentNodeType) {
-        fig.appendChild(serializer.serializeNode(childNode, { document }))
+        element.appendChild(serializer.serializeNode(childNode, { document }))
       }
     })
 
-    return fig
+    if (isExecutableNode(node)) {
+      const listingNode = findChildNodeOfType(
+        node,
+        node.type.schema.nodes.listing
+      )
+
+      if (listingNode) {
+        const { contents, languageKey } = listingNode.attrs
+
+        if (contents && languageKey) {
+          const listing = document.createElement('fig')
+          listing.setAttribute('specific-use', 'source')
+          element.appendChild(listing)
+
+          const code = document.createElement('code')
+          code.setAttribute('executable', 'true')
+          code.setAttribute('language', languageKey)
+          code.textContent = contents
+          listing.appendChild(code)
+
+          // TODO: something more appropriate than "caption"?
+          const caption = document.createElement('caption')
+          listing.appendChild(caption)
+
+          // TODO: real data
+          const attachments: Array<{ id: string; type: string }> = []
+
+          for (const attachment of attachments) {
+            const p = document.createElement('p')
+            caption.appendChild(p)
+
+            const filename = generateAttachmentFilename(
+              `${listingNode.attrs.id}:${attachment.id}`,
+              attachment.type
+            )
+
+            const supp = document.createElement('supplementary-material')
+
+            supp.setAttributeNS(XLINK_NAMESPACE, 'xlink:href', filename)
+
+            const [mimeType, mimeSubType] = attachment.type.split('/')
+
+            if (mimeType) {
+              supp.setAttribute('mimetype', mimeType)
+
+              if (mimeSubType) {
+                supp.setAttribute('mime-subtype', mimeSubType)
+              }
+            }
+
+            // TODO: might need title, length, etc for data files
+
+            p.appendChild(supp)
+          }
+        }
+      }
+    }
+
+    return element
   }
 
   return serializer
+}
+
+const findChildNodeOfType = (
+  node: ManuscriptNode,
+  nodeType: ManuscriptNodeType
+) => {
+  for (const child of iterateChildren(node)) {
+    if (child.type === nodeType) {
+      return child
+    }
+  }
 }
 
 const buildFront = (document: Document, modelMap: Map<string, Model>) => {
@@ -788,7 +860,7 @@ export const serializeToJATS = (
   article.setAttributeNS(
     'http://www.w3.org/2000/xmlns/',
     'xmlns:xlink',
-    'http://www.w3.org/1999/xlink'
+    XLINK_NAMESPACE
   )
 
   const front = buildFront(doc, modelMap)

@@ -59,7 +59,7 @@ import {
   TOCElementNode,
 } from '../schema'
 import { generateNodeID } from './id'
-import { PlaceholderElement, UserProfileWithAvatar } from './models'
+import { PlaceholderElement } from './models'
 import { ExtraObjectTypes, isFigure, isUserProfile } from './object-types'
 import { chooseSectionNodeType, guessSectionCategory } from './section-category'
 import { timestamp } from './timestamp'
@@ -76,8 +76,8 @@ export const getModelData = <T extends Model>(model: Model): T => {
   return data as T
 }
 
-export const getImageAttachment = async (doc: RxDocument<Model>) => {
-  const attachment = await doc.getAttachment('image')
+export const getAttachment = async (doc: RxDocument<Model>, key: string) => {
+  const attachment = await doc.getAttachment(key)
   if (!attachment) return undefined
 
   const data = await attachment.getData()
@@ -86,24 +86,54 @@ export const getImageAttachment = async (doc: RxDocument<Model>) => {
   return window.URL.createObjectURL(data)
 }
 
-export const buildModelMap = (
+export const buildModelMap = async (
   docs: Array<RxDocument<Model>>
 ): Promise<Map<string, Model>> => {
-  const output = new Map()
+  const items: Map<string, RxDocument<Model>> = new Map()
+  const output: Map<string, Model> = new Map()
 
-  const promises = docs.map(async doc => {
-    const model = getModelData(doc.toJSON())
+  await Promise.all(
+    docs.map(async doc => {
+      items.set(doc._id, doc)
+      output.set(doc._id, getModelData(doc.toJSON()))
+    })
+  )
 
+  for (const model of output.values()) {
     if (isFigure(model)) {
-      model.src = await getImageAttachment(doc)
-    } else if (isUserProfile(model)) {
-      ;(model as UserProfileWithAvatar).avatar = await getImageAttachment(doc)
+      if (model.listingAttachment) {
+        const { listingID, attachmentKey } = model.listingAttachment
+        const listingDoc = items.get(listingID)
+
+        if (listingDoc) {
+          model.src = await getAttachment(listingDoc, attachmentKey)
+        }
+      } else {
+        const figureDoc = items.get(model._id)!
+        model.src = await getAttachment(figureDoc, 'image')
+      }
     }
+    // TODO: enable once tables can be images
+    // else if (isTable(model)) {
+    //   if (model.listingAttachment) {
+    //     const { listingID, attachmentKey } = model.listingAttachment
+    //     const listingDoc = items.get(listingID)
+    //
+    //     if (listingDoc) {
+    //       model.src = await getAttachment(listingDoc, attachmentKey)
+    //     }
+    //   } else {
+    //     const tableDoc = items.get(model._id)!
+    //     model.src = await getAttachment(tableDoc, 'image')
+    //   }
+    // }
+    else if (isUserProfile(model)) {
+      const userProfileDoc = items.get(model._id)!
+      model.avatar = await getAttachment(userProfileDoc, 'image')
+    }
+  }
 
-    output.set(doc._id, model)
-  })
-
-  return Promise.all(promises).then(() => output)
+  return output
 }
 
 export const getModelsByType = <T extends Model>(
@@ -197,11 +227,35 @@ export class Decoder {
                 id: figureModel._id,
                 contentType: figureModel.contentType,
                 src: figureModel.src,
+                listingAttachment: figureModel.listingAttachment,
               },
               [figcaption]
             ) as FigureNode
           })
         : [schema.nodes.figure.createAndFill() as FigureNode]
+
+      const content = [...figures, figcaption]
+
+      if (model.listingID) {
+        const listingModel = this.getModel<Listing>(model.listingID)
+
+        const listing = listingModel
+          ? (schema.nodes.listing.create({
+              id: listingModel._id,
+              contents: listingModel.contents,
+              language: listingModel.language,
+              languageKey: listingModel.languageKey,
+            }) as ListingNode)
+          : (schema.nodes.placeholder.create({
+              id: model.listingID,
+              label: 'A listing',
+            }) as PlaceholderNode)
+
+        content.push(listing)
+      } else {
+        const listing = schema.nodes.listing.create()
+        content.push(listing)
+      }
 
       return schema.nodes.figure_element.createChecked(
         {
@@ -210,7 +264,7 @@ export class Decoder {
           figureStyle: model.figureStyle,
           suppressCaption: Boolean(model.suppressCaption),
         },
-        [...figures, figcaption]
+        content
       ) as FigureElementNode
     },
     [ObjectTypes.EquationElement]: data => {
@@ -406,6 +460,29 @@ export class Decoder {
           })
         : figcaptionNode
 
+      const content = [table, figcaption]
+
+      if (model.listingID) {
+        const listingModel = this.getModel<Listing>(model.listingID)
+
+        const listing = listingModel
+          ? (schema.nodes.listing.create({
+              id: listingModel._id,
+              contents: listingModel.contents,
+              language: listingModel.language,
+              languageKey: listingModel.languageKey,
+            }) as ListingNode)
+          : (schema.nodes.placeholder.create({
+              id: model.listingID,
+              label: 'A listing',
+            }) as PlaceholderNode)
+
+        content.push(listing)
+      } else {
+        const listing = schema.nodes.listing.create()
+        content.push(listing)
+      }
+
       return schema.nodes.table_element.createChecked(
         {
           id: model._id,
@@ -416,7 +493,7 @@ export class Decoder {
           tableStyle: model.tableStyle,
           paragraphStyle: model.paragraphStyle,
         },
-        [table, figcaption]
+        content
       ) as TableElementNode
     },
     [ObjectTypes.TOCElement]: data => {

@@ -51,8 +51,16 @@ const elementNodeTypes: ManuscriptNodeType[] = [
   schema.nodes.table_element,
 ]
 
+const executableNodeTypes: ManuscriptNodeType[] = [
+  schema.nodes.figure_element,
+  schema.nodes.table_element,
+]
+
 export const isElementNode = (node: ManuscriptNode) =>
   elementNodeTypes.includes(node.type)
+
+export const isExecutableNode = (node: ManuscriptNode) =>
+  executableNodeTypes.includes(node.type)
 
 export const isNodeType = <T extends ManuscriptNode>(
   node: ManuscriptNode,

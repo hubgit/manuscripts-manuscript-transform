@@ -431,6 +431,7 @@ Object {
                 "contentType": "image/png",
                 "id": "MPFigure:D673DF08-D75E-4061-8EC1-9611EAB302F0",
                 "label": "",
+                "listingAttachment": undefined,
                 "src": "",
               },
               "content": Array [
@@ -449,6 +450,17 @@ Object {
               ],
               "type": "figcaption",
             },
+            Object {
+              "attrs": Object {
+                "contents": "",
+                "id": "",
+                "isExecuting": false,
+                "isExpanded": false,
+                "language": "",
+                "languageKey": "null",
+              },
+              "type": "listing",
+            },
           ],
           "type": "figure_element",
         },
@@ -466,6 +478,7 @@ Object {
                 "contentType": "image/png",
                 "id": "MPFigure:AD65D628-A904-4DC4-A026-F8F4C08F6557",
                 "label": "",
+                "listingAttachment": undefined,
                 "src": "",
               },
               "content": Array [
@@ -484,11 +497,23 @@ Object {
               ],
               "type": "figcaption",
             },
+            Object {
+              "attrs": Object {
+                "contents": "",
+                "id": "",
+                "isExecuting": false,
+                "isExpanded": false,
+                "language": "",
+                "languageKey": "null",
+              },
+              "type": "listing",
+            },
           ],
           "type": "figure_element",
         },
         Object {
           "attrs": Object {
+            "expandListing": false,
             "id": "MPTableElement:82BD8BAF-D136-4536-AD9C-92C30B9D7315",
             "label": "",
             "paragraphStyle": "MPParagraphStyle:7EAB5784-717B-4672-BD59-8CA324FB0637",
@@ -675,11 +700,23 @@ Object {
               ],
               "type": "figcaption",
             },
+            Object {
+              "attrs": Object {
+                "contents": "",
+                "id": "",
+                "isExecuting": false,
+                "isExpanded": false,
+                "language": "",
+                "languageKey": "null",
+              },
+              "type": "listing",
+            },
           ],
           "type": "table_element",
         },
         Object {
           "attrs": Object {
+            "expandListing": false,
             "id": "MPTableElement:E0D445B4-18C4-43D3-97B3-1076A7BB5CF4",
             "label": "",
             "paragraphStyle": "MPParagraphStyle:7EAB5784-717B-4672-BD59-8CA324FB0637",
@@ -824,11 +861,23 @@ Object {
               ],
               "type": "figcaption",
             },
+            Object {
+              "attrs": Object {
+                "contents": "",
+                "id": "",
+                "isExecuting": false,
+                "isExpanded": false,
+                "language": "",
+                "languageKey": "null",
+              },
+              "type": "listing",
+            },
           ],
           "type": "table_element",
         },
         Object {
           "attrs": Object {
+            "expandListing": false,
             "id": "MPTableElement:1DF69096-DBA3-47B0-B8C2-E06491E4C655",
             "label": "",
             "paragraphStyle": "MPParagraphStyle:7EAB5784-717B-4672-BD59-8CA324FB0637",
@@ -967,11 +1016,23 @@ Object {
               ],
               "type": "figcaption",
             },
+            Object {
+              "attrs": Object {
+                "contents": "",
+                "id": "",
+                "isExecuting": false,
+                "isExpanded": false,
+                "language": "",
+                "languageKey": "null",
+              },
+              "type": "listing",
+            },
           ],
           "type": "table_element",
         },
         Object {
           "attrs": Object {
+            "expandListing": false,
             "id": "MPTableElement:89CF51B2-A20C-4AB9-CBD9-F47DAF167DAA",
             "label": "",
             "paragraphStyle": "MPParagraphStyle:7EAB5784-717B-4672-BD59-8CA324FB0637",
@@ -1110,6 +1171,17 @@ Object {
               ],
               "type": "figcaption",
             },
+            Object {
+              "attrs": Object {
+                "contents": "",
+                "id": "",
+                "isExecuting": false,
+                "isExpanded": false,
+                "language": "",
+                "languageKey": "null",
+              },
+              "type": "listing",
+            },
           ],
           "type": "table_element",
         },
@@ -1145,6 +1217,8 @@ Object {
 
 const x = 'y'",
                 "id": "MPListing:4D688DCF-29CD-40CC-93BD-2B13CD883257",
+                "isExecuting": false,
+                "isExpanded": false,
                 "language": "JavaScript",
                 "languageKey": "javascript",
               },
@@ -1723,6 +1797,7 @@ Object {
                 "contentType": "image/png",
                 "id": "MPFigure:AD65D628-A904-4DC4-A026-F8F4C08F6557",
                 "label": "",
+                "listingAttachment": undefined,
                 "src": "",
               },
               "content": Array [
@@ -1741,11 +1816,23 @@ Object {
               ],
               "type": "figcaption",
             },
+            Object {
+              "attrs": Object {
+                "contents": "",
+                "id": "",
+                "isExecuting": false,
+                "isExpanded": false,
+                "language": "",
+                "languageKey": "null",
+              },
+              "type": "listing",
+            },
           ],
           "type": "figure_element",
         },
         Object {
           "attrs": Object {
+            "expandListing": false,
             "id": "MPTableElement:82BD8BAF-D136-4536-AD9C-92C30B9D7315",
             "label": "",
             "paragraphStyle": "MPParagraphStyle:7EAB5784-717B-4672-BD59-8CA324FB0637",
@@ -1932,11 +2019,23 @@ Object {
               ],
               "type": "figcaption",
             },
+            Object {
+              "attrs": Object {
+                "contents": "",
+                "id": "",
+                "isExecuting": false,
+                "isExpanded": false,
+                "language": "",
+                "languageKey": "null",
+              },
+              "type": "listing",
+            },
           ],
           "type": "table_element",
         },
         Object {
           "attrs": Object {
+            "expandListing": false,
             "id": "MPTableElement:E0D445B4-18C4-43D3-97B3-1076A7BB5CF4",
             "label": "",
             "paragraphStyle": "MPParagraphStyle:7EAB5784-717B-4672-BD59-8CA324FB0637",
@@ -2081,11 +2180,23 @@ Object {
               ],
               "type": "figcaption",
             },
+            Object {
+              "attrs": Object {
+                "contents": "",
+                "id": "",
+                "isExecuting": false,
+                "isExpanded": false,
+                "language": "",
+                "languageKey": "null",
+              },
+              "type": "listing",
+            },
           ],
           "type": "table_element",
         },
         Object {
           "attrs": Object {
+            "expandListing": false,
             "id": "MPTableElement:1DF69096-DBA3-47B0-B8C2-E06491E4C655",
             "label": "",
             "paragraphStyle": "MPParagraphStyle:7EAB5784-717B-4672-BD59-8CA324FB0637",
@@ -2111,11 +2222,23 @@ Object {
               ],
               "type": "figcaption",
             },
+            Object {
+              "attrs": Object {
+                "contents": "",
+                "id": "",
+                "isExecuting": false,
+                "isExpanded": false,
+                "language": "",
+                "languageKey": "null",
+              },
+              "type": "listing",
+            },
           ],
           "type": "table_element",
         },
         Object {
           "attrs": Object {
+            "expandListing": false,
             "id": "MPTableElement:89CF51B2-A20C-4AB9-CBD9-F47DAF167DAA",
             "label": "",
             "paragraphStyle": "MPParagraphStyle:7EAB5784-717B-4672-BD59-8CA324FB0637",
@@ -2254,6 +2377,17 @@ Object {
               ],
               "type": "figcaption",
             },
+            Object {
+              "attrs": Object {
+                "contents": "",
+                "id": "",
+                "isExecuting": false,
+                "isExpanded": false,
+                "language": "",
+                "languageKey": "null",
+              },
+              "type": "listing",
+            },
           ],
           "type": "table_element",
         },
@@ -2289,6 +2423,8 @@ Object {
 
 const x = 'y'",
                 "id": "MPListing:4D688DCF-29CD-40CC-93BD-2B13CD883257",
+                "isExecuting": false,
+                "isExpanded": false,
                 "language": "JavaScript",
                 "languageKey": "javascript",
               },
@@ -2895,6 +3031,7 @@ Object {
                 "contentType": "image/png",
                 "id": "MPFigure:D673DF08-D75E-4061-8EC1-9611EAB302F0",
                 "label": "",
+                "listingAttachment": undefined,
                 "src": "",
               },
               "content": Array [
@@ -2913,6 +3050,17 @@ Object {
               ],
               "type": "figcaption",
             },
+            Object {
+              "attrs": Object {
+                "contents": "",
+                "id": "",
+                "isExecuting": false,
+                "isExpanded": false,
+                "language": "",
+                "languageKey": "null",
+              },
+              "type": "listing",
+            },
           ],
           "type": "figure_element",
         },
@@ -2930,6 +3078,7 @@ Object {
                 "contentType": "image/png",
                 "id": "MPFigure:AD65D628-A904-4DC4-A026-F8F4C08F6557",
                 "label": "",
+                "listingAttachment": undefined,
                 "src": "",
               },
               "content": Array [
@@ -2948,11 +3097,23 @@ Object {
               ],
               "type": "figcaption",
             },
+            Object {
+              "attrs": Object {
+                "contents": "",
+                "id": "",
+                "isExecuting": false,
+                "isExpanded": false,
+                "language": "",
+                "languageKey": "null",
+              },
+              "type": "listing",
+            },
           ],
           "type": "figure_element",
         },
         Object {
           "attrs": Object {
+            "expandListing": false,
             "id": "MPTableElement:82BD8BAF-D136-4536-AD9C-92C30B9D7315",
             "label": "",
             "paragraphStyle": "MPParagraphStyle:7EAB5784-717B-4672-BD59-8CA324FB0637",
@@ -3139,11 +3300,23 @@ Object {
               ],
               "type": "figcaption",
             },
+            Object {
+              "attrs": Object {
+                "contents": "",
+                "id": "",
+                "isExecuting": false,
+                "isExpanded": false,
+                "language": "",
+                "languageKey": "null",
+              },
+              "type": "listing",
+            },
           ],
           "type": "table_element",
         },
         Object {
           "attrs": Object {
+            "expandListing": false,
             "id": "MPTableElement:E0D445B4-18C4-43D3-97B3-1076A7BB5CF4",
             "label": "",
             "paragraphStyle": "MPParagraphStyle:7EAB5784-717B-4672-BD59-8CA324FB0637",
@@ -3288,11 +3461,23 @@ Object {
               ],
               "type": "figcaption",
             },
+            Object {
+              "attrs": Object {
+                "contents": "",
+                "id": "",
+                "isExecuting": false,
+                "isExpanded": false,
+                "language": "",
+                "languageKey": "null",
+              },
+              "type": "listing",
+            },
           ],
           "type": "table_element",
         },
         Object {
           "attrs": Object {
+            "expandListing": false,
             "id": "MPTableElement:1DF69096-DBA3-47B0-B8C2-E06491E4C655",
             "label": "",
             "paragraphStyle": "MPParagraphStyle:7EAB5784-717B-4672-BD59-8CA324FB0637",
@@ -3431,11 +3616,23 @@ Object {
               ],
               "type": "figcaption",
             },
+            Object {
+              "attrs": Object {
+                "contents": "",
+                "id": "",
+                "isExecuting": false,
+                "isExpanded": false,
+                "language": "",
+                "languageKey": "null",
+              },
+              "type": "listing",
+            },
           ],
           "type": "table_element",
         },
         Object {
           "attrs": Object {
+            "expandListing": false,
             "id": "MPTableElement:89CF51B2-A20C-4AB9-CBD9-F47DAF167DAA",
             "label": "",
             "paragraphStyle": "MPParagraphStyle:7EAB5784-717B-4672-BD59-8CA324FB0637",
@@ -3574,6 +3771,17 @@ Object {
               ],
               "type": "figcaption",
             },
+            Object {
+              "attrs": Object {
+                "contents": "",
+                "id": "",
+                "isExecuting": false,
+                "isExpanded": false,
+                "language": "",
+                "languageKey": "null",
+              },
+              "type": "listing",
+            },
           ],
           "type": "table_element",
         },
@@ -3609,6 +3817,8 @@ Object {
 
 const x = 'y'",
                 "id": "MPListing:4D688DCF-29CD-40CC-93BD-2B13CD883257",
+                "isExecuting": false,
+                "isExpanded": false,
                 "language": "JavaScript",
                 "languageKey": "javascript",
               },

@@ -19,9 +19,9 @@ import {
   manuscriptIDTypes,
   Model,
   ObjectTypes,
-  UserProfile,
+  Table,
 } from '@manuscripts/manuscripts-json-schema'
-import { ManuscriptModel } from './models'
+import { ManuscriptModel, UserProfileWithAvatar } from './models'
 
 export enum ExtraObjectTypes {
   AuxiliaryObjectReference = 'MPAuxiliaryObjectReference',
@@ -65,5 +65,7 @@ export const hasObjectType = <T extends Model>(objectType: string) => (
 ): model is T => model.objectType === objectType
 
 export const isFigure = hasObjectType<Figure>(ObjectTypes.Figure)
-
-export const isUserProfile = hasObjectType<UserProfile>(ObjectTypes.UserProfile)
+export const isTable = hasObjectType<Table>(ObjectTypes.Table)
+export const isUserProfile = hasObjectType<UserProfileWithAvatar>(
+  ObjectTypes.UserProfile
+)

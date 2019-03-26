@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ListingAttachmentReference } from '@manuscripts/manuscripts-json-schema'
 import { NodeSpec } from 'prosemirror-model'
 import { ManuscriptNode } from '../types'
 
@@ -23,6 +24,7 @@ export interface FigureNode extends ManuscriptNode {
     label: string
     src: string
     contentType: string
+    listingAttachment?: ListingAttachmentReference
   }
 }
 
@@ -33,6 +35,7 @@ export const figure: NodeSpec = {
     label: { default: '' },
     src: { default: '' },
     contentType: { default: '' },
+    listingAttachment: { default: undefined },
   },
   selectable: false,
   group: 'block element',

@@ -25,6 +25,7 @@ interface Attrs {
   suppressCaption: boolean
   suppressFooter: boolean
   suppressHeader: boolean
+  expandListing: boolean
 }
 
 export interface TableElementNode extends ManuscriptNode {
@@ -32,7 +33,7 @@ export interface TableElementNode extends ManuscriptNode {
 }
 
 export const tableElement: NodeSpec = {
-  content: '(table | placeholder) figcaption',
+  content: '(table | placeholder) figcaption listing',
   attrs: {
     id: { default: '' },
     paragraphStyle: { default: '' },
@@ -41,6 +42,7 @@ export const tableElement: NodeSpec = {
     suppressCaption: { default: false },
     suppressFooter: { default: false },
     suppressHeader: { default: false },
+    expandListing: { default: false },
   },
   selectable: false,
   group: 'block element',

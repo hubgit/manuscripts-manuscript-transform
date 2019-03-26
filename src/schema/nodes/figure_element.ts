@@ -17,20 +17,23 @@
 import { NodeSpec } from 'prosemirror-model'
 import { ManuscriptNode } from '../types'
 
+interface Attrs {
+  columns: number
+  figureLayout: string
+  figureStyle: string
+  id: string
+  label: string
+  rows: number
+  suppressCaption: boolean
+  expandListing: boolean
+}
+
 export interface FigureElementNode extends ManuscriptNode {
-  attrs: {
-    columns: number
-    figureLayout: string
-    figureStyle: string
-    id: string
-    label: string
-    rows: number
-    suppressCaption: boolean
-  }
+  attrs: Attrs
 }
 
 export const figureElement: NodeSpec = {
-  content: '(figure | placeholder)+ figcaption',
+  content: '(figure | placeholder)+ figcaption listing',
   attrs: {
     figureLayout: { default: '' },
     figureStyle: { default: '' },
@@ -69,3 +72,8 @@ export const figureElement: NodeSpec = {
     ]
   },
 }
+
+export const isFigureElementNode = (
+  node: ManuscriptNode
+): node is FigureElementNode =>
+  node.type === node.type.schema.nodes.figure_element

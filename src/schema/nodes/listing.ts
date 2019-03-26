@@ -23,6 +23,8 @@ interface Attrs {
   contents: string
   language: string
   languageKey: string
+  isExpanded: boolean
+  isExecuting: boolean
 }
 
 export interface ListingNode extends ManuscriptNode {
@@ -34,9 +36,12 @@ export const listing: NodeSpec = {
     id: { default: '' },
     contents: { default: '' },
     language: { default: '' },
-    languageKey: { default: '' },
+    languageKey: { default: 'null' },
+    isExpanded: { default: false },
+    isExecuting: { default: false },
     // placeholder: { default: 'Click to edit listing' },
   },
+  draggable: false,
   group: 'block',
   parseDOM: [
     {
@@ -80,3 +85,6 @@ export const listing: NodeSpec = {
     return dom
   },
 }
+
+export const isListingNode = (node: ManuscriptNode): node is ListingNode =>
+  node.type === node.type.schema.nodes.listing
