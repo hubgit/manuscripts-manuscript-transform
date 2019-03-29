@@ -19,12 +19,20 @@ interface VersionIds {
   systemId: string
 }
 
-const versions: { [key: string]: VersionIds } = {
+export type Version = '1.1' | '1.2d1' | '1.2'
+
+const versions: { [key in Version]: VersionIds } = {
   '1.1': {
     publicId:
       '-//NLM//DTD JATS (Z39.96) Journal Archiving and Interchange DTD with OASIS Tables with MathML3 v1.1 20151215//EN',
     systemId:
       'http://jats.nlm.nih.gov/archiving/1.1/JATS-archive-oasis-article1-mathml3.dtd',
+  },
+  '1.2d1': {
+    publicId:
+      '-//NLM//DTD JATS (Z39.96) Journal Archiving and Interchange DTD with OASIS Tables with MathML3 v1.2d1 20170631//EN',
+    systemId:
+      'http://jats.nlm.nih.gov/archiving/1.2d1/JATS-archive-oasis-article1-mathml3.dtd',
   },
   '1.2': {
     publicId:
@@ -34,7 +42,10 @@ const versions: { [key: string]: VersionIds } = {
   },
 }
 
-export const selectVersionIds = (version: string): VersionIds => {
+export const supportedVersions = (): Version[] =>
+  Object.keys(versions) as Version[]
+
+export const selectVersionIds = (version: Version): VersionIds => {
   if (!(version in versions)) {
     throw new Error(`Unknown version ${version}`)
   }

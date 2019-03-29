@@ -31,7 +31,7 @@ import {
   Section,
   Table,
   TableElement,
-  TocElement,
+  TOCElement,
 } from '@manuscripts/manuscripts-json-schema'
 import { DOMParser, ParseOptions } from 'prosemirror-model'
 import { RxDocument } from 'rxdb'
@@ -497,7 +497,7 @@ export class Decoder {
       ) as TableElementNode
     },
     [ObjectTypes.TOCElement]: data => {
-      const model = data as TocElement
+      const model = data as TOCElement
 
       return schema.nodes.toc_element.create({
         id: model._id,

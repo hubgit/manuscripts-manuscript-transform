@@ -35,7 +35,7 @@ import {
   TableElementNode,
 } from '../schema'
 import { generateAttachmentFilename } from './filename'
-import { selectVersionIds } from './jats-versions'
+import { selectVersionIds, Version } from './jats-versions'
 // import { serializeTableToHTML } from './html'
 import { isExecutableNode, isNodeType } from './node-types'
 import { hasObjectType } from './object-types'
@@ -121,7 +121,11 @@ const createSerializer = (document: Document) => {
         node.attrs.id,
         node.attrs.contentType
       )
-      graphic.setAttributeNS(XLINK_NAMESPACE, 'xlink:href', `Data/${filename}`)
+      graphic.setAttributeNS(
+        XLINK_NAMESPACE,
+        'xlink:href',
+        `graphic/${filename}`
+      )
 
       if (node.attrs.contentType) {
         const [mimeType, mimeSubType] = node.attrs.contentType.split('/')
@@ -296,7 +300,11 @@ const createSerializer = (document: Document) => {
 
             const supp = document.createElement('supplementary-material')
 
-            supp.setAttributeNS(XLINK_NAMESPACE, 'xlink:href', filename)
+            supp.setAttributeNS(
+              XLINK_NAMESPACE,
+              'xlink:href',
+              `suppl/${filename}`
+            )
 
             const [mimeType, mimeSubType] = attachment.type.split('/')
 
@@ -841,7 +849,7 @@ const insertAbstractNode = (articleMeta: Element, abstractNode: Element) => {
 export const serializeToJATS = (
   fragment: ManuscriptFragment,
   modelMap: Map<string, Model>,
-  version: string = '1.2'
+  version: Version = '1.2'
 ): string => {
   const versionIds = selectVersionIds(version)
 

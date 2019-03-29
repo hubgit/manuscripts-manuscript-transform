@@ -52,6 +52,7 @@ describe('jats', () => {
     const { doc, modelMap } = parseProjectBundle(projectBundle, JSDOM.fragment)
 
     expect(() => {
+      // @ts-ignore (deliberately invalid)
       serializeToJATS(doc.content, modelMap, '1.0')
     }).toThrow()
   })

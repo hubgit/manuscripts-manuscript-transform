@@ -31,7 +31,7 @@ import {
   Section,
   Table,
   TableElement,
-  TocElement,
+  TOCElement,
 } from '@manuscripts/manuscripts-json-schema'
 import { DOMSerializer } from 'prosemirror-model'
 import { iterateChildren } from '../lib/utils'
@@ -352,7 +352,7 @@ const encoders: NodeEncoderMap = {
     suppressHeader: Boolean(node.attrs.suppressHeader) || undefined,
     tableStyle: node.attrs.tableStyle || undefined,
   }),
-  toc_element: (node): Partial<TocElement> => ({
+  toc_element: (node): Partial<TOCElement> => ({
     contents: htmlContents(node),
     // elementType: 'div', // TODO: https://gitlab.com/mpapp-private/manuscripts-json-schema/issues/47
   }),
