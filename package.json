@@ -41,7 +41,7 @@
     "@babel/polyfill": "^7.2.5",
     "@babel/preset-env": "^7.3.1",
     "@babel/preset-typescript": "^7.1.0",
-    "@manuscripts/examples": "^0.0.4",
+    "@manuscripts/examples": "^0.0.5",
     "@manuscripts/manuscripts-json-schema": "^1.8.1",
     "@manuscripts/tslint-config": "^0.1.1",
     "@types/jest": "^24.0.1",

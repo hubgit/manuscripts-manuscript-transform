@@ -173,7 +173,7 @@ const tableContents = (
   output.appendChild(buildTableSection('tbody', rows, parent))
   output.appendChild(buildTableSection('tfoot', tfoot, parent))
 
-  return xmlSerializer.serializeToString(output)
+  return output.outerHTML
 }
 
 const childElements = (node: ManuscriptNode): ManuscriptNode[] => {
