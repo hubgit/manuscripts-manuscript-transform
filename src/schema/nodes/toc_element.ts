@@ -50,6 +50,7 @@ export const tocElement: NodeSpec = {
     contents: { default: '' },
   },
   group: 'block',
+  selectable: false,
   parseDOM: [
     {
       tag: 'div.manuscript-toc',

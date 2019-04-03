@@ -51,6 +51,7 @@ export const footnotesElement: NodeSpec = {
     contents: { default: '' },
   },
   group: 'block element',
+  selectable: false,
   parseDOM: [
     {
       tag: 'div.footnotes',

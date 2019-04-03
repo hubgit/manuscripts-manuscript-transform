@@ -25,6 +25,7 @@ export const figcaption: NodeSpec = {
   content: 'inline*',
   group: 'block',
   isolating: true,
+  selectable: false,
   parseDOM: [
     {
       tag: 'figcaption',

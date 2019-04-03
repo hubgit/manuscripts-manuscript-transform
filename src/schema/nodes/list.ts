@@ -33,6 +33,7 @@ export const bulletList: NodeSpec = {
     id: { default: '' },
     paragraphStyle: { default: '' },
   },
+  selectable: false,
   parseDOM: [{ tag: 'ul' }],
   toDOM: node => {
     const bulletListNode = node as BulletListNode

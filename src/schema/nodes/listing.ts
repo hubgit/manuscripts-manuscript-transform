@@ -42,6 +42,7 @@ export const listing: NodeSpec = {
     // placeholder: { default: 'Click to edit listing' },
   },
   draggable: false,
+  selectable: false,
   group: 'block',
   parseDOM: [
     {

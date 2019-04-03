@@ -55,6 +55,7 @@ export const table: TableNodeSpec = {
   tableRole: 'table',
   isolating: true,
   group: 'block',
+  selectable: false,
   attrs: {
     id: { default: '' },
   },

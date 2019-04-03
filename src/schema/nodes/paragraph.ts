@@ -38,6 +38,7 @@ export const paragraph: NodeSpec = {
     // tight: { default: false }, // https://gitlab.com/mpapp-private/manuscripts-frontend/issues/75
   },
   group: 'block element',
+  selectable: false,
   parseDOM: [
     {
       tag: 'p',

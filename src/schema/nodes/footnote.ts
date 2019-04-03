@@ -42,6 +42,7 @@ export const footnote: NodeSpec = {
     contents: { default: '' },
     kind: { default: '' },
   },
+  selectable: false,
   parseDOM: [
     {
       tag: 'div.footnote-contents',

@@ -33,6 +33,7 @@ export const listingElement: NodeSpec = {
     suppressCaption: { default: true },
   },
   group: 'block element',
+  selectable: false,
   parseDOM: [
     {
       tag: 'figure.listing',

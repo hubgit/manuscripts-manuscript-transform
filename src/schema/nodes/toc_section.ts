@@ -31,6 +31,7 @@ export const tocSection: NodeSpec = {
     id: { default: '' },
   },
   group: 'block sections',
+  selectable: false,
   parseDOM: [
     {
       tag: 'section.toc',

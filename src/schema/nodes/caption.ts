@@ -32,6 +32,7 @@ export const caption: NodeSpec = {
     id: { default: '' },
     label: { default: '' },
   },
+  selectable: false,
   group: 'block',
   parseDOM: [
     {

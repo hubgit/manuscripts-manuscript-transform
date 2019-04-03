@@ -36,6 +36,7 @@ export const section: NodeSpec = {
     titleSuppressed: { default: false },
   },
   group: 'block sections',
+  selectable: false,
   parseDOM: [
     {
       tag: 'section',
