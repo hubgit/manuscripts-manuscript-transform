@@ -34,6 +34,7 @@ import {
   Section,
   UserProfileAffiliation,
 } from '@manuscripts/manuscripts-json-schema'
+import { CSL } from '..'
 import { generateID } from './id'
 import {
   AuxiliaryObjectReference,

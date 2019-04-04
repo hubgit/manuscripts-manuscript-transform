@@ -17,7 +17,7 @@
 // https://github.com/citation-style-language/schema
 
 // tslint:disable-next-line:no-namespace
-namespace CSL {
+export namespace CSL {
   export type ItemType =
     | 'article'
     | 'article-journal'
