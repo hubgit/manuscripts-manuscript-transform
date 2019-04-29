@@ -177,7 +177,7 @@ const createSerializer = (document: Document) => {
     listing_element: node =>
       createFigureElement(node, 'fig', node.type.schema.nodes.listing),
     manuscript: node => ['article', { id: normalizeID(node.attrs.id) }, 0],
-    ordered_list: () => ['list', { 'list-type': 'ordered' }, 0],
+    ordered_list: () => ['list', { 'list-type': 'order' }, 0],
     paragraph: node => {
       const attrs: Attrs = {}
 
