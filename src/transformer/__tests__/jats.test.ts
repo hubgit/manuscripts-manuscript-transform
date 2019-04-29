@@ -118,4 +118,14 @@ describe('jats', () => {
 
     expect(result).not.toBeNull()
   })
+
+  test('handle DOI prefix', () => {
+    const projectBundle = cloneProjectBundle(input)
+
+    const { doc, modelMap } = parseProjectBundle(projectBundle, JSDOM.fragment)
+
+    const result = serializeToJATS(doc.content, modelMap, '1.2', '10.0000/123')
+
+    expect(result).toMatchSnapshot('jats-export')
+  })
 })

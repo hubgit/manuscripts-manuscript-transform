@@ -341,7 +341,13 @@ const findChildNodeOfType = (
   }
 }
 
-const buildFront = (document: Document, modelMap: Map<string, Model>) => {
+const idSuffix = (id: string) => id.split(':')[1]
+
+const buildFront = (
+  document: Document,
+  modelMap: Map<string, Model>,
+  doi?: string
+) => {
   const manuscript = findManuscript(modelMap)
 
   const front = document.createElement('front')
@@ -365,6 +371,18 @@ const buildFront = (document: Document, modelMap: Map<string, Model>) => {
 
   const articleMeta = document.createElement('article-meta')
   front.appendChild(articleMeta)
+
+  const articleID = document.createElement('article-id')
+  articleID.setAttribute('pub-id-type', 'publisher-id')
+  articleID.textContent = idSuffix(manuscript._id)
+  articleMeta.appendChild(articleID)
+
+  if (doi) {
+    const articleID = document.createElement('article-id')
+    articleID.setAttribute('pub-id-type', 'doi')
+    articleID.textContent = doi
+    articleMeta.appendChild(articleID)
+  }
 
   const titleGroup = document.createElement('title-group')
   articleMeta.appendChild(titleGroup)
@@ -849,7 +867,8 @@ const insertAbstractNode = (articleMeta: Element, abstractNode: Element) => {
 export const serializeToJATS = (
   fragment: ManuscriptFragment,
   modelMap: Map<string, Model>,
-  version: Version = '1.2'
+  version: Version = '1.2',
+  doi?: string
 ): string => {
   const versionIds = selectVersionIds(version)
 
@@ -871,7 +890,7 @@ export const serializeToJATS = (
     XLINK_NAMESPACE
   )
 
-  const front = buildFront(doc, modelMap)
+  const front = buildFront(doc, modelMap, doi)
   article.appendChild(front)
 
   const body = buildBody(doc, fragment)
