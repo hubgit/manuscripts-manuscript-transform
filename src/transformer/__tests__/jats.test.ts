@@ -19,6 +19,7 @@ import { Section } from '@manuscripts/manuscripts-json-schema'
 import { JSDOM } from 'jsdom'
 import { serializeToJATS } from '../jats'
 import { parseProjectBundle, ProjectBundle } from '../project-bundle'
+import { submissions } from './__helpers__/submissions'
 
 const input = projectDump as ProjectBundle
 
@@ -124,8 +125,22 @@ describe('jats', () => {
 
     const { doc, modelMap } = parseProjectBundle(projectBundle, JSDOM.fragment)
 
+    const result = serializeToJATS(doc.content, modelMap, '1.2')
+
+    expect(result).toMatchSnapshot('jats-export-doi')
+  })
+
+  test('add journal ID', () => {
+    const projectBundle = cloneProjectBundle(input)
+
+    const { doc, modelMap } = parseProjectBundle(projectBundle, JSDOM.fragment)
+
+    for (const submission of submissions) {
+      modelMap.set(submission._id, submission)
+    }
+
     const result = serializeToJATS(doc.content, modelMap, '1.2', '10.0000/123')
 
-    expect(result).toMatchSnapshot('jats-export')
+    expect(result).toMatchSnapshot('jats-export-submitted')
   })
 })

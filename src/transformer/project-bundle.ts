@@ -18,6 +18,7 @@ import {
   Manuscript,
   Model,
   ObjectTypes,
+  Submission,
 } from '@manuscripts/manuscripts-json-schema'
 import { Decoder } from './decode'
 import { hasObjectType } from './object-types'
@@ -54,4 +55,25 @@ export const findManuscript = (modelMap: Map<string, Model>): Manuscript => {
   }
 
   throw new Error('No manuscript found')
+}
+
+const isSubmission = hasObjectType<Submission>(ObjectTypes.Submission)
+
+const newestFirst = (a: Model, b: Model) => b.createdAt - a.createdAt
+
+export const findLatestManuscriptSubmission = (
+  modelMap: Map<string, Model>,
+  manuscript: Manuscript
+): Submission | undefined => {
+  const submissions: Submission[] = []
+
+  for (const model of modelMap.values()) {
+    if (isSubmission(model) && model.manuscriptID === manuscript._id) {
+      submissions.push(model)
+    }
+  }
+
+  submissions.sort(newestFirst)
+
+  return submissions.length ? submissions[0] : undefined
 }

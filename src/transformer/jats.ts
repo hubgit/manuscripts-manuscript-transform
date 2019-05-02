@@ -39,7 +39,10 @@ import { selectVersionIds, Version } from './jats-versions'
 // import { serializeTableToHTML } from './html'
 import { isExecutableNode, isNodeType } from './node-types'
 import { hasObjectType } from './object-types'
-import { findManuscript } from './project-bundle'
+import {
+  findLatestManuscriptSubmission,
+  findManuscript,
+} from './project-bundle'
 import { sectionCategorySuffix } from './section-category'
 import { xmlSerializer } from './serializer'
 
@@ -349,6 +352,7 @@ const buildFront = (
   doi?: string
 ) => {
   const manuscript = findManuscript(modelMap)
+  const submission = findLatestManuscriptSubmission(modelMap, manuscript)
 
   const front = document.createElement('front')
 
@@ -357,6 +361,9 @@ const buildFront = (
 
   const journalID = document.createElement('journal-id')
   journalID.setAttribute('journal-id-type', 'publisher-id')
+  if (submission && submission.journalCode) {
+    journalID.textContent = submission.journalCode
+  }
   journalMeta.appendChild(journalID)
 
   const journalTitleGroup = document.createElement('journal-title-group')
