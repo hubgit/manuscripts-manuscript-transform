@@ -346,59 +346,14 @@ const findChildNodeOfType = (
 
 const idSuffix = (id: string) => id.split(':')[1]
 
-const buildFront = (
+const buildContributors = (
   document: Document,
   modelMap: Map<string, Model>,
-  doi?: string
+  articleMeta: Node
 ) => {
-  const manuscript = findManuscript(modelMap)
-  const submission = findLatestManuscriptSubmission(modelMap, manuscript)
+  const models = Array.from(modelMap.values())
 
-  const front = document.createElement('front')
-
-  const journalMeta = document.createElement('journal-meta')
-  front.appendChild(journalMeta)
-
-  const journalID = document.createElement('journal-id')
-  journalID.setAttribute('journal-id-type', 'publisher-id')
-  if (submission && submission.journalCode) {
-    journalID.textContent = submission.journalCode
-  }
-  journalMeta.appendChild(journalID)
-
-  const journalTitleGroup = document.createElement('journal-title-group')
-  journalMeta.appendChild(journalTitleGroup)
-
-  const journalTitle = document.createElement('journal-title')
-  journalTitleGroup.appendChild(journalTitle)
-
-  const issn = document.createElement('issn')
-  issn.setAttribute('pub-type', 'epub')
-  journalMeta.appendChild(issn)
-
-  const articleMeta = document.createElement('article-meta')
-  front.appendChild(articleMeta)
-
-  const articleID = document.createElement('article-id')
-  articleID.setAttribute('pub-id-type', 'publisher-id')
-  articleID.textContent = idSuffix(manuscript._id)
-  articleMeta.appendChild(articleID)
-
-  if (doi) {
-    const articleID = document.createElement('article-id')
-    articleID.setAttribute('pub-id-type', 'doi')
-    articleID.textContent = doi
-    articleMeta.appendChild(articleID)
-  }
-
-  const titleGroup = document.createElement('title-group')
-  articleMeta.appendChild(titleGroup)
-
-  const articleTitle = document.createElement('article-title')
-  articleTitle.textContent = manuscript.title! // TODO: serialize to JATS from title-editor
-  titleGroup.appendChild(articleTitle)
-
-  const contributors = Array.from(modelMap.values()).filter(
+  const contributors = models.filter(
     hasObjectType<Contributor>(ObjectTypes.Contributor)
   )
 
@@ -459,7 +414,7 @@ const buildFront = (
       }
     })
 
-    const affiliations = Array.from(modelMap.values()).filter(
+    const affiliations = models.filter(
       hasObjectType<Affiliation>(ObjectTypes.Affiliation)
     )
 
@@ -517,6 +472,67 @@ const buildFront = (
       })
     }
   }
+}
+
+const buildFront = (
+  document: Document,
+  modelMap: Map<string, Model>,
+  doi?: string
+) => {
+  const manuscript = findManuscript(modelMap)
+  const submission = findLatestManuscriptSubmission(modelMap, manuscript)
+
+  const front = document.createElement('front')
+
+  const journalMeta = document.createElement('journal-meta')
+  front.appendChild(journalMeta)
+
+  const journalID = document.createElement('journal-id')
+  journalID.setAttribute('journal-id-type', 'publisher-id')
+  if (submission && submission.journalCode) {
+    journalID.textContent = submission.journalCode
+  }
+  journalMeta.appendChild(journalID)
+
+  const journalTitleGroup = document.createElement('journal-title-group')
+  journalMeta.appendChild(journalTitleGroup)
+
+  const journalTitle = document.createElement('journal-title')
+  if (submission && submission.journalTitle) {
+    journalTitle.textContent = submission.journalTitle
+  }
+  journalTitleGroup.appendChild(journalTitle)
+
+  const issn = document.createElement('issn')
+  issn.setAttribute('pub-type', 'epub')
+  if (submission && submission.issn) {
+    issn.textContent = submission.issn
+  }
+  journalMeta.appendChild(issn)
+
+  const articleMeta = document.createElement('article-meta')
+  front.appendChild(articleMeta)
+
+  const articleID = document.createElement('article-id')
+  articleID.setAttribute('pub-id-type', 'publisher-id')
+  articleID.textContent = idSuffix(manuscript._id)
+  articleMeta.appendChild(articleID)
+
+  if (doi) {
+    const articleID = document.createElement('article-id')
+    articleID.setAttribute('pub-id-type', 'doi')
+    articleID.textContent = doi
+    articleMeta.appendChild(articleID)
+  }
+
+  const titleGroup = document.createElement('title-group')
+  articleMeta.appendChild(titleGroup)
+
+  const articleTitle = document.createElement('article-title')
+  articleTitle.textContent = manuscript.title! // TODO: serialize to JATS from title-editor
+  titleGroup.appendChild(articleTitle)
+
+  buildContributors(document, modelMap, articleMeta)
 
   // const now = new Date()
   // const isodate = now.toISOString().replace(/T.*/, '')

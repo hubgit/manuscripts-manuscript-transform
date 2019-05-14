@@ -142,5 +142,11 @@ describe('jats', () => {
     const result = serializeToJATS(doc.content, modelMap, '1.2', '10.0000/123')
 
     expect(result).toMatchSnapshot('jats-export-submitted')
+
+    const output = new DOMParser().parseFromString(result, 'application/xml')
+
+    expect(output.querySelector('journal-id')!.textContent).toBe('bar')
+    expect(output.querySelector('journal-title')!.textContent).toBe('Bar')
+    expect(output.querySelector('issn')!.textContent).toBe('2222-2222')
   })
 })

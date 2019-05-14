@@ -19,9 +19,12 @@ import { ObjectTypes, Submission } from '@manuscripts/manuscripts-json-schema'
 export const submissions: Submission[] = [
   {
     _id: 'MPSubmission:1',
-    objectType: ObjectTypes.Submission,
     manuscriptID: 'MPManuscript:8EB79C14-9F61-483A-902F-A0B8EF5973C9',
     containerID: 'MPProject:1',
+    objectType: ObjectTypes.Submission,
+    journalCode: 'foo',
+    journalTitle: 'Foo',
+    issn: '1111-1111',
     createdAt: 1000,
     updatedAt: 1000,
     sessionID: 'foo',
@@ -31,6 +34,9 @@ export const submissions: Submission[] = [
     manuscriptID: 'MPManuscript:8EB79C14-9F61-483A-902F-A0B8EF5973C9',
     containerID: 'MPProject:1',
     objectType: ObjectTypes.Submission,
+    journalCode: 'bar',
+    journalTitle: 'Bar',
+    issn: '2222-2222',
     createdAt: 2000,
     updatedAt: 2000,
     sessionID: 'foo',
