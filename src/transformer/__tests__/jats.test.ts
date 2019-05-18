@@ -120,12 +120,28 @@ describe('jats', () => {
     expect(result).not.toBeNull()
   })
 
-  test('handle DOI prefix', () => {
+  test('handle ID', () => {
     const projectBundle = cloneProjectBundle(input)
 
     const { doc, modelMap } = parseProjectBundle(projectBundle, JSDOM.fragment)
 
-    const result = serializeToJATS(doc.content, modelMap, '1.2')
+    const result = serializeToJATS(
+      doc.content,
+      modelMap,
+      '1.2',
+      undefined,
+      '123'
+    )
+
+    expect(result).toMatchSnapshot('jats-export-id')
+  })
+
+  test('handle DOI', () => {
+    const projectBundle = cloneProjectBundle(input)
+
+    const { doc, modelMap } = parseProjectBundle(projectBundle, JSDOM.fragment)
+
+    const result = serializeToJATS(doc.content, modelMap, '1.2', '10.0000/123')
 
     expect(result).toMatchSnapshot('jats-export-doi')
   })
@@ -139,7 +155,13 @@ describe('jats', () => {
       modelMap.set(submission._id, submission)
     }
 
-    const result = serializeToJATS(doc.content, modelMap, '1.2', '10.0000/123')
+    const result = serializeToJATS(
+      doc.content,
+      modelMap,
+      '1.2',
+      '10.0000/123',
+      '123'
+    )
 
     expect(result).toMatchSnapshot('jats-export-submitted')
 
