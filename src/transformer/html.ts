@@ -22,11 +22,14 @@ import {
 } from '@manuscripts/manuscripts-json-schema'
 import { DOMSerializer } from 'prosemirror-model'
 import {
+  FigureNode,
   ManuscriptFragment,
   ManuscriptSchema,
   schema,
   TableNode,
 } from '../schema'
+import { generateAttachmentFilename } from './filename'
+import { isNodeType } from './node-types'
 import { hasObjectType } from './object-types'
 import { findManuscript } from './project-bundle'
 import { xmlSerializer } from './serializer'
@@ -122,7 +125,23 @@ const buildBody = (document: Document, fragment: ManuscriptFragment) => {
 
 const idSelector = (id: string) => '#' + id.replace(/:/g, '\\:')
 
+const fixFigure = (document: Document, node: FigureNode) => {
+  const figure = document.getElementById(node.attrs.id)
+
+  if (figure) {
+    const filename = generateAttachmentFilename(
+      node.attrs.id,
+      node.attrs.contentType
+    )
+
+    const img = document.createElement('img')
+    img.setAttribute('src', `Data/${filename}`)
+    figure.insertBefore(img, figure.firstChild)
+  }
+}
+
 const fixBody = (document: Document, fragment: ManuscriptFragment) => {
+  // tslint:disable-next-line:cyclomatic-complexity
   fragment.descendants(node => {
     if (node.attrs.id) {
       if (node.attrs.titleSuppressed) {
@@ -144,6 +163,10 @@ const fixBody = (document: Document, fragment: ManuscriptFragment) => {
         if (caption && caption.parentNode) {
           caption.parentNode.removeChild(caption)
         }
+      }
+
+      if (isNodeType<FigureNode>(node, 'figure')) {
+        fixFigure(document, node)
       }
     }
   })
