@@ -23,6 +23,7 @@ import {
 import { DOMSerializer } from 'prosemirror-model'
 import {
   FigureNode,
+  ListingNode,
   ManuscriptFragment,
   ManuscriptSchema,
   schema,
@@ -140,6 +141,18 @@ const fixFigure = (document: Document, node: FigureNode) => {
   }
 }
 
+const fixListing = (document: Document, node: ListingNode) => {
+  const listing = document.getElementById(node.attrs.id)
+  if (!listing) return
+
+  const pre = document.createElement('pre')
+  const code = document.createElement('code')
+  listing.insertBefore(pre, listing.childNodes[0])
+  pre.insertBefore(code, pre.childNodes[0])
+
+  code.textContent = node.attrs.contents
+}
+
 const fixBody = (document: Document, fragment: ManuscriptFragment) => {
   // tslint:disable-next-line:cyclomatic-complexity
   fragment.descendants(node => {
@@ -167,6 +180,10 @@ const fixBody = (document: Document, fragment: ManuscriptFragment) => {
 
       if (isNodeType<FigureNode>(node, 'figure')) {
         fixFigure(document, node)
+      }
+
+      if (isNodeType<ListingNode>(node, 'listing')) {
+        fixListing(document, node)
       }
     }
   })
