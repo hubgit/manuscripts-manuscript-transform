@@ -645,9 +645,22 @@ const buildBack = (document: Document, modelMap: Map<string, Model>) => {
 
         const citation = document.createElement('element-citation')
 
-        citation.setAttribute('publication-type', 'journal')
         // TODO: add citation elements depending on publication type
-        // citation.setAttribute('publication-type', bibliographyItem.type)
+
+        if (bibliographyItem.type) {
+          switch (bibliographyItem.type) {
+            case 'article':
+            case 'article-journal':
+              citation.setAttribute('publication-type', 'journal')
+              break
+
+            default:
+              citation.setAttribute('publication-type', bibliographyItem.type)
+              break
+          }
+        } else {
+          citation.setAttribute('publication-type', 'journal')
+        }
 
         if (bibliographyItem.author) {
           bibliographyItem.author.forEach(author => {
