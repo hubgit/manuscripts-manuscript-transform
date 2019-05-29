@@ -100,7 +100,13 @@ const createSerializer = (document: Document) => {
     },
     equation_element: node =>
       createFigureElement(node, 'fig', node.type.schema.nodes.equation),
-    figcaption: () => ['caption', ['p', 0]],
+    figcaption: node => {
+      if (!node.textContent) {
+        return ''
+      }
+
+      return ['caption', ['p', 0]]
+    },
     figure: node => {
       const fig = document.createElement('fig')
       fig.setAttribute('id', normalizeID(node.attrs.id))
@@ -182,6 +188,10 @@ const createSerializer = (document: Document) => {
     manuscript: node => ['article', { id: normalizeID(node.attrs.id) }, 0],
     ordered_list: () => ['list', { 'list-type': 'order' }, 0],
     paragraph: node => {
+      if (!node.childCount) {
+        return ''
+      }
+
       const attrs: Attrs = {}
 
       if (node.attrs.id) {
