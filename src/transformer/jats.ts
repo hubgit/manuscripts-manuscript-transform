@@ -675,9 +675,9 @@ const buildBack = (document: Document, modelMap: Map<string, Model>) => {
           citation.appendChild(node)
         }
 
-        if (bibliographyItem.source) {
+        if (bibliographyItem['container-title']) {
           const node = document.createElement('source')
-          node.textContent = bibliographyItem.source
+          node.textContent = bibliographyItem['container-title']
           citation.appendChild(node)
         }
 
@@ -693,15 +693,37 @@ const buildBack = (document: Document, modelMap: Map<string, Model>) => {
           citation.appendChild(node)
         }
 
-        // TODO: use bibliographyItem.page?
         if (bibliographyItem['page-first']) {
           const node = document.createElement('fpage')
           node.textContent = String(bibliographyItem['page-first'])
           citation.appendChild(node)
+        } else if (bibliographyItem.page) {
+          const pageString = String(bibliographyItem.page)
+
+          if (/^\d+$/.test(pageString)) {
+            const node = document.createElement('fpage')
+            node.textContent = pageString
+            citation.appendChild(node)
+          } else if (/^\d+-\d+$/.test(pageString)) {
+            const [fpage, lpage] = pageString.split('-')
+
+            const fpageNode = document.createElement('fpage')
+            fpageNode.textContent = fpage
+            citation.appendChild(fpageNode)
+
+            const lpageNode = document.createElement('lpage')
+            lpageNode.textContent = lpage
+            citation.appendChild(lpageNode)
+          } else {
+            // TODO: check page-range contents?
+            const node = document.createElement('page-range')
+            node.textContent = pageString
+            citation.appendChild(node)
+          }
         }
 
         if (bibliographyItem.issued) {
-          const { 'date-parts': dateParts } = bibliographyItem.issued
+          const dateParts = bibliographyItem.issued['date-parts']
 
           if (dateParts && dateParts.length) {
             const [[year, month, day]] = dateParts
