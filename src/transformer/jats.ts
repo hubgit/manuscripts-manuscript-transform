@@ -574,7 +574,7 @@ const buildBody = (document: Document, fragment: ManuscriptFragment) => {
   const body = document.createElement('body')
   body.appendChild(content)
 
-  fixBody(document, fragment)
+  fixBody(body, document, fragment)
 
   return body
 }
@@ -723,9 +723,9 @@ const buildBack = (document: Document, modelMap: Map<string, Model>) => {
 }
 
 const fixTable = (
+  table: ChildNode,
   document: Document,
-  node: ManuscriptNode,
-  table: ChildNode
+  node: ManuscriptNode
 ) => {
   const rows = Array.from(table.childNodes)
 
@@ -772,12 +772,16 @@ const fixTable = (
   table.appendChild(tbody)
 }
 
-const fixBody = (document: Document, fragment: ManuscriptFragment) => {
+const fixBody = (
+  body: Element,
+  document: Document,
+  fragment: ManuscriptFragment
+) => {
   fragment.descendants(node => {
     if (node.attrs.id) {
       // remove suppressed titles
       if (node.attrs.titleSuppressed) {
-        const title = document.querySelector(
+        const title = body.querySelector(
           `#${normalizeID(node.attrs.id)} > title`
         )
 
@@ -789,7 +793,7 @@ const fixBody = (document: Document, fragment: ManuscriptFragment) => {
       // remove suppressed captions
       if (node.attrs.suppressCaption) {
         // TODO: need to query deeper?
-        const caption = document.querySelector(
+        const caption = body.querySelector(
           `#${normalizeID(node.attrs.id)} > caption`
         )
 
@@ -800,7 +804,7 @@ const fixBody = (document: Document, fragment: ManuscriptFragment) => {
 
       // move captions to the top of tables
       if (isNodeType<TableElementNode>(node, 'table_element')) {
-        const tableElement = document.querySelector(
+        const tableElement = body.querySelector(
           `#${normalizeID(node.attrs.id)}`
         )
 
@@ -817,7 +821,7 @@ const fixBody = (document: Document, fragment: ManuscriptFragment) => {
               }
 
               case 'table': {
-                fixTable(document, node, childNode)
+                fixTable(childNode, document, node)
                 break
               }
             }
