@@ -495,31 +495,33 @@ const buildFront = (
 
   const front = document.createElement('front')
 
-  const journalMeta = document.createElement('journal-meta')
-  front.appendChild(journalMeta)
+  if (submission) {
+    const journalMeta = document.createElement('journal-meta')
+    front.appendChild(journalMeta)
 
-  const journalID = document.createElement('journal-id')
-  journalID.setAttribute('journal-id-type', 'publisher-id')
-  if (submission && submission.journalCode) {
-    journalID.textContent = submission.journalCode
+    if (submission.journalCode) {
+      const journalID = document.createElement('journal-id')
+      journalID.setAttribute('journal-id-type', 'publisher-id')
+      journalID.textContent = submission.journalCode
+      journalMeta.appendChild(journalID)
+    }
+
+    if (submission.journalTitle) {
+      const journalTitleGroup = document.createElement('journal-title-group')
+      journalMeta.appendChild(journalTitleGroup)
+
+      const journalTitle = document.createElement('journal-title')
+      journalTitle.textContent = submission.journalTitle
+      journalTitleGroup.appendChild(journalTitle)
+    }
+
+    if (submission.issn) {
+      const issn = document.createElement('issn')
+      issn.setAttribute('pub-type', 'epub')
+      issn.textContent = submission.issn
+      journalMeta.appendChild(issn)
+    }
   }
-  journalMeta.appendChild(journalID)
-
-  const journalTitleGroup = document.createElement('journal-title-group')
-  journalMeta.appendChild(journalTitleGroup)
-
-  const journalTitle = document.createElement('journal-title')
-  if (submission && submission.journalTitle) {
-    journalTitle.textContent = submission.journalTitle
-  }
-  journalTitleGroup.appendChild(journalTitle)
-
-  const issn = document.createElement('issn')
-  issn.setAttribute('pub-type', 'epub')
-  if (submission && submission.issn) {
-    issn.textContent = submission.issn
-  }
-  journalMeta.appendChild(issn)
 
   const articleMeta = document.createElement('article-meta')
   front.appendChild(articleMeta)
