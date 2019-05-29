@@ -25,6 +25,7 @@ import {
 import { DOMOutputSpec, DOMSerializer } from 'prosemirror-model'
 import { iterateChildren } from '../lib/utils'
 import {
+  FigureElementNode,
   ManuscriptFragment,
   ManuscriptMark,
   ManuscriptNode,
@@ -83,7 +84,7 @@ const createSerializer = (document: Document) => {
     cross_reference: node => {
       const xref = document.createElement('xref')
       xref.setAttribute('ref-type', 'fig')
-      xref.setAttribute('rid', normalizeID(node.attrs.rid))
+      xref.setAttribute('rid', normalizeID(node.attrs.rid)) // TODO: find auxiliary object id
       xref.textContent = node.attrs.label
 
       return xref
@@ -836,6 +837,35 @@ const fixBody = (
                 fixTable(childNode, document, node)
                 break
               }
+            }
+          }
+        }
+      }
+
+      if (isNodeType<FigureElementNode>(node, 'figure_element')) {
+        const figureGroup = body.querySelector(`#${normalizeID(node.attrs.id)}`)
+
+        if (figureGroup) {
+          const figures = body.querySelectorAll(
+            `#${normalizeID(node.attrs.id)} > fig`
+          )
+
+          const caption = body.querySelector(
+            `#${normalizeID(node.attrs.id)} > caption`
+          )
+
+          // replace a single-figure fig-group with the figure
+          if (figures.length === 1) {
+            const figure = figures[0]
+
+            // move any caption into the figure
+            if (caption) {
+              figure.insertBefore(caption, figure.firstChild)
+            }
+
+            // replace the figure element with the figure
+            if (figureGroup.parentElement) {
+              figureGroup.parentElement.replaceChild(figure, figureGroup)
             }
           }
         }
