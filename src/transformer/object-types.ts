@@ -16,6 +16,7 @@
 
 import {
   Figure,
+  Manuscript,
   manuscriptIDTypes,
   Model,
   ObjectTypes,
@@ -65,6 +66,7 @@ export const hasObjectType = <T extends Model>(objectType: string) => (
 ): model is T => model.objectType === objectType
 
 export const isFigure = hasObjectType<Figure>(ObjectTypes.Figure)
+export const isManuscript = hasObjectType<Manuscript>(ObjectTypes.Manuscript)
 export const isTable = hasObjectType<Table>(ObjectTypes.Table)
 export const isUserProfile = hasObjectType<UserProfileWithAvatar>(
   ObjectTypes.UserProfile

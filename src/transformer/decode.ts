@@ -60,7 +60,12 @@ import {
 } from '../schema'
 import { generateNodeID } from './id'
 import { PlaceholderElement } from './models'
-import { ExtraObjectTypes, isFigure, isUserProfile } from './object-types'
+import {
+  ExtraObjectTypes,
+  isFigure,
+  isManuscript,
+  isUserProfile,
+} from './object-types'
 import { chooseSectionNodeType, guessSectionCategory } from './section-category'
 import { timestamp } from './timestamp'
 
@@ -538,7 +543,12 @@ export class Decoder {
       }) as SectionNode)
     }
 
-    return schema.nodes.manuscript.create({}, rootSectionNodes)
+    return schema.nodes.manuscript.create(
+      {
+        id: this.getManuscriptID(),
+      },
+      rootSectionNodes
+    )
   }
 
   public parseContents = (contents: string, options?: ParseOptions) => {
@@ -549,6 +559,14 @@ export class Decoder {
     }
 
     return parser.parse(node.firstChild, options)
+  }
+
+  private getManuscriptID = () => {
+    for (const item of this.modelMap.values()) {
+      if (isManuscript(item)) {
+        return item._id
+      }
+    }
   }
 
   private createContextualFragment = (contents: string) =>
