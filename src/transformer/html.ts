@@ -16,12 +16,14 @@
 
 import {
   Affiliation,
+  Citation,
   Contributor,
   Model,
   ObjectTypes,
 } from '@manuscripts/manuscripts-json-schema'
 import { DOMSerializer } from 'prosemirror-model'
 import {
+  CitationNode,
   FigureNode,
   ListingNode,
   ManuscriptFragment,
@@ -153,7 +155,22 @@ const fixListing = (document: Document, node: ListingNode) => {
   code.textContent = node.attrs.contents
 }
 
-const fixBody = (document: Document, fragment: ManuscriptFragment) => {
+const fixCitation = (document: Document, model: Citation) => {
+  const citation = document.querySelector(`[data-reference-id="${model._id}"]`)
+  if (!citation) return
+
+  const biblioIds = model.embeddedCitationItems.map(
+    item => item.bibliographyItem
+  )
+  citation.setAttribute('data-reference-ids', biblioIds.join(' '))
+  citation.removeAttribute('data-reference-id')
+}
+
+const fixBody = (
+  document: Document,
+  fragment: ManuscriptFragment,
+  modelMap: Map<string, Model>
+) => {
   // tslint:disable-next-line:cyclomatic-complexity
   fragment.descendants(node => {
     if (node.attrs.id) {
@@ -184,6 +201,13 @@ const fixBody = (document: Document, fragment: ManuscriptFragment) => {
 
       if (isNodeType<ListingNode>(node, 'listing')) {
         fixListing(document, node)
+      }
+    }
+
+    if (isNodeType<CitationNode>(node, 'citation')) {
+      const model = modelMap.get(node.attrs.rid)
+      if (model) {
+        fixCitation(document, model as Citation)
       }
     }
   })
@@ -219,7 +243,7 @@ export const serializeToHTML = (
   const back = buildBack(doc)
   article.appendChild(back)
 
-  fixBody(doc, fragment)
+  fixBody(doc, fragment, modelMap)
 
   return xmlSerializer.serializeToString(doc)
 }

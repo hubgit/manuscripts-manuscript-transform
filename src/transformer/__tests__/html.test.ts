@@ -18,6 +18,7 @@ import projectDump from '@manuscripts/examples/data/project-dump.json'
 import { JSDOM } from 'jsdom'
 import { serializeToHTML } from '../html'
 import { parseProjectBundle, ProjectBundle } from '../project-bundle'
+import projectDump2 from './data/project-bundle-2.json'
 
 describe('html', () => {
   test('export', () => {
@@ -29,5 +30,16 @@ describe('html', () => {
     const result = serializeToHTML(doc.content, modelMap)
 
     expect(result).toMatchSnapshot('html-export')
+  })
+
+  test('export with citations to fix', () => {
+    const { doc, modelMap } = parseProjectBundle(
+      projectDump2 as ProjectBundle,
+      JSDOM.fragment
+    )
+
+    const result = serializeToHTML(doc.content, modelMap)
+
+    expect(result).toMatchSnapshot('html-export-citations')
   })
 })
