@@ -19,6 +19,7 @@ import {
   BibliographyItem,
   Citation,
   Contributor,
+  Footnote,
   Model,
   ObjectTypes,
 } from '@manuscripts/manuscripts-json-schema'
@@ -37,6 +38,7 @@ import {
 } from '../schema'
 import { generateAttachmentFilename } from './filename'
 import { selectVersionIds, Version } from './jats-versions'
+import { AuxiliaryObjectReference } from './models'
 // import { serializeTableToHTML } from './html'
 import { isExecutableNode, isNodeType } from './node-types'
 import { hasObjectType } from './object-types'
@@ -61,8 +63,19 @@ const XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink'
 
 const normalizeID = (id: string) => id.replace(/:/g, '_')
 
-const createSerializer = (document: Document) => {
+const domParser = new DOMParser()
+
+const textFromHTML = (html: string) => {
+  const node = domParser.parseFromString(`<div>${html}</div>`, 'text/html')
+
+  return node.firstChild!.textContent
+}
+
+const createSerializer = (document: Document, modelMap: Map<string, Model>) => {
   let serializer: DOMSerializer<ManuscriptSchema>
+
+  const getModel = <T extends Model>(id?: string) =>
+    id ? (modelMap.get(id) as T | undefined) : undefined
 
   const nodes: NodeSpecs = {
     bibliography_element: () => '',
@@ -76,15 +89,39 @@ const createSerializer = (document: Document) => {
     citation: node => {
       const xref = document.createElement('xref')
       xref.setAttribute('ref-type', 'bibr')
-      xref.setAttribute('rid', normalizeID(node.attrs.rid))
-      xref.textContent = node.attrs.contents.replace(/&amp;/g, '&') // TODO: decode all HTML entities?
+
+      const citation = getModel<Citation>(node.attrs.rid)
+
+      // NOTE: https://www.ncbi.nlm.nih.gov/pmc/pmcdoc/tagging-guidelines/article/tags.html#el-xref
+      if (citation) {
+        xref.setAttribute(
+          'rid',
+          citation.embeddedCitationItems
+            .map(item => normalizeID(item.bibliographyItem))
+            .join(' ')
+        )
+      }
+
+      // TODO: need to keep any markup?
+      xref.textContent = textFromHTML(node.attrs.contents)
 
       return xref
     },
     cross_reference: node => {
       const xref = document.createElement('xref')
       xref.setAttribute('ref-type', 'fig')
-      xref.setAttribute('rid', normalizeID(node.attrs.rid)) // TODO: find auxiliary object id
+
+      const auxiliaryObjectReference = getModel<AuxiliaryObjectReference>(
+        node.attrs.rid
+      )
+
+      if (auxiliaryObjectReference) {
+        xref.setAttribute(
+          'rid',
+          normalizeID(auxiliaryObjectReference.referencedObject)
+        )
+      }
+
       xref.textContent = node.attrs.label
 
       return xref
@@ -92,6 +129,7 @@ const createSerializer = (document: Document) => {
     doc: () => '',
     equation: node => {
       const formula = document.createElement('disp-formula')
+      formula.setAttribute('id', normalizeID(node.attrs.id))
 
       const math = document.createElement('tex-math')
       math.textContent = node.attrs.TeXRepresentation
@@ -226,7 +264,7 @@ const createSerializer = (document: Document) => {
     table_cell: () => ['td', 0],
     table_row: () => ['tr', 0],
     text: node => node.text!,
-    toc_element: node => ['div', { id: normalizeID(node.attrs.id) }],
+    toc_element: node => ['p', { id: normalizeID(node.attrs.id) }],
     toc_section: node => ['sec', { id: normalizeID(node.attrs.id) }, 0],
   }
 
@@ -579,8 +617,12 @@ const buildFront = (
   return front
 }
 
-const buildBody = (document: Document, fragment: ManuscriptFragment) => {
-  const serializer = createSerializer(document)
+const buildBody = (
+  document: Document,
+  fragment: ManuscriptFragment,
+  modelMap: Map<string, Model>
+) => {
+  const serializer = createSerializer(document, modelMap)
 
   const content = serializer.serializeFragment(fragment, { document })
 
@@ -598,45 +640,78 @@ const buildBack = (document: Document, modelMap: Map<string, Model>) => {
 
   const values = Array.from(modelMap.values())
 
-  const citations = values.filter(hasObjectType<Citation>(ObjectTypes.Citation))
+  // footnotes element
+  const footnotesElement = document.querySelector('fn-group')
 
-  const bibliographyItems = values.filter(
-    hasObjectType<BibliographyItem>(ObjectTypes.BibliographyItem)
-  )
+  if (footnotesElement) {
+    // move fn-group from body to back
+    back.appendChild(footnotesElement)
 
-  const bibliographyItemIDsSet: Set<string> = new Set()
+    const footnoteIDsSet: Set<string> = new Set()
 
-  const xrefs = document.querySelectorAll('xref[ref-type=bibr]')
+    const xrefs = document.querySelectorAll('xref[ref-type=fn][rid]')
 
-  for (const xref of xrefs) {
-    const rid = xref.getAttribute('rid')
+    for (const xref of xrefs) {
+      const attribute = xref.getAttribute('rid')
 
-    const citation = citations.find(
-      citation => normalizeID(citation._id) === rid
+      if (attribute) {
+        for (const rid of attribute.split(/\s+/)) {
+          footnoteIDsSet.add(rid)
+        }
+      }
+    }
+
+    const footnotes = values.filter(
+      hasObjectType<Footnote>(ObjectTypes.Footnote)
     )
 
-    if (citation) {
-      const bibliographyItemIDs = citation.embeddedCitationItems.map(
-        citationItem => citationItem.bibliographyItem
+    for (const footnoteID of footnoteIDsSet) {
+      const footnote = footnotes.find(
+        footnote => normalizeID(footnote._id) === footnoteID
       )
 
-      // NOTE: https://www.ncbi.nlm.nih.gov/pmc/pmcdoc/tagging-guidelines/article/tags.html#el-xref
-      xref.setAttribute('rid', bibliographyItemIDs.map(normalizeID).join(' '))
+      if (footnote) {
+        const fn = document.createElement('fn')
+        fn.setAttribute('id', normalizeID(footnote._id))
 
-      for (const bibliographyItemID of bibliographyItemIDs) {
-        bibliographyItemIDsSet.add(bibliographyItemID)
+        const p = document.createElement('p')
+        p.textContent = textFromHTML(footnote.contents) // TODO: convert HTML to JATS?
+        fn.appendChild(p)
+
+        footnotesElement.appendChild(fn)
       }
     }
   }
 
+  // bibliography element
   const refList = document.querySelector('ref-list')
 
   if (refList) {
+    // move ref-list from body to back
     back.appendChild(refList)
+
+    const bibliographyItems = values.filter(
+      hasObjectType<BibliographyItem>(ObjectTypes.BibliographyItem)
+    )
+
+    const bibliographyItemIDsSet: Set<string> = new Set()
+
+    const xrefs = document.querySelectorAll('xref[ref-type=bibr][rid]')
+
+    for (const xref of xrefs) {
+      const attribute = xref.getAttribute('rid')
+
+      if (attribute) {
+        for (const rid of attribute.split(/\s+/)) {
+          bibliographyItemIDsSet.add(rid)
+        }
+      }
+    }
 
     for (const bibliographyItemID of bibliographyItemIDsSet) {
       const bibliographyItem = bibliographyItems.find(
-        bibliographyItem => bibliographyItem._id === bibliographyItemID
+        bibliographyItem =>
+          normalizeID(bibliographyItem._id) === bibliographyItemID
       )
 
       if (bibliographyItem) {
@@ -1001,7 +1076,7 @@ export const serializeToJATS = (
   const front = buildFront(doc, modelMap, doi, id)
   article.appendChild(front)
 
-  const body = buildBody(doc, fragment)
+  const body = buildBody(doc, fragment, modelMap)
   article.appendChild(body)
 
   const back = buildBack(doc, modelMap)

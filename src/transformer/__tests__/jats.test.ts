@@ -17,6 +17,7 @@
 import projectDump from '@manuscripts/examples/data/project-dump.json'
 import { Section } from '@manuscripts/manuscripts-json-schema'
 import { JSDOM } from 'jsdom'
+import libxml from 'libxmljs'
 import { serializeToJATS } from '../jats'
 import { parseProjectBundle, ProjectBundle } from '../project-bundle'
 import { submissions } from './__helpers__/submissions'
@@ -170,5 +171,21 @@ describe('jats', () => {
     expect(output.querySelector('journal-id')!.textContent).toBe('bar')
     expect(output.querySelector('journal-title')!.textContent).toBe('Bar')
     expect(output.querySelector('issn')!.textContent).toBe('2222-2222')
+  })
+
+  test('DTD validation', () => {
+    const projectBundle = cloneProjectBundle(input)
+
+    const { doc, modelMap } = parseProjectBundle(projectBundle, JSDOM.fragment)
+
+    const data = serializeToJATS(doc.content, modelMap)
+
+    const { errors } = libxml.parseXmlString(data, {
+      dtdload: true,
+      dtdvalid: true,
+      nonet: true,
+    })
+
+    expect(errors).toHaveLength(0)
   })
 })

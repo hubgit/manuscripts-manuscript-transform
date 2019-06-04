@@ -663,6 +663,11 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
+"@jats4r/dtds@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.npmjs.org/@jats4r/dtds/-/dtds-0.0.3.tgz#eb10ea2a5a3c3ee127b077ff33499799701fcf26"
+  integrity sha512-IAUSvBorKT4uE4ZnTmbKYxxtIEfFcvSkWCf+BVOmH7catWingpx02HS4dFc3i1KWgzNgLcy5aStzU7ICSyg/Kw==
+
 "@manuscripts/examples@^0.0.5":
   version "0.0.5"
   resolved "https://atypon-npm-registry.herokuapp.com/@manuscripts%2fexamples/-/examples-0.0.5.tgz#335d4fefaf9b4cdc64e59f03c45818cd8fed904d"
@@ -700,6 +705,13 @@
     "@types/node" "*"
     "@types/tough-cookie" "*"
     parse5 "^4.0.0"
+
+"@types/libxmljs@^0.18.3":
+  version "0.18.3"
+  resolved "https://registry.npmjs.org/@types/libxmljs/-/libxmljs-0.18.3.tgz#5aaed8fc4ec5ea99e005ee5dfb47cf9924166a4d"
+  integrity sha512-EvYww5XELtacMKQkvvEj2DrFSm9F4cusPoegt4C2S9OTw2MCJ2RZW5FMUP4MiU5307yIMZDCP25C/oBuJros1w==
+  dependencies:
+    "@types/node" "*"
 
 "@types/node@*":
   version "11.9.0"
@@ -1308,6 +1320,11 @@ big-integer@^1.6.16:
   version "1.6.41"
   resolved "https://registry.npmjs.org/big-integer/-/big-integer-1.6.41.tgz#6fb0e51bc8661129ef3832d46c939170b81ca794"
   integrity sha512-d5AT9lMTYJ/ZE/4gzxb+5ttPcRWljVsvv7lF1w9KzkPhVUhBtHrjDo1J8swfZKepfLsliDhYa31zRYwcD0Yg9w==
+
+bindings@~1.3.0:
+  version "1.3.1"
+  resolved "https://registry.npmjs.org/bindings/-/bindings-1.3.1.tgz#21fc7c6d67c18516ec5aaa2815b145ff77b26ea5"
+  integrity sha512-i47mqjF9UbjxJhxGf+pZ6kSxrnI3wBLlnGI2ArWJ4r0VrvDS7ZYXkprq/pLaBWYq4GM0r4zdHY+NNRqEMU7uew==
 
 bluebird@^3.4.7:
   version "3.5.3"
@@ -4497,6 +4514,15 @@ levn@~0.3.0:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
 
+libxmljs@^0.19.5:
+  version "0.19.5"
+  resolved "https://registry.npmjs.org/libxmljs/-/libxmljs-0.19.5.tgz#b2f34cc12fd6a3e43670c604c42a902f339ea54d"
+  integrity sha512-mKlafbSIsgZCXcha6loyMN/Q1kcbNJ5N3VC/rS0vrJXdI99TzEI2i2rPp10HN/B70vSPh6bq6nHhoCT19eGtTw==
+  dependencies:
+    bindings "~1.3.0"
+    nan "~2.10.0"
+    node-pre-gyp "~0.11.0"
+
 lie@3.0.4:
   version "3.0.4"
   resolved "https://registry.npmjs.org/lie/-/lie-3.0.4.tgz#bc7ae1ebe7f1c8de39afdcd4f789076b47b0f634"
@@ -4857,6 +4883,11 @@ nan@^2.9.2:
   resolved "https://registry.npmjs.org/nan/-/nan-2.12.1.tgz#7b1aa193e9aa86057e3c7bbd0ac448e770925552"
   integrity sha512-JY7V6lRkStKcKTvHO5NVSQRv+RV+FIL5pvDoLiAtSL9pKlC5x9PKQcZDsq7m4FO4d57mkhC6Z+QhAh3Jdk5JFw==
 
+nan@~2.10.0:
+  version "2.10.0"
+  resolved "https://registry.npmjs.org/nan/-/nan-2.10.0.tgz#96d0cd610ebd58d4b4de9cc0c6828cda99c7548f"
+  integrity sha512-bAdJv7fBLhWC+/Bls0Oza+mvTaNQtP+1RyhhhvD95pgUJz6XM5IzgmxOkItJ9tkoCiplvAnXI1tNmmUD/eScyA==
+
 nano-time@1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/nano-time/-/nano-time-1.0.0.tgz#b0554f69ad89e22d0907f7a12b0993a5d96137ef"
@@ -4935,6 +4966,22 @@ node-pre-gyp@^0.10.0:
   version "0.10.3"
   resolved "https://registry.npmjs.org/node-pre-gyp/-/node-pre-gyp-0.10.3.tgz#3070040716afdc778747b61b6887bf78880b80fc"
   integrity sha512-d1xFs+C/IPS8Id0qPTZ4bUT8wWryfR/OzzAFxweG+uLN85oPzyo2Iw6bVlLQ/JOdgNonXLCoRyqDzDWq4iw72A==
+  dependencies:
+    detect-libc "^1.0.2"
+    mkdirp "^0.5.1"
+    needle "^2.2.1"
+    nopt "^4.0.1"
+    npm-packlist "^1.1.6"
+    npmlog "^4.0.2"
+    rc "^1.2.7"
+    rimraf "^2.6.1"
+    semver "^5.3.0"
+    tar "^4"
+
+node-pre-gyp@~0.11.0:
+  version "0.11.0"
+  resolved "https://registry.npmjs.org/node-pre-gyp/-/node-pre-gyp-0.11.0.tgz#db1f33215272f692cd38f03238e3e9b47c5dd054"
+  integrity sha512-TwWAOZb0j7e9eGaf9esRx3ZcLaE5tQ2lvYy1pb5IAaG1a2e2Kv5Lms1Y4hpj+ciXJRofIxxlt5haeQ/2ANeE0Q==
   dependencies:
     detect-libc "^1.0.2"
     mkdirp "^0.5.1"
