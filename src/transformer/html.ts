@@ -21,17 +21,24 @@ import {
   Model,
   ObjectTypes,
 } from '@manuscripts/manuscripts-json-schema'
-import { DOMSerializer } from 'prosemirror-model'
+import { DOMOutputSpec, DOMSerializer } from 'prosemirror-model'
 import {
   CitationNode,
+  CrossReferenceNode,
   FigureNode,
   ListingNode,
   ManuscriptFragment,
+  ManuscriptMark,
+  ManuscriptNode,
   ManuscriptSchema,
+  Marks,
+  Nodes,
   schema,
   TableNode,
 } from '../schema'
 import { generateAttachmentFilename } from './filename'
+import { nodeFromHTML } from './html-parser'
+import { AuxiliaryObjectReference } from './models'
 import { isNodeType } from './node-types'
 import { hasObjectType } from './object-types'
 import { findManuscript } from './project-bundle'
@@ -120,8 +127,103 @@ const buildFront = (document: Document, modelMap: Map<string, Model>) => {
   return front
 }
 
-const buildBody = (document: Document, fragment: ManuscriptFragment) => {
-  const serializer = DOMSerializer.fromSchema<ManuscriptSchema>(schema)
+const buildBody = (
+  document: Document,
+  fragment: ManuscriptFragment,
+  modelMap: Map<string, Model>
+) => {
+  const getModel = <T extends Model>(id?: string) =>
+    id ? (modelMap.get(id) as T | undefined) : undefined
+
+  const nodes: { [key: string]: (node: ManuscriptNode) => DOMOutputSpec } = {}
+
+  for (const [name, node] of Object.entries(schema.nodes)) {
+    if (node.spec.toDOM) {
+      nodes[name as Nodes] = node.spec.toDOM
+    }
+  }
+
+  nodes.citation = node => {
+    const citationNode = node as CitationNode
+
+    const element = document.createElement('span')
+    element.setAttribute('class', 'citation')
+
+    const citation = getModel<Citation>(citationNode.attrs.rid)
+
+    if (citation) {
+      element.setAttribute(
+        'data-reference-ids',
+        citation.embeddedCitationItems
+          .map(item => item.bibliographyItem)
+          .join(' ')
+      )
+    }
+
+    // TODO: sanitize?
+    const contentsNode = nodeFromHTML(citationNode.attrs.contents)
+
+    while (contentsNode.firstChild) {
+      element.appendChild(contentsNode.firstChild)
+    }
+
+    return element
+  }
+
+  nodes.cross_reference = node => {
+    const crossReferenceNode = node as CrossReferenceNode
+
+    const element = document.createElement('a')
+    element.classList.add('cross-reference')
+
+    const auxiliaryObjectReference = getModel<AuxiliaryObjectReference>(
+      crossReferenceNode.attrs.rid
+    )
+
+    if (auxiliaryObjectReference) {
+      element.setAttribute(
+        'href',
+        `#${auxiliaryObjectReference.referencedObject}`
+      )
+    }
+
+    element.textContent = crossReferenceNode.attrs.label
+
+    return element
+  }
+
+  nodes.listing = node => {
+    const listingNode = node as ListingNode
+
+    const pre = document.createElement('pre')
+    if (listingNode.attrs.id) {
+      pre.setAttribute('id', listingNode.attrs.id)
+    }
+    pre.classList.add('listing')
+
+    const code = document.createElement('code')
+    if (listingNode.attrs.languageKey) {
+      code.setAttribute('data-language', listingNode.attrs.languageKey)
+    }
+    code.textContent = listingNode.attrs.contents
+    pre.appendChild(code)
+
+    return pre
+  }
+
+  nodes.text = node => node.text!
+
+  const marks: {
+    [key: string]: (mark: ManuscriptMark, inline: boolean) => DOMOutputSpec
+  } = {}
+
+  for (const [name, mark] of Object.entries(schema.marks)) {
+    if (mark.spec.toDOM) {
+      marks[name as Marks] = mark.spec.toDOM
+    }
+  }
+
+  const serializer = new DOMSerializer(nodes, marks)
 
   return serializer.serializeFragment(fragment, { document })
 }
@@ -141,29 +243,6 @@ const fixFigure = (document: Document, node: FigureNode) => {
     img.setAttribute('src', `Data/${filename}`)
     figure.insertBefore(img, figure.firstChild)
   }
-}
-
-const fixListing = (document: Document, node: ListingNode) => {
-  const listing = document.getElementById(node.attrs.id)
-  if (!listing) return
-
-  const pre = document.createElement('pre')
-  const code = document.createElement('code')
-  listing.insertBefore(pre, listing.childNodes[0])
-  pre.insertBefore(code, pre.childNodes[0])
-
-  code.textContent = node.attrs.contents
-}
-
-const fixCitation = (document: Document, model: Citation) => {
-  const citation = document.querySelector(`[data-reference-id="${model._id}"]`)
-  if (!citation) return
-
-  const biblioIds = model.embeddedCitationItems.map(
-    item => item.bibliographyItem
-  )
-  citation.setAttribute('data-reference-ids', biblioIds.join(' '))
-  citation.removeAttribute('data-reference-id')
 }
 
 const fixBody = (
@@ -198,17 +277,6 @@ const fixBody = (
       if (isNodeType<FigureNode>(node, 'figure')) {
         fixFigure(document, node)
       }
-
-      if (isNodeType<ListingNode>(node, 'listing')) {
-        fixListing(document, node)
-      }
-    }
-
-    if (isNodeType<CitationNode>(node, 'citation')) {
-      const model = modelMap.get(node.attrs.rid)
-      if (model) {
-        fixCitation(document, model as Citation)
-      }
     }
   })
 }
@@ -237,7 +305,7 @@ export const serializeToHTML = (
   const front = buildFront(doc, modelMap)
   article.appendChild(front)
 
-  const body = buildBody(doc, fragment)
+  const body = buildBody(doc, fragment, modelMap)
   article.appendChild(body)
 
   const back = buildBack(doc)

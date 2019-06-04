@@ -37,6 +37,7 @@ import {
   TableElementNode,
 } from '../schema'
 import { generateAttachmentFilename } from './filename'
+import { textFromHTML } from './html-parser'
 import { selectVersionIds, Version } from './jats-versions'
 import { AuxiliaryObjectReference } from './models'
 // import { serializeTableToHTML } from './html'
@@ -62,14 +63,6 @@ type MarkSpecs = {
 const XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink'
 
 const normalizeID = (id: string) => id.replace(/:/g, '_')
-
-const domParser = new DOMParser()
-
-const textFromHTML = (html: string) => {
-  const node = domParser.parseFromString(`<div>${html}</div>`, 'text/html')
-
-  return node.firstChild!.textContent
-}
 
 const createSerializer = (document: Document, modelMap: Map<string, Model>) => {
   let serializer: DOMSerializer<ManuscriptSchema>

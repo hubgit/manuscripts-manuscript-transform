@@ -22,7 +22,7 @@ interface Attrs {
   label: string
 }
 
-interface CrossReferenceNode extends ManuscriptNode {
+export interface CrossReferenceNode extends ManuscriptNode {
   attrs: Attrs
 }
 
