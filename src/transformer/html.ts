@@ -44,8 +44,17 @@ import { hasObjectType } from './object-types'
 import { findManuscript } from './project-bundle'
 import { xmlSerializer } from './serializer'
 
-const buildFront = (document: Document, modelMap: Map<string, Model>) => {
+const buildFront = (
+  document: Document,
+  modelMap: Map<string, Model & { title?: string }>
+) => {
+  // at this point we assume that there is only one manuscript - resources
+  // associated with others should have been stripped out via parseProjectBundle
   const manuscript = findManuscript(modelMap)
+
+  if (!manuscript) {
+    throw new Error('Manuscript not found in project modelMap')
+  }
 
   const front = document.createElement('header')
 

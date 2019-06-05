@@ -18,7 +18,8 @@ import projectDump from '@manuscripts/examples/data/project-dump.json'
 import { JSDOM } from 'jsdom'
 import { serializeToHTML } from '../html'
 import { parseProjectBundle, ProjectBundle } from '../project-bundle'
-import projectDump2 from './data/project-bundle-2.json'
+import ProjectBundle2 from './data/project-bundle-2.json'
+import projectBundle3 from './data/project-bundle-3.json'
 
 describe('html', () => {
   test('export', () => {
@@ -34,12 +35,24 @@ describe('html', () => {
 
   test('export with citations to fix', () => {
     const { doc, modelMap } = parseProjectBundle(
-      projectDump2 as ProjectBundle,
+      ProjectBundle2 as ProjectBundle,
       JSDOM.fragment
     )
 
     const result = serializeToHTML(doc.content, modelMap)
 
     expect(result).toMatchSnapshot('html-export-citations')
+  })
+
+  test('export one manuscript from a bundle with multiple', () => {
+    const { doc, modelMap } = parseProjectBundle(
+      projectBundle3 as ProjectBundle,
+      JSDOM.fragment,
+      'MPManuscript:BCEB682E-C475-4BF7-9470-D6194D3EF0D8'
+    )
+
+    const result = serializeToHTML(doc.content, modelMap)
+
+    expect(result).toMatchSnapshot('multi-manuscript-html-export')
   })
 })

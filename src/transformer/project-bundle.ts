@@ -21,6 +21,7 @@ import {
   Submission,
 } from '@manuscripts/manuscripts-json-schema'
 import { Decoder } from './decode'
+import { ManuscriptModel } from './models'
 import { hasObjectType } from './object-types'
 
 export interface ProjectBundle {
@@ -30,11 +31,18 @@ export interface ProjectBundle {
 
 export const parseProjectBundle = (
   projectBundle: ProjectBundle,
-  parseFragment?: (contents: string) => DocumentFragment
+  parseFragment?: (contents: string) => DocumentFragment,
+  manuscriptID?: string
 ) => {
+  const manuscriptData = manuscriptID
+    ? (projectBundle.data as ManuscriptModel[]).filter(
+        doc => !doc.manuscriptID || doc.manuscriptID === manuscriptID
+      )
+    : projectBundle.data
+
   const modelMap: Map<string, Model> = new Map()
 
-  for (const component of projectBundle.data) {
+  for (const component of manuscriptData) {
     modelMap.set(component._id, component)
   }
 
