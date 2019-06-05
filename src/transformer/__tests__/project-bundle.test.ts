@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import project3 from '@manuscripts/examples/data/project-dump-3.json'
 import { Manuscript, ObjectTypes } from '@manuscripts/manuscripts-json-schema'
 import { JSDOM } from 'jsdom'
 import { hasObjectType } from '../object-types'
@@ -23,7 +24,6 @@ import {
 } from '../project-bundle'
 import { createTestModelMap } from './__helpers__/doc'
 import { submissions } from './__helpers__/submissions'
-import project3 from './data/project-bundle-3.json'
 
 const isManuscript = hasObjectType<Manuscript>(ObjectTypes.Manuscript)
 

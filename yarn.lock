@@ -668,10 +668,10 @@
   resolved "https://registry.npmjs.org/@jats4r/dtds/-/dtds-0.0.3.tgz#eb10ea2a5a3c3ee127b077ff33499799701fcf26"
   integrity sha512-IAUSvBorKT4uE4ZnTmbKYxxtIEfFcvSkWCf+BVOmH7catWingpx02HS4dFc3i1KWgzNgLcy5aStzU7ICSyg/Kw==
 
-"@manuscripts/examples@^0.0.5":
-  version "0.0.5"
-  resolved "https://atypon-npm-registry.herokuapp.com/@manuscripts%2fexamples/-/examples-0.0.5.tgz#335d4fefaf9b4cdc64e59f03c45818cd8fed904d"
-  integrity sha512-oTAMMrSHmBXXUnmOK4jBw94r1snEVRcUXeMcC2tGOBKKqeEEP5oGYU50qKnfgcN+N1xZ2p6HZ6Zp0wjTeLvH1A==
+"@manuscripts/examples@0.0.6":
+  version "0.0.6"
+  resolved "https://atypon-npm-registry.herokuapp.com/@manuscripts%2fexamples/-/examples-0.0.6.tgz#9d823d13eed0f9c7410db99ad60fe9f002e2baad"
+  integrity sha512-k9OVrxMmDdCaGcLgyTKrW11qN5un+HA9fuoMHnbW259hXuUZ336aKnAN5RFMctaQl2K/rk52Oq8MQZKxXafXtA==
 
 "@manuscripts/manuscripts-json-schema@^1.11.0":
   version "1.11.0"
