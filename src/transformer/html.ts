@@ -71,6 +71,7 @@ const buildFront = (
 
   if (contributors && contributors.length) {
     const contribGroup = document.createElement('div')
+    contribGroup.classList.add('contrib-group')
     articleMeta.appendChild(contribGroup)
 
     contributors.sort((a, b) => Number(a.priority) - Number(b.priority))
@@ -84,16 +85,19 @@ const buildFront = (
       }
 
       const name = document.createElement('span')
+      name.classList.add('contrib-name')
       contrib.appendChild(name)
 
       if (contributor.bibliographicName.given) {
         const givenNames = document.createElement('span')
+        givenNames.classList.add('contrib-given-names')
         givenNames.textContent = contributor.bibliographicName.given
         name.appendChild(givenNames)
       }
 
       if (contributor.bibliographicName.family) {
         const surname = document.createElement('span')
+        surname.classList.add('contrib-surname')
         surname.textContent = contributor.bibliographicName.family
         name.appendChild(surname)
       }
@@ -118,10 +122,12 @@ const buildFront = (
 
   if (affiliations && affiliations.length) {
     const affiliationList = document.createElement('ol')
+    affiliationList.classList.add('affiliations-list')
     articleMeta.appendChild(affiliationList)
 
     affiliations.forEach(affiliation => {
       const affiliationItem = document.createElement('li')
+      affiliationItem.classList.add('affiliation-list-item')
       affiliationItem.setAttribute('id', affiliation._id)
 
       // TODO: all the institution fields
