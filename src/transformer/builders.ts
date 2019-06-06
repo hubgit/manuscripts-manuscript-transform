@@ -46,6 +46,7 @@ import {
 import { ExtraObjectTypes } from './object-types'
 
 export const DEFAULT_BUNDLE = 'MPBundle:www-zotero-org-styles-nature'
+export const DEFAULT_PAGE_LAYOUT = 'MPPageLayout:a4'
 
 export type Build<T> = Pick<T, Exclude<keyof T, keyof ManuscriptModel>> & {
   _id: string
@@ -79,6 +80,7 @@ export const buildManuscript = (title: string = ''): Build<Manuscript> => ({
   objectType: ObjectTypes.Manuscript,
   title,
   bundle: DEFAULT_BUNDLE,
+  pageLayout: DEFAULT_PAGE_LAYOUT,
 })
 
 export type ContributorRole = 'author'

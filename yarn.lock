@@ -668,15 +668,15 @@
   resolved "https://registry.npmjs.org/@jats4r/dtds/-/dtds-0.0.3.tgz#eb10ea2a5a3c3ee127b077ff33499799701fcf26"
   integrity sha512-IAUSvBorKT4uE4ZnTmbKYxxtIEfFcvSkWCf+BVOmH7catWingpx02HS4dFc3i1KWgzNgLcy5aStzU7ICSyg/Kw==
 
-"@manuscripts/examples@0.0.6":
+"@manuscripts/examples@^0.0.6":
   version "0.0.6"
   resolved "https://atypon-npm-registry.herokuapp.com/@manuscripts%2fexamples/-/examples-0.0.6.tgz#9d823d13eed0f9c7410db99ad60fe9f002e2baad"
   integrity sha512-k9OVrxMmDdCaGcLgyTKrW11qN5un+HA9fuoMHnbW259hXuUZ336aKnAN5RFMctaQl2K/rk52Oq8MQZKxXafXtA==
 
-"@manuscripts/manuscripts-json-schema@^1.11.0":
-  version "1.11.0"
-  resolved "https://atypon-npm-registry.herokuapp.com/@manuscripts%2fmanuscripts-json-schema/-/manuscripts-json-schema-1.11.0.tgz#bdb9e0ce20697b40c292f0693b734e94822ff474"
-  integrity sha512-NquwpT7w6uQltbCF3WSHEauYOCGe9CrL3+QN/o13TqYSKRtf+Df3A8NFTeQb3bEssJLsxtP2/Aeffld8u3sVXA==
+"@manuscripts/manuscripts-json-schema@^1.13.0":
+  version "1.13.0"
+  resolved "https://atypon-npm-registry.herokuapp.com/@manuscripts%2fmanuscripts-json-schema/-/manuscripts-json-schema-1.13.0.tgz#102945390d82f19f81fbb304c177a7a0bf9ae77b"
+  integrity sha512-fIYP6maoXOTJYhWZ0BjGdph9U6mK4F5hv4E7xL6Uvrh2mGkIGZTmgEudnMPu/1s1JAwQAClEEB8LbpzM1H6ErQ==
   dependencies:
     ajv "^6.10.0"
     deepmerge "^3.2.0"
