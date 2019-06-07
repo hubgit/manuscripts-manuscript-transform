@@ -21,6 +21,7 @@ import {
   BibliographyItem,
   Citation,
   CitationItem,
+  Color,
   Contributor,
   EmbeddedModel,
   Figure,
@@ -244,4 +245,11 @@ export const buildParagraph = (contents: string): Build<ParagraphElement> => ({
   objectType: ObjectTypes.ParagraphElement,
   elementType: 'p',
   contents,
+})
+
+export const buildColor = (value: string, priority: number): Build<Color> => ({
+  _id: generateID(ObjectTypes.Color),
+  objectType: ObjectTypes.Color,
+  priority,
+  value,
 })
