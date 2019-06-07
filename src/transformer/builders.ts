@@ -79,8 +79,6 @@ export const buildManuscript = (title: string = ''): Build<Manuscript> => ({
   _id: generateID(ObjectTypes.Manuscript),
   objectType: ObjectTypes.Manuscript,
   title,
-  bundle: DEFAULT_BUNDLE,
-  pageLayout: DEFAULT_PAGE_LAYOUT,
 })
 
 export type ContributorRole = 'author'
