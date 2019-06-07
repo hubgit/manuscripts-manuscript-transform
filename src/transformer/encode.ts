@@ -316,7 +316,7 @@ const encoders: NodeEncoderMap = {
   ordered_list: (node): Partial<ListElement> => ({
     elementType: 'ol',
     contents: listContents(node),
-    paragraphStyle: node.attrs.paragraphStyle,
+    paragraphStyle: node.attrs.paragraphStyle || undefined,
   }),
   paragraph: (node): Partial<ParagraphElement> => ({
     elementType: 'p',
