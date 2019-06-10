@@ -245,7 +245,11 @@ const buildBody = (
 
 const idSelector = (id: string) => '#' + id.replace(/:/g, '\\:')
 
-const fixFigure = (document: Document, node: FigureNode) => {
+const fixFigure = (
+  document: Document,
+  node: FigureNode,
+  attachmentUrlPrefix: string
+) => {
   const figure = document.getElementById(node.attrs.id)
 
   if (figure) {
@@ -255,7 +259,7 @@ const fixFigure = (document: Document, node: FigureNode) => {
     )
 
     const img = document.createElement('img')
-    img.setAttribute('src', `Data/${filename}`)
+    img.setAttribute('src', attachmentUrlPrefix + filename)
     figure.insertBefore(img, figure.firstChild)
   }
 }
@@ -263,7 +267,7 @@ const fixFigure = (document: Document, node: FigureNode) => {
 const fixBody = (
   document: Document,
   fragment: ManuscriptFragment,
-  modelMap: Map<string, Model>
+  attachmentUrlPrefix: string
 ) => {
   // tslint:disable-next-line:cyclomatic-complexity
   fragment.descendants(node => {
@@ -290,7 +294,7 @@ const fixBody = (
       }
 
       if (isNodeType<FigureNode>(node, 'figure')) {
-        fixFigure(document, node)
+        fixFigure(document, node, attachmentUrlPrefix)
       }
     }
   })
@@ -306,7 +310,8 @@ const buildBack = (document: Document) => {
 
 export const serializeToHTML = (
   fragment: ManuscriptFragment,
-  modelMap: Map<string, Model>
+  modelMap: Map<string, Model>,
+  attachmentUrlPrefix: string = 'Data/'
 ) => {
   const doc = document.implementation.createDocument(
     'http://www.w3.org/1999/xhtml',
@@ -326,7 +331,7 @@ export const serializeToHTML = (
   const back = buildBack(doc)
   article.appendChild(back)
 
-  fixBody(doc, fragment, modelMap)
+  fixBody(doc, fragment, attachmentUrlPrefix)
 
   return xmlSerializer.serializeToString(doc)
 }

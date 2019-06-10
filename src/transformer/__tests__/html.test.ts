@@ -55,4 +55,15 @@ describe('html', () => {
 
     expect(result).toMatchSnapshot('multi-manuscript-html-export')
   })
+
+  test('custom attachment URL', () => {
+    const { doc, modelMap } = parseProjectBundle(
+      projectDump as ProjectBundle,
+      JSDOM.fragment
+    )
+
+    const result = serializeToHTML(doc.content, modelMap, 'http://example.com/')
+
+    expect(result).toMatchSnapshot('html-export-custom-url')
+  })
 })
