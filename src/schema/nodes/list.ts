@@ -33,8 +33,18 @@ export const bulletList: NodeSpec = {
     id: { default: '' },
     paragraphStyle: { default: '' },
   },
-  selectable: false,
-  parseDOM: [{ tag: 'ul' }],
+  parseDOM: [
+    {
+      tag: 'ul',
+      getAttrs: p => {
+        const dom = p as HTMLUListElement
+
+        return {
+          id: dom.getAttribute('id'),
+        }
+      },
+    },
+  ],
   toDOM: node => {
     const bulletListNode = node as BulletListNode
 
@@ -43,7 +53,6 @@ export const bulletList: NodeSpec = {
           'ul',
           {
             id: bulletListNode.attrs.id,
-            // start: node.attrs.order === 1 ? undefined : node.attrs.order,
             class: buildElementClass(bulletListNode.attrs),
             'data-object-type': ObjectTypes.ListElement,
           },
