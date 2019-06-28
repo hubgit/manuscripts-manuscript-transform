@@ -15,7 +15,6 @@
  */
 
 import '@babel/polyfill'
-import { JSDOM } from 'jsdom'
 import uuid from 'uuid/v4'
 
 const supportedCommands: string[] = []
@@ -26,14 +25,6 @@ Object.defineProperty(document, 'queryCommandSupported', {
 
 Object.defineProperty(document, 'execCommand', {
   value: (cmd: string) => supportedCommands.includes(cmd),
-})
-
-// https://github.com/jsdom/jsdom/issues/317
-
-Object.defineProperty(document, 'createRange', {
-  value: () => ({
-    createContextualFragment: JSDOM.fragment,
-  }),
 })
 
 if (!window.URL.createObjectURL) {

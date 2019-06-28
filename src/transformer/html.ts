@@ -30,322 +30,296 @@ import {
   ManuscriptFragment,
   ManuscriptMark,
   ManuscriptNode,
-  ManuscriptSchema,
   Marks,
   Nodes,
   schema,
-  TableNode,
 } from '../schema'
 import { generateAttachmentFilename } from './filename'
-import { nodeFromHTML } from './html-parser'
 import { AuxiliaryObjectReference } from './models'
 import { isNodeType } from './node-types'
 import { hasObjectType } from './object-types'
 import { findManuscript } from './project-bundle'
 import { xmlSerializer } from './serializer'
 
-const buildFront = (
-  document: Document,
-  modelMap: Map<string, Model & { title?: string }>
-) => {
-  // at this point we assume that there is only one manuscript - resources
-  // associated with others should have been stripped out via parseProjectBundle
-  const manuscript = findManuscript(modelMap)
+export class HTMLTransformer {
+  private document: Document
+  private modelMap: Map<string, Model>
 
-  if (!manuscript) {
-    throw new Error('Manuscript not found in project modelMap')
-  }
+  public serializeToHTML = (
+    fragment: ManuscriptFragment,
+    modelMap: Map<string, Model>,
+    attachmentUrlPrefix: string = 'Data/'
+  ) => {
+    this.modelMap = modelMap
 
-  const front = document.createElement('header')
-
-  const articleMeta = document.createElement('div')
-  front.appendChild(articleMeta)
-
-  const articleTitle = document.createElement('h1')
-  articleTitle.textContent = manuscript.title! // TODO: serialize to HTML from title-editor
-  articleMeta.appendChild(articleTitle)
-
-  const contributors = Array.from(modelMap.values()).filter(
-    hasObjectType<Contributor>(ObjectTypes.Contributor)
-  )
-
-  if (contributors && contributors.length) {
-    const contribGroup = document.createElement('div')
-    contribGroup.classList.add('contrib-group')
-    articleMeta.appendChild(contribGroup)
-
-    contributors.sort((a, b) => Number(a.priority) - Number(b.priority))
-
-    contributors.forEach(contributor => {
-      const contrib = document.createElement('span')
-      contrib.setAttribute('id', contributor._id)
-
-      if (contributor.isCorresponding) {
-        contrib.setAttribute('data-corresp', 'yes')
-      }
-
-      const name = document.createElement('span')
-      name.classList.add('contrib-name')
-      contrib.appendChild(name)
-
-      if (contributor.bibliographicName.given) {
-        const givenNames = document.createElement('span')
-        givenNames.classList.add('contrib-given-names')
-        givenNames.textContent = contributor.bibliographicName.given
-        name.appendChild(givenNames)
-      }
-
-      if (contributor.bibliographicName.family) {
-        const surname = document.createElement('span')
-        surname.classList.add('contrib-surname')
-        surname.textContent = contributor.bibliographicName.family
-        name.appendChild(surname)
-      }
-
-      // if (contributor.email) {
-      //   const email = document.createElement('a')
-      //   email.href = `mailto:${contributor.email}`
-      //   contrib.appendChild(email)
-      // }
-
-      // TODO: link to affiliations
-
-      contribGroup.appendChild(contrib)
-    })
-  }
-
-  const affiliations = Array.from(modelMap.values()).filter(
-    hasObjectType<Affiliation>(ObjectTypes.Affiliation)
-  )
-
-  // TODO: sort affiliations
-
-  if (affiliations && affiliations.length) {
-    const affiliationList = document.createElement('ol')
-    affiliationList.classList.add('affiliations-list')
-    articleMeta.appendChild(affiliationList)
-
-    affiliations.forEach(affiliation => {
-      const affiliationItem = document.createElement('li')
-      affiliationItem.classList.add('affiliation-list-item')
-      affiliationItem.setAttribute('id', affiliation._id)
-
-      // TODO: all the institution fields
-      if (affiliation.institution) {
-        affiliationItem.textContent = affiliation.institution
-      }
-
-      affiliationList.appendChild(affiliationItem)
-    })
-  }
-
-  return front
-}
-
-const buildBody = (
-  document: Document,
-  fragment: ManuscriptFragment,
-  modelMap: Map<string, Model>
-) => {
-  const getModel = <T extends Model>(id?: string) =>
-    id ? (modelMap.get(id) as T | undefined) : undefined
-
-  const nodes: { [key: string]: (node: ManuscriptNode) => DOMOutputSpec } = {}
-
-  for (const [name, node] of Object.entries(schema.nodes)) {
-    if (node.spec.toDOM) {
-      nodes[name as Nodes] = node.spec.toDOM
-    }
-  }
-
-  nodes.citation = node => {
-    const citationNode = node as CitationNode
-
-    const element = document.createElement('span')
-    element.setAttribute('class', 'citation')
-
-    const citation = getModel<Citation>(citationNode.attrs.rid)
-
-    if (citation) {
-      element.setAttribute(
-        'data-reference-ids',
-        citation.embeddedCitationItems
-          .map(item => item.bibliographyItem)
-          .join(' ')
-      )
-    }
-
-    // TODO: sanitize?
-    const contentsNode = nodeFromHTML(citationNode.attrs.contents)
-
-    while (contentsNode.firstChild) {
-      element.appendChild(contentsNode.firstChild)
-    }
-
-    return element
-  }
-
-  nodes.cross_reference = node => {
-    const crossReferenceNode = node as CrossReferenceNode
-
-    const element = document.createElement('a')
-    element.classList.add('cross-reference')
-
-    const auxiliaryObjectReference = getModel<AuxiliaryObjectReference>(
-      crossReferenceNode.attrs.rid
+    this.document = document.implementation.createDocument(
+      'http://www.w3.org/1999/xhtml',
+      'html',
+      document.implementation.createDocumentType('html', '', '')
     )
 
-    if (auxiliaryObjectReference) {
-      element.setAttribute(
-        'href',
-        `#${auxiliaryObjectReference.referencedObject}`
-      )
-    }
+    const article = this.document.createElement('article')
+    this.document.documentElement.appendChild(article)
 
-    element.textContent = crossReferenceNode.attrs.label
+    article.appendChild(this.buildFront())
+    article.appendChild(this.buildBody(fragment))
+    // article.appendChild(this.buildBack())
 
-    return element
+    this.fixBody(fragment, attachmentUrlPrefix)
+
+    return xmlSerializer.serializeToString(this.document)
   }
 
-  nodes.listing = node => {
-    const listingNode = node as ListingNode
+  private buildFront = () => {
+    // at this point we assume that there is only one manuscript - resources
+    // associated with others should have been stripped out via parseProjectBundle
+    const manuscript = findManuscript(this.modelMap)
 
-    const pre = document.createElement('pre')
-    if (listingNode.attrs.id) {
-      pre.setAttribute('id', listingNode.attrs.id)
+    if (!manuscript) {
+      throw new Error('Manuscript not found in project modelMap')
     }
-    pre.classList.add('listing')
 
-    const code = document.createElement('code')
-    if (listingNode.attrs.languageKey) {
-      code.setAttribute('data-language', listingNode.attrs.languageKey)
+    const front = this.document.createElement('header')
+
+    const articleMeta = this.document.createElement('div')
+    front.appendChild(articleMeta)
+
+    const articleTitle = this.document.createElement('h1')
+    if (manuscript.title) {
+      articleTitle.innerHTML = manuscript.title
     }
-    code.textContent = listingNode.attrs.contents
-    pre.appendChild(code)
+    articleMeta.appendChild(articleTitle)
 
-    return pre
-  }
-
-  nodes.text = node => node.text!
-
-  const marks: {
-    [key: string]: (mark: ManuscriptMark, inline: boolean) => DOMOutputSpec
-  } = {}
-
-  for (const [name, mark] of Object.entries(schema.marks)) {
-    if (mark.spec.toDOM) {
-      marks[name as Marks] = mark.spec.toDOM
-    }
-  }
-
-  const serializer = new DOMSerializer(nodes, marks)
-
-  return serializer.serializeFragment(fragment, { document })
-}
-
-const idSelector = (id: string) => '#' + id.replace(/:/g, '\\:')
-
-const fixFigure = (
-  document: Document,
-  node: FigureNode,
-  attachmentUrlPrefix: string
-) => {
-  const figure = document.getElementById(node.attrs.id)
-
-  if (figure) {
-    const filename = generateAttachmentFilename(
-      node.attrs.id,
-      node.attrs.contentType
+    const contributors = Array.from(this.modelMap.values()).filter(
+      hasObjectType<Contributor>(ObjectTypes.Contributor)
     )
 
-    const img = document.createElement('img')
-    img.setAttribute('src', attachmentUrlPrefix + filename)
-    figure.insertBefore(img, figure.firstChild)
+    if (contributors && contributors.length) {
+      const contribGroup = this.document.createElement('div')
+      contribGroup.classList.add('contrib-group')
+      articleMeta.appendChild(contribGroup)
+
+      contributors.sort((a, b) => Number(a.priority) - Number(b.priority))
+
+      contributors.forEach(contributor => {
+        const contrib = this.document.createElement('span')
+        contrib.setAttribute('id', contributor._id)
+
+        if (contributor.isCorresponding) {
+          contrib.setAttribute('data-corresp', 'yes')
+        }
+
+        const name = this.document.createElement('span')
+        name.classList.add('contrib-name')
+        contrib.appendChild(name)
+
+        if (contributor.bibliographicName.given) {
+          const givenNames = this.document.createElement('span')
+          givenNames.classList.add('contrib-given-names')
+          givenNames.textContent = contributor.bibliographicName.given
+          name.appendChild(givenNames)
+        }
+
+        if (contributor.bibliographicName.family) {
+          const surname = this.document.createElement('span')
+          surname.classList.add('contrib-surname')
+          surname.textContent = contributor.bibliographicName.family
+          name.appendChild(surname)
+        }
+
+        // if (contributor.email) {
+        //   const email = this.document.createElement('a')
+        //   email.href = `mailto:${contributor.email}`
+        //   contrib.appendChild(email)
+        // }
+
+        // TODO: link to affiliations
+
+        contribGroup.appendChild(contrib)
+      })
+    }
+
+    const affiliations = Array.from(this.modelMap.values()).filter(
+      hasObjectType<Affiliation>(ObjectTypes.Affiliation)
+    )
+
+    // TODO: sort affiliations
+
+    if (affiliations && affiliations.length) {
+      const affiliationList = this.document.createElement('ol')
+      affiliationList.classList.add('affiliations-list')
+      articleMeta.appendChild(affiliationList)
+
+      affiliations.forEach(affiliation => {
+        const affiliationItem = this.document.createElement('li')
+        affiliationItem.classList.add('affiliation-list-item')
+        affiliationItem.setAttribute('id', affiliation._id)
+
+        // TODO: all the institution fields
+        if (affiliation.institution) {
+          affiliationItem.textContent = affiliation.institution
+        }
+
+        affiliationList.appendChild(affiliationItem)
+      })
+    }
+
+    return front
   }
-}
 
-const fixBody = (
-  document: Document,
-  fragment: ManuscriptFragment,
-  attachmentUrlPrefix: string
-) => {
-  // tslint:disable-next-line:cyclomatic-complexity
-  fragment.descendants(node => {
-    if (node.attrs.id) {
-      if (node.attrs.titleSuppressed) {
-        const selector = idSelector(node.attrs.id)
+  private buildBody = (fragment: ManuscriptFragment) => {
+    const getModel = <T extends Model>(id?: string) =>
+      id ? (this.modelMap.get(id) as T | undefined) : undefined
 
-        const title = document.querySelector(`${selector} > h1`)
+    const nodes: { [key: string]: (node: ManuscriptNode) => DOMOutputSpec } = {}
 
-        if (title && title.parentNode) {
-          title.parentNode.removeChild(title)
-        }
-      }
-
-      if (node.attrs.suppressCaption) {
-        const selector = idSelector(node.attrs.id)
-
-        // TODO: need to query deeper?
-        const caption = document.querySelector(`${selector} > figcaption`)
-
-        if (caption && caption.parentNode) {
-          caption.parentNode.removeChild(caption)
-        }
-      }
-
-      if (isNodeType<FigureNode>(node, 'figure')) {
-        fixFigure(document, node, attachmentUrlPrefix)
+    for (const [name, node] of Object.entries(schema.nodes)) {
+      if (node.spec.toDOM) {
+        nodes[name as Nodes] = node.spec.toDOM
       }
     }
-  })
-}
 
-const buildBack = (document: Document) => {
-  const back = document.createElement('footer')
+    nodes.citation = node => {
+      const citationNode = node as CitationNode
 
-  // TODO: reference list
+      const element = this.document.createElement('span')
+      element.setAttribute('class', 'citation')
 
-  return back
-}
+      const citation = getModel<Citation>(citationNode.attrs.rid)
 
-export const serializeToHTML = (
-  fragment: ManuscriptFragment,
-  modelMap: Map<string, Model>,
-  attachmentUrlPrefix: string = 'Data/'
-) => {
-  const doc = document.implementation.createDocument(
-    'http://www.w3.org/1999/xhtml',
-    'html',
-    document.implementation.createDocumentType('html', '', '')
-  )
+      if (citation) {
+        element.setAttribute(
+          'data-reference-ids',
+          citation.embeddedCitationItems
+            .map(item => item.bibliographyItem)
+            .join(' ')
+        )
+      }
 
-  const article = doc.createElement('article')
-  doc.documentElement.appendChild(article)
+      if (citationNode.attrs.contents) {
+        element.innerHTML = citationNode.attrs.contents
+      }
 
-  const front = buildFront(doc, modelMap)
-  article.appendChild(front)
+      return element
+    }
 
-  const body = buildBody(doc, fragment, modelMap)
-  article.appendChild(body)
+    nodes.cross_reference = node => {
+      const crossReferenceNode = node as CrossReferenceNode
 
-  const back = buildBack(doc)
-  article.appendChild(back)
+      const element = this.document.createElement('a')
+      element.classList.add('cross-reference')
 
-  fixBody(doc, fragment, attachmentUrlPrefix)
+      const auxiliaryObjectReference = getModel<AuxiliaryObjectReference>(
+        crossReferenceNode.attrs.rid
+      )
 
-  return xmlSerializer.serializeToString(doc)
-}
+      if (auxiliaryObjectReference) {
+        element.setAttribute(
+          'href',
+          `#${auxiliaryObjectReference.referencedObject}`
+        )
+      }
 
-export const serializeTableToHTML = (node: TableNode) => {
-  const doc = document.implementation.createDocument(
-    'http://www.w3.org/1999/xhtml',
-    'html',
-    document.implementation.createDocumentType('html', '', '')
-  )
+      element.textContent = crossReferenceNode.attrs.label
 
-  const serializer = DOMSerializer.fromSchema<ManuscriptSchema>(
-    node.type.schema
-  )
+      return element
+    }
 
-  return serializer.serializeNode(node, { document: doc })
+    nodes.listing = node => {
+      const listingNode = node as ListingNode
+
+      const pre = this.document.createElement('pre')
+      if (listingNode.attrs.id) {
+        pre.setAttribute('id', listingNode.attrs.id)
+      }
+      pre.classList.add('listing')
+
+      const code = this.document.createElement('code')
+      if (listingNode.attrs.languageKey) {
+        code.setAttribute('data-language', listingNode.attrs.languageKey)
+      }
+      code.textContent = listingNode.attrs.contents
+      pre.appendChild(code)
+
+      return pre
+    }
+
+    nodes.text = node => node.text!
+
+    const marks: {
+      [key: string]: (mark: ManuscriptMark, inline: boolean) => DOMOutputSpec
+    } = {}
+
+    for (const [name, mark] of Object.entries(schema.marks)) {
+      if (mark.spec.toDOM) {
+        marks[name as Marks] = mark.spec.toDOM
+      }
+    }
+
+    const serializer = new DOMSerializer(nodes, marks)
+
+    return serializer.serializeFragment(fragment, { document })
+  }
+
+  // private buildBack = (document: Document) => {
+  //   const back = this.document.createElement('footer')
+  //
+  //   // TODO: reference list
+  //
+  //   return back
+  // }
+
+  private idSelector = (id: string) => '#' + id.replace(/:/g, '\\:')
+
+  private fixFigure = (node: FigureNode, attachmentUrlPrefix: string) => {
+    const figure = this.document.getElementById(node.attrs.id)
+
+    if (figure) {
+      const filename = generateAttachmentFilename(
+        node.attrs.id,
+        node.attrs.contentType
+      )
+
+      const img = this.document.createElement('img')
+      img.setAttribute('src', attachmentUrlPrefix + filename)
+      figure.insertBefore(img, figure.firstChild)
+    }
+  }
+
+  private fixBody = (
+    fragment: ManuscriptFragment,
+    attachmentUrlPrefix: string
+  ) => {
+    // tslint:disable-next-line:cyclomatic-complexity
+    fragment.descendants(node => {
+      if (node.attrs.id) {
+        if (node.attrs.titleSuppressed) {
+          const selector = this.idSelector(node.attrs.id)
+
+          const title = this.document.querySelector(`${selector} > h1`)
+
+          if (title && title.parentNode) {
+            title.parentNode.removeChild(title)
+          }
+        }
+
+        if (node.attrs.suppressCaption) {
+          const selector = this.idSelector(node.attrs.id)
+
+          // TODO: need to query deeper?
+          const caption = this.document.querySelector(
+            `${selector} > figcaption`
+          )
+
+          if (caption && caption.parentNode) {
+            caption.parentNode.removeChild(caption)
+          }
+        }
+
+        if (isNodeType<FigureNode>(node, 'figure')) {
+          this.fixFigure(node, attachmentUrlPrefix)
+        }
+      }
+    })
+  }
 }

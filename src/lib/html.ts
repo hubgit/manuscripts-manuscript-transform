@@ -14,8 +14,16 @@
  * limitations under the License.
  */
 
-declare global {
-  interface Window {
-    DOMParser: () => null
+export const nodeFromHTML = (html: string) => {
+  html = html.trim()
+
+  if (!html.length) {
+    return null
   }
+
+  const template = document.createElement('template')
+
+  template.innerHTML = html
+
+  return template.content.firstChild
 }

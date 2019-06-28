@@ -88,9 +88,10 @@ const listContents = (node: ManuscriptNode): string => {
 }
 
 const svgDefs = (svg: string): string | undefined => {
-  const fragment = document.createRange().createContextualFragment(svg)
+  const template = document.createElement('template')
+  template.innerHTML = svg.trim()
 
-  const defs = fragment.querySelector('defs')
+  const defs = template.content.querySelector('defs')
 
   return defs ? xmlSerializer.serializeToString(defs) : undefined
 }

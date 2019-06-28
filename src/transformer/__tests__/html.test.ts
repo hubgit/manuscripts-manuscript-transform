@@ -14,32 +14,27 @@
  * limitations under the License.
  */
 
-import projectDump from '@manuscripts/examples/data/project-dump.json'
 import projectDump2 from '@manuscripts/examples/data/project-dump-2.json'
 import projectDump3 from '@manuscripts/examples/data/project-dump-3.json'
-import { JSDOM } from 'jsdom'
-import { serializeToHTML } from '../html'
+import projectDump from '@manuscripts/examples/data/project-dump.json'
+import { HTMLTransformer } from '../html'
 import { parseProjectBundle, ProjectBundle } from '../project-bundle'
 
 describe('html', () => {
   test('export', () => {
-    const { doc, modelMap } = parseProjectBundle(
-      projectDump as ProjectBundle,
-      JSDOM.fragment
-    )
+    const { doc, modelMap } = parseProjectBundle(projectDump as ProjectBundle)
 
-    const result = serializeToHTML(doc.content, modelMap)
+    const transformer = new HTMLTransformer()
+    const result = transformer.serializeToHTML(doc.content, modelMap)
 
     expect(result).toMatchSnapshot('html-export')
   })
 
   test('export with citations to fix', () => {
-    const { doc, modelMap } = parseProjectBundle(
-      projectDump2 as ProjectBundle,
-      JSDOM.fragment
-    )
+    const { doc, modelMap } = parseProjectBundle(projectDump2 as ProjectBundle)
 
-    const result = serializeToHTML(doc.content, modelMap)
+    const transformer = new HTMLTransformer()
+    const result = transformer.serializeToHTML(doc.content, modelMap)
 
     expect(result).toMatchSnapshot('html-export-citations')
   })
@@ -47,22 +42,26 @@ describe('html', () => {
   test('export one manuscript from a bundle with multiple', () => {
     const { doc, modelMap } = parseProjectBundle(
       projectDump3 as ProjectBundle,
-      JSDOM.fragment,
       'MPManuscript:BCEB682E-C475-4BF7-9470-D6194D3EF0D8'
     )
 
-    const result = serializeToHTML(doc.content, modelMap)
+    const transformer = new HTMLTransformer()
+    const result = transformer.serializeToHTML(doc.content, modelMap)
 
     expect(result).toMatchSnapshot('multi-manuscript-html-export')
   })
 
   test('custom attachment URL', () => {
     const { doc, modelMap } = parseProjectBundle(
-      projectDump as ProjectBundle,
-      JSDOM.fragment
+      (projectDump as unknown) as ProjectBundle
     )
 
-    const result = serializeToHTML(doc.content, modelMap, 'http://example.com/')
+    const transformer = new HTMLTransformer()
+    const result = transformer.serializeToHTML(
+      doc.content,
+      modelMap,
+      'http://example.com/'
+    )
 
     expect(result).toMatchSnapshot('html-export-custom-url')
   })

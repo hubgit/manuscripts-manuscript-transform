@@ -16,7 +16,6 @@
 
 import projectDump from '@manuscripts/examples/data/project-dump.json'
 import { Model } from '@manuscripts/manuscripts-json-schema'
-import { JSDOM } from 'jsdom'
 import { Decoder } from '../../decode'
 
 export const createTestModelMap = (): Map<string, Model> => {
@@ -32,7 +31,7 @@ export const createTestModelMap = (): Map<string, Model> => {
 export const createTestDoc = () => {
   const modelMap = createTestModelMap()
 
-  const decoder = new Decoder(modelMap, JSDOM.fragment)
+  const decoder = new Decoder(modelMap)
 
   return decoder.createArticleNode()
 }

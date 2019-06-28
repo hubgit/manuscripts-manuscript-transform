@@ -19,7 +19,6 @@ import {
   ObjectTypes,
   Section,
 } from '@manuscripts/manuscripts-json-schema'
-import { JSDOM } from 'jsdom'
 import { ManuscriptNode, ManuscriptNodeType, schema } from '../../schema'
 import { Decoder, getModelData, sortSectionsByPriority } from '../decode'
 import { createTestDoc, createTestModelMap } from './__helpers__/doc'
@@ -40,7 +39,7 @@ const countDescendantsOfType = (
 }
 
 const createDoc = (modelMap: Map<string, Model>) => {
-  const decoder = new Decoder(modelMap, JSDOM.fragment)
+  const decoder = new Decoder(modelMap)
 
   return decoder.createArticleNode()
 }

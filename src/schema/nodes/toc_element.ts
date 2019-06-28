@@ -15,6 +15,7 @@
  */
 
 import { NodeSpec } from 'prosemirror-model'
+import { nodeFromHTML } from '../../lib/html'
 import { ManuscriptNode } from '../types'
 
 interface Attrs {
@@ -32,15 +33,6 @@ const createBodyElement = (node: ManuscriptNode) => {
   dom.id = node.attrs.id
 
   return dom
-}
-
-const parseBodyElement = (node: ManuscriptNode): Node => {
-  // return document.createRange().createContextualFragment(node.attrs.contents)
-  //   .firstChild as HTMLDivElement
-
-  const dom = document.createElement('div')
-  dom.innerHTML = node.attrs.contents // TODO: sanitize?
-  return dom.firstChild || createBodyElement(node)
 }
 
 export const tocElement: NodeSpec = {
@@ -66,8 +58,9 @@ export const tocElement: NodeSpec = {
   toDOM: node => {
     const tocElementNode = node as TOCElementNode
 
-    return tocElementNode.attrs.contents
-      ? parseBodyElement(tocElementNode)
-      : createBodyElement(tocElementNode)
+    return (
+      nodeFromHTML(tocElementNode.attrs.contents) ||
+      createBodyElement(tocElementNode)
+    )
   },
 }

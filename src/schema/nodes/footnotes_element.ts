@@ -15,6 +15,7 @@
  */
 
 import { NodeSpec } from 'prosemirror-model'
+import { nodeFromHTML } from '../../lib/html'
 import { ManuscriptNode } from '../types'
 
 interface Attrs {
@@ -28,19 +29,10 @@ export interface FootnotesElementNode extends ManuscriptNode {
 
 const createBodyElement = (node: FootnotesElementNode) => {
   const dom = document.createElement('div')
-  dom.className = 'csl-bib-body'
+  dom.className = 'manuscript-footnotes'
   dom.id = node.attrs.id
 
   return dom
-}
-
-const parseBodyElement = (node: FootnotesElementNode): HTMLDivElement => {
-  // return document.createRange().createContextualFragment(node.attrs.contents)
-  //   .firstChild as HTMLDivElement
-
-  const dom = document.createElement('div')
-  dom.innerHTML = node.attrs.contents // TODO: sanitize?
-  return (dom.firstChild as HTMLDivElement) || createBodyElement(node)
 }
 
 export const footnotesElement: NodeSpec = {
@@ -68,8 +60,9 @@ export const footnotesElement: NodeSpec = {
   toDOM: node => {
     const footnotesElementNode = node as FootnotesElementNode
 
-    return footnotesElementNode.attrs.contents
-      ? parseBodyElement(footnotesElementNode)
-      : createBodyElement(footnotesElementNode)
+    return (
+      nodeFromHTML(footnotesElementNode.attrs.contents) ||
+      createBodyElement(footnotesElementNode)
+    )
   },
 }

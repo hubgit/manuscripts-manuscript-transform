@@ -16,11 +16,11 @@
 
 import project3 from '@manuscripts/examples/data/project-dump-3.json'
 import { Manuscript, ObjectTypes } from '@manuscripts/manuscripts-json-schema'
-import { JSDOM } from 'jsdom'
 import { hasObjectType } from '../object-types'
 import {
   findLatestManuscriptSubmission,
   parseProjectBundle,
+  ProjectBundle,
 } from '../project-bundle'
 import { createTestModelMap } from './__helpers__/doc'
 import { submissions } from './__helpers__/submissions'
@@ -46,14 +46,13 @@ test('find latest manuscript submission', () => {
 })
 
 test('project bundle with no manuscript parameter', () => {
-  const result = parseProjectBundle(project3, JSDOM.fragment)
+  const result = parseProjectBundle(project3)
   expect(result).toMatchSnapshot('project-bundle')
 })
 
 test('project bundle for a specific manuscript', () => {
   const result = parseProjectBundle(
-    project3,
-    JSDOM.fragment,
+    project3 as ProjectBundle,
     'MPManuscript:BCEB682E-C475-4BF7-9470-D6194D3EF0D8'
   )
   expect(result).toMatchSnapshot('multimanuscript-project-bundle')

@@ -82,7 +82,7 @@ export const getModelData = <T extends Model>(model: Model): T => {
 }
 
 export const getAttachment = async (doc: RxDocument<Model>, key: string) => {
-  const attachment = await doc.getAttachment(key)
+  const attachment = doc.getAttachment(key)
   if (!attachment) return undefined
 
   const data = await attachment.getData()
@@ -167,7 +167,6 @@ const getSections = (modelMap: Map<string, Model>) =>
 
 export class Decoder {
   private readonly modelMap: Map<string, Model>
-  private parseHTMLFragment: (contents: string) => DocumentFragment
 
   private creators: NodeCreatorMap = {
     [ObjectTypes.BibliographyElement]: data => {
@@ -511,12 +510,8 @@ export class Decoder {
     },
   }
 
-  constructor(
-    modelMap: Map<string, Model>,
-    parseHTMLFragment?: (contents: string) => DocumentFragment
-  ) {
+  constructor(modelMap: Map<string, Model>) {
     this.modelMap = modelMap
-    this.parseHTMLFragment = parseHTMLFragment || this.createContextualFragment
   }
 
   public decode = (model: Model) => {
@@ -552,13 +547,20 @@ export class Decoder {
   }
 
   public parseContents = (contents: string, options?: ParseOptions) => {
-    const node = this.parseHTMLFragment(contents)
+    const html = contents.trim()
 
-    if (!node.firstChild) {
+    if (!html.length) {
+      throw new Error('No HTML to parse')
+    }
+
+    const template = document.createElement('template')
+    template.innerHTML = html
+
+    if (!template.content.firstChild) {
       throw new Error('No content could be parsed')
     }
 
-    return parser.parse(node.firstChild, options)
+    return parser.parse(template.content.firstChild, options)
   }
 
   private getManuscriptID = () => {
@@ -568,7 +570,4 @@ export class Decoder {
       }
     }
   }
-
-  private createContextualFragment = (contents: string) =>
-    document.createRange().createContextualFragment(contents)
 }

@@ -23,7 +23,8 @@ import {
   Model,
   ObjectTypes,
 } from '@manuscripts/manuscripts-json-schema'
-import { DOMOutputSpec, DOMSerializer } from 'prosemirror-model'
+import { DOMOutputSpec, DOMParser, DOMSerializer } from 'prosemirror-model'
+import { nodeFromHTML } from '../lib/html'
 import { iterateChildren } from '../lib/utils'
 import {
   FigureElementNode,
@@ -34,13 +35,12 @@ import {
   ManuscriptSchema,
   Marks,
   Nodes,
+  schema,
   TableElementNode,
 } from '../schema'
 import { generateAttachmentFilename } from './filename'
-import { textFromHTML } from './html-parser'
 import { selectVersionIds, Version } from './jats-versions'
 import { AuxiliaryObjectReference } from './models'
-// import { serializeTableToHTML } from './html'
 import { isExecutableNode, isNodeType } from './node-types'
 import { hasObjectType } from './object-types'
 import {
@@ -64,316 +64,7 @@ const XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink'
 
 const normalizeID = (id: string) => id.replace(/:/g, '_')
 
-const createSerializer = (document: Document, modelMap: Map<string, Model>) => {
-  let serializer: DOMSerializer<ManuscriptSchema>
-
-  const getModel = <T extends Model>(id?: string) =>
-    id ? (modelMap.get(id) as T | undefined) : undefined
-
-  const nodes: NodeSpecs = {
-    bibliography_element: () => '',
-    bibliography_section: node => [
-      'ref-list',
-      { id: normalizeID(node.attrs.id) },
-      0,
-    ],
-    bullet_list: () => ['list', { 'list-type': 'bullet' }, 0],
-    caption: () => ['caption', ['p', 0]],
-    citation: node => {
-      const xref = document.createElement('xref')
-      xref.setAttribute('ref-type', 'bibr')
-
-      const citation = getModel<Citation>(node.attrs.rid)
-
-      // NOTE: https://www.ncbi.nlm.nih.gov/pmc/pmcdoc/tagging-guidelines/article/tags.html#el-xref
-      if (citation) {
-        xref.setAttribute(
-          'rid',
-          citation.embeddedCitationItems
-            .map(item => normalizeID(item.bibliographyItem))
-            .join(' ')
-        )
-      }
-
-      // TODO: need to keep any markup?
-      xref.textContent = textFromHTML(node.attrs.contents)
-
-      return xref
-    },
-    cross_reference: node => {
-      const xref = document.createElement('xref')
-      xref.setAttribute('ref-type', 'fig')
-
-      const auxiliaryObjectReference = getModel<AuxiliaryObjectReference>(
-        node.attrs.rid
-      )
-
-      if (auxiliaryObjectReference) {
-        xref.setAttribute(
-          'rid',
-          normalizeID(auxiliaryObjectReference.referencedObject)
-        )
-      }
-
-      xref.textContent = node.attrs.label
-
-      return xref
-    },
-    doc: () => '',
-    equation: node => {
-      const formula = document.createElement('disp-formula')
-      formula.setAttribute('id', normalizeID(node.attrs.id))
-
-      const math = document.createElement('tex-math')
-      math.textContent = node.attrs.TeXRepresentation
-      formula.appendChild(math)
-
-      return formula
-    },
-    equation_element: node =>
-      createFigureElement(node, 'fig', node.type.schema.nodes.equation),
-    figcaption: node => {
-      if (!node.textContent) {
-        return ''
-      }
-
-      return ['caption', ['p', 0]]
-    },
-    figure: node => {
-      const fig = document.createElement('fig')
-      fig.setAttribute('id', normalizeID(node.attrs.id))
-
-      if (node.attrs.label) {
-        const label = document.createElement('label')
-        label.textContent = node.attrs.label
-        fig.appendChild(label)
-      }
-
-      const figcaptionNodeType = node.type.schema.nodes.figcaption
-
-      node.forEach(childNode => {
-        if (childNode.type === figcaptionNodeType) {
-          fig.appendChild(serializer.serializeNode(childNode, { document }))
-        }
-      })
-
-      const graphic = document.createElement('graphic')
-      const filename = generateAttachmentFilename(
-        node.attrs.id,
-        node.attrs.contentType
-      )
-      graphic.setAttributeNS(
-        XLINK_NAMESPACE,
-        'xlink:href',
-        `graphic/${filename}`
-      )
-
-      if (node.attrs.contentType) {
-        const [mimeType, mimeSubType] = node.attrs.contentType.split('/')
-
-        if (mimeType) {
-          graphic.setAttribute('mimetype', mimeType)
-
-          if (mimeSubType) {
-            graphic.setAttribute('mime-subtype', mimeSubType)
-          }
-        }
-      }
-
-      fig.appendChild(graphic)
-
-      return fig
-    },
-    figure_element: node =>
-      createFigureElement(node, 'fig-group', node.type.schema.nodes.figure),
-    footnote: node => ['fn', { id: normalizeID(node.attrs.id) }, 0],
-    footnotes_element: node => ['fn-group', { id: normalizeID(node.attrs.id) }],
-    hard_break: () => ['break'],
-    inline_equation: node => {
-      const formula = document.createElement('inline-formula')
-
-      const math = document.createElement('tex-math')
-      math.textContent = node.attrs.TeXRepresentation
-      formula.appendChild(math)
-
-      return formula
-    },
-    inline_footnote: node => {
-      const xref = document.createElement('xref')
-      xref.setAttribute('ref-type', 'fn')
-      xref.setAttribute('rid', normalizeID(node.attrs.rid))
-      xref.textContent = node.attrs.contents
-
-      return xref
-    },
-    list_item: () => ['list-item', 0],
-    listing: node => {
-      const code = document.createElement('code')
-      code.setAttribute('id', normalizeID(node.attrs.id))
-      code.setAttribute('language', node.attrs.languageKey)
-      code.textContent = node.attrs.contents
-
-      return code
-    },
-    listing_element: node =>
-      createFigureElement(node, 'fig', node.type.schema.nodes.listing),
-    manuscript: node => ['article', { id: normalizeID(node.attrs.id) }, 0],
-    ordered_list: () => ['list', { 'list-type': 'order' }, 0],
-    paragraph: node => {
-      if (!node.childCount) {
-        return ''
-      }
-
-      const attrs: Attrs = {}
-
-      if (node.attrs.id) {
-        attrs.id = normalizeID(node.attrs.id)
-      }
-
-      return ['p', attrs, 0]
-    },
-    placeholder: () => {
-      throw new Error('Placeholder!')
-    },
-    placeholder_element: () => {
-      throw new Error('Placeholder element!')
-    },
-    section: node => {
-      const attrs: { [key: string]: string } = {
-        id: normalizeID(node.attrs.id),
-      }
-
-      if (node.attrs.category) {
-        attrs['sec-type'] = sectionCategorySuffix(node.attrs.category)
-      }
-
-      return ['sec', attrs, 0]
-    },
-    section_title: () => ['title', 0],
-    table: node => ['table', { id: normalizeID(node.attrs.id) }, 0],
-    // table: node => serializeTableToHTML(node as TableNode),
-    table_element: node =>
-      createFigureElement(node, 'table-wrap', node.type.schema.nodes.table),
-    table_cell: () => ['td', 0],
-    table_row: () => ['tr', 0],
-    text: node => node.text!,
-    toc_element: node => ['p', { id: normalizeID(node.attrs.id) }],
-    toc_section: node => ['sec', { id: normalizeID(node.attrs.id) }, 0],
-  }
-
-  const marks: MarkSpecs = {
-    bold: () => ['bold'],
-    code: () => ['code', { position: 'anchor' }], // TODO: inline?
-    italic: () => ['italic'],
-    link: node => ['a', { href: node.attrs.href }],
-    smallcaps: () => ['sc'],
-    strikethrough: () => ['strike'],
-    superscript: () => ['sup'],
-    subscript: () => ['sub'],
-    underline: () => ['underline'],
-  }
-
-  serializer = new DOMSerializer<ManuscriptSchema>(nodes, marks)
-
-  // tslint:disable-next-line:cyclomatic-complexity
-  const createFigureElement = (
-    node: ManuscriptNode,
-    nodeName: string,
-    contentNodeType: ManuscriptNodeType
-  ) => {
-    const element = document.createElement(nodeName)
-    element.setAttribute('id', normalizeID(node.attrs.id))
-
-    if (node.attrs.label) {
-      const label = document.createElement('label')
-      label.textContent = node.attrs.label
-      element.appendChild(label)
-    }
-
-    const figcaptionNode = findChildNodeOfType(
-      node,
-      node.type.schema.nodes.figcaption
-    )
-
-    if (figcaptionNode) {
-      element.appendChild(
-        serializer.serializeNode(figcaptionNode, { document })
-      )
-    }
-
-    node.forEach(childNode => {
-      if (childNode.type === contentNodeType) {
-        element.appendChild(serializer.serializeNode(childNode, { document }))
-      }
-    })
-
-    if (isExecutableNode(node)) {
-      const listingNode = findChildNodeOfType(
-        node,
-        node.type.schema.nodes.listing
-      )
-
-      if (listingNode) {
-        const { contents, languageKey } = listingNode.attrs
-
-        if (contents && languageKey) {
-          const listing = document.createElement('fig')
-          listing.setAttribute('specific-use', 'source')
-          element.appendChild(listing)
-
-          const code = document.createElement('code')
-          code.setAttribute('executable', 'true')
-          code.setAttribute('language', languageKey)
-          code.textContent = contents
-          listing.appendChild(code)
-
-          // TODO: something more appropriate than "caption"?
-          const caption = document.createElement('caption')
-          listing.appendChild(caption)
-
-          // TODO: real data
-          const attachments: Array<{ id: string; type: string }> = []
-
-          for (const attachment of attachments) {
-            const p = document.createElement('p')
-            caption.appendChild(p)
-
-            const filename = generateAttachmentFilename(
-              `${listingNode.attrs.id}:${attachment.id}`,
-              attachment.type
-            )
-
-            const supp = document.createElement('supplementary-material')
-
-            supp.setAttributeNS(
-              XLINK_NAMESPACE,
-              'xlink:href',
-              `suppl/${filename}`
-            )
-
-            const [mimeType, mimeSubType] = attachment.type.split('/')
-
-            if (mimeType) {
-              supp.setAttribute('mimetype', mimeType)
-
-              if (mimeSubType) {
-                supp.setAttribute('mime-subtype', mimeSubType)
-              }
-            }
-
-            // TODO: might need title, length, etc for data files
-
-            p.appendChild(supp)
-          }
-        }
-      }
-    }
-
-    return element
-  }
-
-  return serializer
-}
+const parser = DOMParser.fromSchema(schema)
 
 const findChildNodeOfType = (
   node: ManuscriptNode,
@@ -382,636 +73,6 @@ const findChildNodeOfType = (
   for (const child of iterateChildren(node)) {
     if (child.type === nodeType) {
       return child
-    }
-  }
-}
-
-const buildContributors = (
-  document: Document,
-  modelMap: Map<string, Model>,
-  articleMeta: Node
-) => {
-  const models = Array.from(modelMap.values())
-
-  const contributors = models.filter(
-    hasObjectType<Contributor>(ObjectTypes.Contributor)
-  )
-
-  if (contributors && contributors.length) {
-    const contribGroup = document.createElement('contrib-group')
-    contribGroup.setAttribute('content-type', 'authors')
-    articleMeta.appendChild(contribGroup)
-
-    contributors.sort((a, b) => Number(a.priority) - Number(b.priority))
-
-    contributors.forEach(contributor => {
-      const contrib = document.createElement('contrib')
-      contrib.setAttribute('contrib-type', 'author')
-      contrib.setAttribute('id', normalizeID(contributor._id))
-
-      if (contributor.isCorresponding) {
-        contrib.setAttribute('corresp', 'yes')
-      }
-
-      const name = document.createElement('name')
-      contrib.appendChild(name)
-
-      if (contributor.bibliographicName.family) {
-        const surname = document.createElement('surname')
-        surname.textContent = contributor.bibliographicName.family
-        name.appendChild(surname)
-      }
-
-      if (contributor.bibliographicName.given) {
-        const givenNames = document.createElement('given-names')
-        givenNames.textContent = contributor.bibliographicName.given
-        name.appendChild(givenNames)
-      }
-
-      if (contributor.email) {
-        const email = document.createElement('email')
-        email.textContent = contributor.email
-        contrib.appendChild(email)
-      }
-
-      if (contributor.affiliations) {
-        contributor.affiliations.forEach(rid => {
-          const xref = document.createElement('xref')
-          xref.setAttribute('ref-type', 'aff')
-          xref.setAttribute('rid', normalizeID(rid))
-          contrib.appendChild(xref)
-        })
-      }
-
-      contribGroup.appendChild(contrib)
-    })
-
-    const affiliationRIDs: string[] = []
-
-    contributors.forEach(contributor => {
-      if (contributor.affiliations) {
-        affiliationRIDs.push(...contributor.affiliations)
-      }
-    })
-
-    const affiliations = models.filter(
-      hasObjectType<Affiliation>(ObjectTypes.Affiliation)
-    )
-
-    if (affiliations) {
-      const usedAffiliations = affiliations.filter(
-        affiliation => affiliationRIDs.indexOf(affiliation._id) !== -1
-      )
-
-      usedAffiliations.sort(
-        (a, b) =>
-          affiliationRIDs.indexOf(a._id) - affiliationRIDs.indexOf(b._id)
-      )
-
-      usedAffiliations.forEach(affiliation => {
-        const aff = document.createElement('aff')
-        aff.setAttribute('id', normalizeID(affiliation._id))
-
-        if (affiliation.institution) {
-          const institution = document.createElement('institution')
-          institution.textContent = affiliation.institution
-          aff.appendChild(institution)
-        }
-
-        if (affiliation.addressLine1) {
-          const addressLine = document.createElement('addr-line')
-          addressLine.textContent = affiliation.addressLine1
-          aff.appendChild(addressLine)
-        }
-
-        if (affiliation.addressLine2) {
-          const addressLine = document.createElement('addr-line')
-          addressLine.textContent = affiliation.addressLine2
-          aff.appendChild(addressLine)
-        }
-
-        if (affiliation.addressLine3) {
-          const addressLine = document.createElement('addr-line')
-          addressLine.textContent = affiliation.addressLine3
-          aff.appendChild(addressLine)
-        }
-
-        if (affiliation.city) {
-          const city = document.createElement('city')
-          city.textContent = affiliation.city
-          aff.appendChild(city)
-        }
-
-        if (affiliation.country) {
-          const country = document.createElement('country')
-          country.textContent = affiliation.country
-          aff.appendChild(country)
-        }
-
-        articleMeta.appendChild(aff)
-      })
-    }
-  }
-}
-
-// tslint:disable-next-line:cyclomatic-complexity
-const buildFront = (
-  document: Document,
-  modelMap: Map<string, Model>,
-  doi?: string,
-  id?: string
-) => {
-  const manuscript = findManuscript(modelMap)
-
-  const submission = findLatestManuscriptSubmission(modelMap, manuscript)
-
-  const front = document.createElement('front')
-
-  if (submission) {
-    const journalMeta = document.createElement('journal-meta')
-    front.appendChild(journalMeta)
-
-    if (submission.journalCode) {
-      const journalID = document.createElement('journal-id')
-      journalID.setAttribute('journal-id-type', 'publisher-id')
-      journalID.textContent = submission.journalCode
-      journalMeta.appendChild(journalID)
-    }
-
-    if (submission.journalTitle) {
-      const journalTitleGroup = document.createElement('journal-title-group')
-      journalMeta.appendChild(journalTitleGroup)
-
-      const journalTitle = document.createElement('journal-title')
-      journalTitle.textContent = submission.journalTitle
-      journalTitleGroup.appendChild(journalTitle)
-    }
-
-    if (submission.issn) {
-      const issn = document.createElement('issn')
-      issn.setAttribute('pub-type', 'epub')
-      issn.textContent = submission.issn
-      journalMeta.appendChild(issn)
-    }
-  }
-
-  const articleMeta = document.createElement('article-meta')
-  front.appendChild(articleMeta)
-
-  if (id) {
-    const articleID = document.createElement('article-id')
-    articleID.setAttribute('pub-id-type', 'publisher-id')
-    articleID.textContent = id
-    articleMeta.appendChild(articleID)
-  }
-
-  if (doi) {
-    const articleID = document.createElement('article-id')
-    articleID.setAttribute('pub-id-type', 'doi')
-    articleID.textContent = doi
-    articleMeta.appendChild(articleID)
-  }
-
-  const titleGroup = document.createElement('title-group')
-  articleMeta.appendChild(titleGroup)
-
-  const articleTitle = document.createElement('article-title')
-  articleTitle.textContent = manuscript.title! // TODO: serialize to JATS from title-editor
-  titleGroup.appendChild(articleTitle)
-
-  buildContributors(document, modelMap, articleMeta)
-
-  // const now = new Date()
-  // const isodate = now.toISOString().replace(/T.*/, '')
-  // const [isoyear, isomonth, isoday] = isodate.split('-')
-  //
-  // const pubDate = document.createElement('pub-date')
-  // pubDate.setAttribute('pub-type', 'epreprint')
-  // pubDate.setAttribute('date-type', 'preprint')
-  // pubDate.setAttribute('iso-8601-date', isodate)
-  //
-  // const pubDateDay = document.createElement('day')
-  // pubDateDay.textContent = isoday
-  // pubDate.appendChild(pubDateDay)
-  //
-  // const pubDateMonth = document.createElement('month')
-  // pubDateMonth.textContent = isomonth
-  // pubDate.appendChild(pubDateMonth)
-  //
-  // const pubDateYear = document.createElement('year')
-  // pubDateYear.textContent = isoyear
-  // pubDate.appendChild(pubDateYear)
-  //
-  // articleMeta.appendChild(pubDate)
-  //
-  // const elocationID = document.createElement('elocation-id')
-  // articleMeta.appendChild(elocationID)
-
-  return front
-}
-
-const buildBody = (
-  document: Document,
-  fragment: ManuscriptFragment,
-  modelMap: Map<string, Model>
-) => {
-  const serializer = createSerializer(document, modelMap)
-
-  const content = serializer.serializeFragment(fragment, { document })
-
-  const body = document.createElement('body')
-  body.appendChild(content)
-
-  fixBody(body, document, fragment)
-
-  return body
-}
-
-// tslint:disable:cyclomatic-complexity
-const buildBack = (document: Document, modelMap: Map<string, Model>) => {
-  const back = document.createElement('back')
-
-  const values = Array.from(modelMap.values())
-
-  // footnotes element
-  const footnotesElement = document.querySelector('fn-group')
-
-  if (footnotesElement) {
-    // move fn-group from body to back
-    back.appendChild(footnotesElement)
-
-    const footnoteIDsSet: Set<string> = new Set()
-
-    const xrefs = document.querySelectorAll('xref[ref-type=fn][rid]')
-
-    for (const xref of xrefs) {
-      const attribute = xref.getAttribute('rid')
-
-      if (attribute) {
-        for (const rid of attribute.split(/\s+/)) {
-          footnoteIDsSet.add(rid)
-        }
-      }
-    }
-
-    const footnotes = values.filter(
-      hasObjectType<Footnote>(ObjectTypes.Footnote)
-    )
-
-    for (const footnoteID of footnoteIDsSet) {
-      const footnote = footnotes.find(
-        footnote => normalizeID(footnote._id) === footnoteID
-      )
-
-      if (footnote) {
-        const fn = document.createElement('fn')
-        fn.setAttribute('id', normalizeID(footnote._id))
-
-        const p = document.createElement('p')
-        p.textContent = textFromHTML(footnote.contents) // TODO: convert HTML to JATS?
-        fn.appendChild(p)
-
-        footnotesElement.appendChild(fn)
-      }
-    }
-  }
-
-  // bibliography element
-  const refList = document.querySelector('ref-list')
-
-  if (refList) {
-    // move ref-list from body to back
-    back.appendChild(refList)
-
-    const bibliographyItems = values.filter(
-      hasObjectType<BibliographyItem>(ObjectTypes.BibliographyItem)
-    )
-
-    const bibliographyItemIDsSet: Set<string> = new Set()
-
-    const xrefs = document.querySelectorAll('xref[ref-type=bibr][rid]')
-
-    for (const xref of xrefs) {
-      const attribute = xref.getAttribute('rid')
-
-      if (attribute) {
-        for (const rid of attribute.split(/\s+/)) {
-          bibliographyItemIDsSet.add(rid)
-        }
-      }
-    }
-
-    for (const bibliographyItemID of bibliographyItemIDsSet) {
-      const bibliographyItem = bibliographyItems.find(
-        bibliographyItem =>
-          normalizeID(bibliographyItem._id) === bibliographyItemID
-      )
-
-      if (bibliographyItem) {
-        const ref = document.createElement('ref')
-        ref.setAttribute('id', normalizeID(bibliographyItem._id))
-
-        const citation = document.createElement('element-citation')
-
-        // TODO: add citation elements depending on publication type
-
-        if (bibliographyItem.type) {
-          switch (bibliographyItem.type) {
-            case 'article':
-            case 'article-journal':
-              citation.setAttribute('publication-type', 'journal')
-              break
-
-            default:
-              citation.setAttribute('publication-type', bibliographyItem.type)
-              break
-          }
-        } else {
-          citation.setAttribute('publication-type', 'journal')
-        }
-
-        if (bibliographyItem.author) {
-          bibliographyItem.author.forEach(author => {
-            const name = document.createElement('name')
-
-            if (author.family) {
-              const node = document.createElement('surname')
-              node.textContent = author.family
-              name.appendChild(node)
-            }
-
-            if (author.given) {
-              const node = document.createElement('given-names')
-              node.textContent = author.given
-              name.appendChild(node)
-            }
-
-            citation.appendChild(name)
-          })
-        }
-
-        if (bibliographyItem.title) {
-          const node = document.createElement('article-title')
-          node.textContent = bibliographyItem.title
-          citation.appendChild(node)
-        }
-
-        if (bibliographyItem['container-title']) {
-          const node = document.createElement('source')
-          node.textContent = bibliographyItem['container-title']
-          citation.appendChild(node)
-        }
-
-        if (bibliographyItem.volume) {
-          const node = document.createElement('volume')
-          node.textContent = String(bibliographyItem.volume)
-          citation.appendChild(node)
-        }
-
-        if (bibliographyItem.issue) {
-          const node = document.createElement('issue')
-          node.textContent = String(bibliographyItem.issue)
-          citation.appendChild(node)
-        }
-
-        if (bibliographyItem['page-first']) {
-          const node = document.createElement('fpage')
-          node.textContent = String(bibliographyItem['page-first'])
-          citation.appendChild(node)
-        } else if (bibliographyItem.page) {
-          const pageString = String(bibliographyItem.page)
-
-          if (/^\d+$/.test(pageString)) {
-            const node = document.createElement('fpage')
-            node.textContent = pageString
-            citation.appendChild(node)
-          } else if (/^\d+-\d+$/.test(pageString)) {
-            const [fpage, lpage] = pageString.split('-')
-
-            const fpageNode = document.createElement('fpage')
-            fpageNode.textContent = fpage
-            citation.appendChild(fpageNode)
-
-            const lpageNode = document.createElement('lpage')
-            lpageNode.textContent = lpage
-            citation.appendChild(lpageNode)
-          } else {
-            // TODO: check page-range contents?
-            const node = document.createElement('page-range')
-            node.textContent = pageString
-            citation.appendChild(node)
-          }
-        }
-
-        if (bibliographyItem.issued) {
-          const dateParts = bibliographyItem.issued['date-parts']
-
-          if (dateParts && dateParts.length) {
-            const [[year, month, day]] = dateParts
-
-            if (year) {
-              const node = document.createElement('year')
-              node.textContent = String(year)
-              citation.appendChild(node)
-            }
-
-            if (month) {
-              const node = document.createElement('month')
-              node.textContent = String(month)
-              citation.appendChild(node)
-            }
-
-            if (day) {
-              const node = document.createElement('day')
-              node.textContent = String(day)
-              citation.appendChild(node)
-            }
-          }
-        }
-
-        ref.appendChild(citation)
-        refList.appendChild(ref)
-      }
-    }
-  }
-
-  return back
-}
-
-const fixTable = (
-  table: ChildNode,
-  document: Document,
-  node: ManuscriptNode
-) => {
-  const rows = Array.from(table.childNodes)
-
-  const theadRows = rows.splice(0, 1)
-  const tfootRows = rows.splice(-1, 1)
-
-  // thead
-  if (node.attrs.suppressHeader) {
-    for (const row of theadRows) {
-      table.removeChild(row)
-    }
-  } else {
-    const thead = document.createElement('thead')
-
-    for (const row of theadRows) {
-      thead.appendChild(row)
-    }
-
-    table.appendChild(thead)
-  }
-
-  // tfoot
-  if (node.attrs.suppressFooter) {
-    for (const row of tfootRows) {
-      table.removeChild(row)
-    }
-  } else {
-    const tfoot = document.createElement('tfoot')
-
-    for (const row of tfootRows) {
-      tfoot.appendChild(row)
-    }
-
-    table.appendChild(tfoot)
-  }
-
-  // tbody
-  const tbody = document.createElement('tbody')
-
-  for (const row of rows) {
-    tbody.appendChild(row)
-  }
-
-  table.appendChild(tbody)
-}
-
-const fixBody = (
-  body: Element,
-  document: Document,
-  fragment: ManuscriptFragment
-) => {
-  fragment.descendants(node => {
-    if (node.attrs.id) {
-      // remove suppressed titles
-      if (node.attrs.titleSuppressed) {
-        const title = body.querySelector(
-          `#${normalizeID(node.attrs.id)} > title`
-        )
-
-        if (title && title.parentNode) {
-          title.parentNode.removeChild(title)
-        }
-      }
-
-      // remove suppressed captions
-      if (node.attrs.suppressCaption) {
-        // TODO: need to query deeper?
-        const caption = body.querySelector(
-          `#${normalizeID(node.attrs.id)} > caption`
-        )
-
-        if (caption && caption.parentNode) {
-          caption.parentNode.removeChild(caption)
-        }
-      }
-
-      // move captions to the top of tables
-      if (isNodeType<TableElementNode>(node, 'table_element')) {
-        const tableElement = body.querySelector(
-          `#${normalizeID(node.attrs.id)}`
-        )
-
-        if (tableElement) {
-          for (const childNode of tableElement.childNodes) {
-            switch (childNode.nodeName) {
-              case 'caption': {
-                if (node.attrs.suppressCaption) {
-                  tableElement.removeChild(childNode)
-                } else {
-                  tableElement.insertBefore(childNode, tableElement.firstChild)
-                }
-                break
-              }
-
-              case 'table': {
-                fixTable(childNode, document, node)
-                break
-              }
-            }
-          }
-        }
-      }
-
-      if (isNodeType<FigureElementNode>(node, 'figure_element')) {
-        const figureGroup = body.querySelector(`#${normalizeID(node.attrs.id)}`)
-
-        if (figureGroup) {
-          const figures = body.querySelectorAll(
-            `#${normalizeID(node.attrs.id)} > fig`
-          )
-
-          const caption = body.querySelector(
-            `#${normalizeID(node.attrs.id)} > caption`
-          )
-
-          // replace a single-figure fig-group with the figure
-          if (figures.length === 1) {
-            const figure = figures[0]
-
-            // move any caption into the figure
-            if (caption) {
-              figure.insertBefore(caption, figure.firstChild)
-            }
-
-            // replace the figure element with the figure
-            if (figureGroup.parentElement) {
-              figureGroup.parentElement.replaceChild(figure, figureGroup)
-            }
-          }
-        }
-      }
-    }
-  })
-}
-
-const moveAbstract = (
-  document: Document,
-  front: HTMLElement,
-  body: HTMLElement
-) => {
-  const sections = body.querySelectorAll(':scope > sec')
-
-  const abstractSection = Array.from(sections).find(section => {
-    if (section.getAttribute('sec-type') === 'abstract') {
-      return true
-    }
-
-    const sectionTitle = section.querySelector(':scope > title')
-
-    if (!sectionTitle) {
-      return false
-    }
-
-    return sectionTitle.textContent === 'Abstract'
-  })
-
-  if (abstractSection && abstractSection.parentNode) {
-    const abstractNode = document.createElement('abstract')
-
-    // TODO: ensure that abstract section schema is valid
-    while (abstractSection.firstChild) {
-      abstractNode.appendChild(abstractSection.firstChild)
-    }
-
-    abstractSection.parentNode.removeChild(abstractSection)
-
-    const articleMeta = front.querySelector(':scope > article-meta')
-
-    if (articleMeta) {
-      insertAbstractNode(articleMeta, abstractNode)
     }
   }
 }
@@ -1039,43 +100,978 @@ const insertAbstractNode = (articleMeta: Element, abstractNode: Element) => {
   articleMeta.appendChild(abstractNode)
 }
 
-export const serializeToJATS = (
-  fragment: ManuscriptFragment,
-  modelMap: Map<string, Model>,
-  version: Version = '1.2',
-  doi?: string,
-  id?: string
-): string => {
-  const versionIds = selectVersionIds(version)
+export class JATSTransformer {
+  private document: Document
+  private modelMap: Map<string, Model>
+  private models: Model[]
+  private serializer: DOMSerializer<ManuscriptSchema>
 
-  const doc = document.implementation.createDocument(
-    null,
-    'article',
-    document.implementation.createDocumentType(
+  public serializeToJATS = (
+    fragment: ManuscriptFragment,
+    modelMap: Map<string, Model>,
+    version: Version = '1.2',
+    doi?: string,
+    id?: string
+  ) => {
+    this.modelMap = modelMap
+    this.models = Array.from(this.modelMap.values())
+
+    this.createSerializer()
+
+    const versionIds = selectVersionIds(version)
+
+    this.document = document.implementation.createDocument(
+      null,
       'article',
-      versionIds.publicId,
-      versionIds.systemId
+      document.implementation.createDocumentType(
+        'article',
+        versionIds.publicId,
+        versionIds.systemId
+      )
     )
-  )
 
-  const article = doc.documentElement
+    const article = this.document.documentElement
 
-  article.setAttributeNS(
-    'http://www.w3.org/2000/xmlns/',
-    'xmlns:xlink',
-    XLINK_NAMESPACE
-  )
+    article.setAttributeNS(
+      'http://www.w3.org/2000/xmlns/',
+      'xmlns:xlink',
+      XLINK_NAMESPACE
+    )
 
-  const front = buildFront(doc, modelMap, doi, id)
-  article.appendChild(front)
+    const front = this.buildFront(doi, id)
+    article.appendChild(front)
 
-  const body = buildBody(doc, fragment, modelMap)
-  article.appendChild(body)
+    const body = this.buildBody(fragment)
+    article.appendChild(body)
 
-  const back = buildBack(doc, modelMap)
-  article.appendChild(back)
+    const back = this.buildBack()
+    article.appendChild(back)
 
-  moveAbstract(doc, front, body)
+    this.moveAbstract(front, body)
 
-  return xmlSerializer.serializeToString(doc)
+    return xmlSerializer.serializeToString(this.document)
+  }
+
+  private serializeFragment = (fragment: ManuscriptFragment) =>
+    this.serializer.serializeFragment(fragment, {
+      document: this.document,
+    })
+
+  private serializeNode = (node: ManuscriptNode) =>
+    this.serializer.serializeNode(node, {
+      document: this.document,
+    })
+
+  private buildContributors = (articleMeta: Node) => {
+    const contributors = this.models.filter(
+      hasObjectType<Contributor>(ObjectTypes.Contributor)
+    )
+
+    if (contributors && contributors.length) {
+      const contribGroup = this.document.createElement('contrib-group')
+      contribGroup.setAttribute('content-type', 'authors')
+      articleMeta.appendChild(contribGroup)
+
+      contributors.sort((a, b) => Number(a.priority) - Number(b.priority))
+
+      contributors.forEach(contributor => {
+        const contrib = this.document.createElement('contrib')
+        contrib.setAttribute('contrib-type', 'author')
+        contrib.setAttribute('id', normalizeID(contributor._id))
+
+        if (contributor.isCorresponding) {
+          contrib.setAttribute('corresp', 'yes')
+        }
+
+        const name = this.document.createElement('name')
+        contrib.appendChild(name)
+
+        if (contributor.bibliographicName.family) {
+          const surname = this.document.createElement('surname')
+          surname.textContent = contributor.bibliographicName.family
+          name.appendChild(surname)
+        }
+
+        if (contributor.bibliographicName.given) {
+          const givenNames = this.document.createElement('given-names')
+          givenNames.textContent = contributor.bibliographicName.given
+          name.appendChild(givenNames)
+        }
+
+        if (contributor.email) {
+          const email = this.document.createElement('email')
+          email.textContent = contributor.email
+          contrib.appendChild(email)
+        }
+
+        if (contributor.affiliations) {
+          contributor.affiliations.forEach(rid => {
+            const xref = this.document.createElement('xref')
+            xref.setAttribute('ref-type', 'aff')
+            xref.setAttribute('rid', normalizeID(rid))
+            contrib.appendChild(xref)
+          })
+        }
+
+        contribGroup.appendChild(contrib)
+      })
+
+      const affiliationRIDs: string[] = []
+
+      contributors.forEach(contributor => {
+        if (contributor.affiliations) {
+          affiliationRIDs.push(...contributor.affiliations)
+        }
+      })
+
+      const affiliations = this.models.filter(
+        hasObjectType<Affiliation>(ObjectTypes.Affiliation)
+      )
+
+      if (affiliations) {
+        const usedAffiliations = affiliations.filter(
+          affiliation => affiliationRIDs.indexOf(affiliation._id) !== -1
+        )
+
+        usedAffiliations.sort(
+          (a, b) =>
+            affiliationRIDs.indexOf(a._id) - affiliationRIDs.indexOf(b._id)
+        )
+
+        usedAffiliations.forEach(affiliation => {
+          const aff = this.document.createElement('aff')
+          aff.setAttribute('id', normalizeID(affiliation._id))
+
+          if (affiliation.institution) {
+            const institution = this.document.createElement('institution')
+            institution.textContent = affiliation.institution
+            aff.appendChild(institution)
+          }
+
+          if (affiliation.addressLine1) {
+            const addressLine = this.document.createElement('addr-line')
+            addressLine.textContent = affiliation.addressLine1
+            aff.appendChild(addressLine)
+          }
+
+          if (affiliation.addressLine2) {
+            const addressLine = this.document.createElement('addr-line')
+            addressLine.textContent = affiliation.addressLine2
+            aff.appendChild(addressLine)
+          }
+
+          if (affiliation.addressLine3) {
+            const addressLine = this.document.createElement('addr-line')
+            addressLine.textContent = affiliation.addressLine3
+            aff.appendChild(addressLine)
+          }
+
+          if (affiliation.city) {
+            const city = this.document.createElement('city')
+            city.textContent = affiliation.city
+            aff.appendChild(city)
+          }
+
+          if (affiliation.country) {
+            const country = this.document.createElement('country')
+            country.textContent = affiliation.country
+            aff.appendChild(country)
+          }
+
+          articleMeta.appendChild(aff)
+        })
+      }
+    }
+  }
+
+  // tslint:disable-next-line:cyclomatic-complexity
+  private buildFront = (doi?: string, id?: string) => {
+    const manuscript = findManuscript(this.modelMap)
+
+    const submission = findLatestManuscriptSubmission(this.modelMap, manuscript)
+
+    const front = this.document.createElement('front')
+
+    if (submission) {
+      const journalMeta = this.document.createElement('journal-meta')
+      front.appendChild(journalMeta)
+
+      if (submission.journalCode) {
+        const journalID = this.document.createElement('journal-id')
+        journalID.setAttribute('journal-id-type', 'publisher-id')
+        journalID.textContent = submission.journalCode
+        journalMeta.appendChild(journalID)
+      }
+
+      if (submission.journalTitle) {
+        const journalTitleGroup = this.document.createElement(
+          'journal-title-group'
+        )
+        journalMeta.appendChild(journalTitleGroup)
+
+        const journalTitle = this.document.createElement('journal-title')
+        journalTitle.textContent = submission.journalTitle
+        journalTitleGroup.appendChild(journalTitle)
+      }
+
+      if (submission.issn) {
+        const issn = this.document.createElement('issn')
+        issn.setAttribute('pub-type', 'epub')
+        issn.textContent = submission.issn
+        journalMeta.appendChild(issn)
+      }
+    }
+
+    const articleMeta = this.document.createElement('article-meta')
+    front.appendChild(articleMeta)
+
+    if (id) {
+      const articleID = this.document.createElement('article-id')
+      articleID.setAttribute('pub-id-type', 'publisher-id')
+      articleID.textContent = id
+      articleMeta.appendChild(articleID)
+    }
+
+    if (doi) {
+      const articleID = this.document.createElement('article-id')
+      articleID.setAttribute('pub-id-type', 'doi')
+      articleID.textContent = doi
+      articleMeta.appendChild(articleID)
+    }
+
+    const titleGroup = this.document.createElement('title-group')
+    articleMeta.appendChild(titleGroup)
+
+    if (manuscript.title) {
+      const htmlTitleNode = nodeFromHTML(`<h1>${manuscript.title}</h1>`)
+
+      if (htmlTitleNode) {
+        // TODO: parse and serialize with title schema
+        const titleNode = parser.parse(htmlTitleNode, {
+          topNode: schema.nodes.section_title.create(),
+        })
+
+        const jatsTitleNode = this.serializeNode(titleNode)
+
+        const articleTitle = this.document.createElement('article-title')
+        while (jatsTitleNode.firstChild) {
+          articleTitle.appendChild(jatsTitleNode.firstChild)
+        }
+        titleGroup.appendChild(articleTitle)
+      }
+    }
+
+    this.buildContributors(articleMeta)
+
+    return front
+  }
+
+  private buildBody = (fragment: ManuscriptFragment) => {
+    const content = this.serializeFragment(fragment)
+
+    const body = this.document.createElement('body')
+    body.appendChild(content)
+
+    this.fixBody(body, fragment)
+
+    return body
+  }
+
+  // tslint:disable:cyclomatic-complexity
+  private buildBack = () => {
+    const back = this.document.createElement('back')
+
+    // footnotes element
+    const footnotesElement = this.document.querySelector('fn-group')
+
+    if (footnotesElement) {
+      // move fn-group from body to back
+      back.appendChild(footnotesElement)
+
+      const footnoteIDsSet: Set<string> = new Set()
+
+      const xrefs = this.document.querySelectorAll('xref[ref-type=fn][rid]')
+
+      for (const xref of xrefs) {
+        const attribute = xref.getAttribute('rid')
+
+        if (attribute) {
+          for (const rid of attribute.split(/\s+/)) {
+            footnoteIDsSet.add(rid)
+          }
+        }
+      }
+
+      const footnotes = this.models.filter(
+        hasObjectType<Footnote>(ObjectTypes.Footnote)
+      )
+
+      for (const footnoteID of footnoteIDsSet) {
+        const footnote = footnotes.find(
+          footnote => normalizeID(footnote._id) === footnoteID
+        )
+
+        if (footnote) {
+          const fn = this.document.createElement('fn')
+          fn.setAttribute('id', normalizeID(footnote._id))
+
+          const p = this.document.createElement('p')
+          // TODO: convert markup to JATS?
+          // p.innerHTML = footnote.contents
+
+          const content = nodeFromHTML(footnote.contents)
+
+          if (content) {
+            p.textContent = content.textContent
+          }
+
+          fn.appendChild(p)
+
+          footnotesElement.appendChild(fn)
+        }
+      }
+    }
+
+    // bibliography element
+    const refList = this.document.querySelector('ref-list')
+
+    if (refList) {
+      // move ref-list from body to back
+      back.appendChild(refList)
+
+      const bibliographyItems = this.models.filter(
+        hasObjectType<BibliographyItem>(ObjectTypes.BibliographyItem)
+      )
+
+      const bibliographyItemIDsSet: Set<string> = new Set()
+
+      const xrefs = this.document.querySelectorAll('xref[ref-type=bibr][rid]')
+
+      for (const xref of xrefs) {
+        const attribute = xref.getAttribute('rid')
+
+        if (attribute) {
+          for (const rid of attribute.split(/\s+/)) {
+            bibliographyItemIDsSet.add(rid)
+          }
+        }
+      }
+
+      for (const bibliographyItemID of bibliographyItemIDsSet) {
+        const bibliographyItem = bibliographyItems.find(
+          bibliographyItem =>
+            normalizeID(bibliographyItem._id) === bibliographyItemID
+        )
+
+        if (bibliographyItem) {
+          const ref = this.document.createElement('ref')
+          ref.setAttribute('id', normalizeID(bibliographyItem._id))
+
+          const citation = this.document.createElement('element-citation')
+
+          // TODO: add citation elements depending on publication type
+
+          if (bibliographyItem.type) {
+            switch (bibliographyItem.type) {
+              case 'article':
+              case 'article-journal':
+                citation.setAttribute('publication-type', 'journal')
+                break
+
+              default:
+                citation.setAttribute('publication-type', bibliographyItem.type)
+                break
+            }
+          } else {
+            citation.setAttribute('publication-type', 'journal')
+          }
+
+          if (bibliographyItem.author) {
+            bibliographyItem.author.forEach(author => {
+              const name = this.document.createElement('name')
+
+              if (author.family) {
+                const node = this.document.createElement('surname')
+                node.textContent = author.family
+                name.appendChild(node)
+              }
+
+              if (author.given) {
+                const node = this.document.createElement('given-names')
+                node.textContent = author.given
+                name.appendChild(node)
+              }
+
+              citation.appendChild(name)
+            })
+          }
+
+          if (bibliographyItem.title) {
+            const node = this.document.createElement('article-title')
+            node.textContent = bibliographyItem.title
+            citation.appendChild(node)
+          }
+
+          if (bibliographyItem['container-title']) {
+            const node = this.document.createElement('source')
+            node.textContent = bibliographyItem['container-title']
+            citation.appendChild(node)
+          }
+
+          if (bibliographyItem.volume) {
+            const node = this.document.createElement('volume')
+            node.textContent = String(bibliographyItem.volume)
+            citation.appendChild(node)
+          }
+
+          if (bibliographyItem.issue) {
+            const node = this.document.createElement('issue')
+            node.textContent = String(bibliographyItem.issue)
+            citation.appendChild(node)
+          }
+
+          if (bibliographyItem['page-first']) {
+            const node = this.document.createElement('fpage')
+            node.textContent = String(bibliographyItem['page-first'])
+            citation.appendChild(node)
+          } else if (bibliographyItem.page) {
+            const pageString = String(bibliographyItem.page)
+
+            if (/^\d+$/.test(pageString)) {
+              const node = this.document.createElement('fpage')
+              node.textContent = pageString
+              citation.appendChild(node)
+            } else if (/^\d+-\d+$/.test(pageString)) {
+              const [fpage, lpage] = pageString.split('-')
+
+              const fpageNode = this.document.createElement('fpage')
+              fpageNode.textContent = fpage
+              citation.appendChild(fpageNode)
+
+              const lpageNode = this.document.createElement('lpage')
+              lpageNode.textContent = lpage
+              citation.appendChild(lpageNode)
+            } else {
+              // TODO: check page-range contents?
+              const node = this.document.createElement('page-range')
+              node.textContent = pageString
+              citation.appendChild(node)
+            }
+          }
+
+          if (bibliographyItem.issued) {
+            const dateParts = bibliographyItem.issued['date-parts']
+
+            if (dateParts && dateParts.length) {
+              const [[year, month, day]] = dateParts
+
+              if (year) {
+                const node = this.document.createElement('year')
+                node.textContent = String(year)
+                citation.appendChild(node)
+              }
+
+              if (month) {
+                const node = this.document.createElement('month')
+                node.textContent = String(month)
+                citation.appendChild(node)
+              }
+
+              if (day) {
+                const node = this.document.createElement('day')
+                node.textContent = String(day)
+                citation.appendChild(node)
+              }
+            }
+          }
+
+          ref.appendChild(citation)
+          refList.appendChild(ref)
+        }
+      }
+    }
+
+    return back
+  }
+
+  private createSerializer = () => {
+    const getModel = <T extends Model>(id?: string) =>
+      id ? (this.modelMap.get(id) as T | undefined) : undefined
+
+    const nodes: NodeSpecs = {
+      bibliography_element: () => '',
+      bibliography_section: node => [
+        'ref-list',
+        { id: normalizeID(node.attrs.id) },
+        0,
+      ],
+      bullet_list: () => ['list', { 'list-type': 'bullet' }, 0],
+      caption: () => ['caption', ['p', 0]],
+      citation: node => {
+        const xref = this.document.createElement('xref')
+        xref.setAttribute('ref-type', 'bibr')
+
+        const citation = getModel<Citation>(node.attrs.rid)
+
+        // NOTE: https://www.ncbi.nlm.nih.gov/pmc/pmcdoc/tagging-guidelines/article/tags.html#el-xref
+        if (citation) {
+          xref.setAttribute(
+            'rid',
+            citation.embeddedCitationItems
+              .map(item => normalizeID(item.bibliographyItem))
+              .join(' ')
+          )
+        }
+
+        if (node.attrs.contents) {
+          // TODO: strip markup?
+          // TODO: convert markup to JATS?
+          xref.innerHTML = node.attrs.contents
+        }
+
+        return xref
+      },
+      cross_reference: node => {
+        const xref = this.document.createElement('xref')
+        xref.setAttribute('ref-type', 'fig')
+
+        const auxiliaryObjectReference = getModel<AuxiliaryObjectReference>(
+          node.attrs.rid
+        )
+
+        if (auxiliaryObjectReference) {
+          xref.setAttribute(
+            'rid',
+            normalizeID(auxiliaryObjectReference.referencedObject)
+          )
+        }
+
+        xref.textContent = node.attrs.label
+
+        return xref
+      },
+      doc: () => '',
+      equation: node => {
+        const formula = this.document.createElement('disp-formula')
+        formula.setAttribute('id', normalizeID(node.attrs.id))
+
+        const math = this.document.createElement('tex-math')
+        math.textContent = node.attrs.TeXRepresentation
+        formula.appendChild(math)
+
+        return formula
+      },
+      equation_element: node =>
+        createFigureElement(node, 'fig', node.type.schema.nodes.equation),
+      figcaption: node => {
+        if (!node.textContent) {
+          return ''
+        }
+
+        return ['caption', ['p', 0]]
+      },
+      figure: node => {
+        const fig = this.document.createElement('fig')
+        fig.setAttribute('id', normalizeID(node.attrs.id))
+
+        if (node.attrs.label) {
+          const label = this.document.createElement('label')
+          label.textContent = node.attrs.label
+          fig.appendChild(label)
+        }
+
+        const figcaptionNodeType = node.type.schema.nodes.figcaption
+
+        node.forEach(childNode => {
+          if (childNode.type === figcaptionNodeType) {
+            fig.appendChild(this.serializeNode(childNode))
+          }
+        })
+
+        const graphic = this.document.createElement('graphic')
+        const filename = generateAttachmentFilename(
+          node.attrs.id,
+          node.attrs.contentType
+        )
+        graphic.setAttributeNS(
+          XLINK_NAMESPACE,
+          'xlink:href',
+          `graphic/${filename}`
+        )
+
+        if (node.attrs.contentType) {
+          const [mimeType, mimeSubType] = node.attrs.contentType.split('/')
+
+          if (mimeType) {
+            graphic.setAttribute('mimetype', mimeType)
+
+            if (mimeSubType) {
+              graphic.setAttribute('mime-subtype', mimeSubType)
+            }
+          }
+        }
+
+        fig.appendChild(graphic)
+
+        return fig
+      },
+      figure_element: node =>
+        createFigureElement(node, 'fig-group', node.type.schema.nodes.figure),
+      footnote: node => ['fn', { id: normalizeID(node.attrs.id) }, 0],
+      footnotes_element: node => [
+        'fn-group',
+        { id: normalizeID(node.attrs.id) },
+      ],
+      hard_break: () => ['break'],
+      inline_equation: node => {
+        const formula = this.document.createElement('inline-formula')
+
+        const math = this.document.createElement('tex-math')
+        math.textContent = node.attrs.TeXRepresentation
+        formula.appendChild(math)
+
+        return formula
+      },
+      inline_footnote: node => {
+        const xref = this.document.createElement('xref')
+        xref.setAttribute('ref-type', 'fn')
+        xref.setAttribute('rid', normalizeID(node.attrs.rid))
+        xref.textContent = node.attrs.contents
+
+        return xref
+      },
+      list_item: () => ['list-item', 0],
+      listing: node => {
+        const code = this.document.createElement('code')
+        code.setAttribute('id', normalizeID(node.attrs.id))
+        code.setAttribute('language', node.attrs.languageKey)
+        code.textContent = node.attrs.contents
+
+        return code
+      },
+      listing_element: node =>
+        createFigureElement(node, 'fig', node.type.schema.nodes.listing),
+      manuscript: node => ['article', { id: normalizeID(node.attrs.id) }, 0],
+      ordered_list: () => ['list', { 'list-type': 'order' }, 0],
+      paragraph: node => {
+        if (!node.childCount) {
+          return ''
+        }
+
+        const attrs: Attrs = {}
+
+        if (node.attrs.id) {
+          attrs.id = normalizeID(node.attrs.id)
+        }
+
+        return ['p', attrs, 0]
+      },
+      placeholder: () => {
+        throw new Error('Placeholder!')
+      },
+      placeholder_element: () => {
+        throw new Error('Placeholder element!')
+      },
+      section: node => {
+        const attrs: { [key: string]: string } = {
+          id: normalizeID(node.attrs.id),
+        }
+
+        if (node.attrs.category) {
+          attrs['sec-type'] = sectionCategorySuffix(node.attrs.category)
+        }
+
+        return ['sec', attrs, 0]
+      },
+      section_title: () => ['title', 0],
+      table: node => ['table', { id: normalizeID(node.attrs.id) }, 0],
+      table_element: node =>
+        createFigureElement(node, 'table-wrap', node.type.schema.nodes.table),
+      table_cell: () => ['td', 0],
+      table_row: () => ['tr', 0],
+      text: node => node.text!,
+      toc_element: node => ['p', { id: normalizeID(node.attrs.id) }],
+      toc_section: node => ['sec', { id: normalizeID(node.attrs.id) }, 0],
+    }
+
+    const marks: MarkSpecs = {
+      bold: () => ['bold'],
+      code: () => ['code', { position: 'anchor' }], // TODO: inline?
+      italic: () => ['italic'],
+      link: node => ['a', { href: node.attrs.href }],
+      smallcaps: () => ['sc'],
+      strikethrough: () => ['strike'],
+      superscript: () => ['sup'],
+      subscript: () => ['sub'],
+      underline: () => ['underline'],
+    }
+
+    this.serializer = new DOMSerializer<ManuscriptSchema>(nodes, marks)
+
+    // tslint:disable-next-line:cyclomatic-complexity
+    const createFigureElement = (
+      node: ManuscriptNode,
+      nodeName: string,
+      contentNodeType: ManuscriptNodeType
+    ) => {
+      const element = this.document.createElement(nodeName)
+      element.setAttribute('id', normalizeID(node.attrs.id))
+
+      if (node.attrs.label) {
+        const label = this.document.createElement('label')
+        label.textContent = node.attrs.label
+        element.appendChild(label)
+      }
+
+      const figcaptionNode = findChildNodeOfType(
+        node,
+        node.type.schema.nodes.figcaption
+      )
+
+      if (figcaptionNode) {
+        element.appendChild(this.serializeNode(figcaptionNode))
+      }
+
+      node.forEach(childNode => {
+        if (childNode.type === contentNodeType) {
+          element.appendChild(this.serializeNode(childNode))
+        }
+      })
+
+      if (isExecutableNode(node)) {
+        const listingNode = findChildNodeOfType(
+          node,
+          node.type.schema.nodes.listing
+        )
+
+        if (listingNode) {
+          const { contents, languageKey } = listingNode.attrs
+
+          if (contents && languageKey) {
+            const listing = this.document.createElement('fig')
+            listing.setAttribute('specific-use', 'source')
+            element.appendChild(listing)
+
+            const code = this.document.createElement('code')
+            code.setAttribute('executable', 'true')
+            code.setAttribute('language', languageKey)
+            code.textContent = contents
+            listing.appendChild(code)
+
+            // TODO: something more appropriate than "caption"?
+            const caption = this.document.createElement('caption')
+            listing.appendChild(caption)
+
+            // TODO: real data
+            const attachments: Array<{ id: string; type: string }> = []
+
+            for (const attachment of attachments) {
+              const p = this.document.createElement('p')
+              caption.appendChild(p)
+
+              const filename = generateAttachmentFilename(
+                `${listingNode.attrs.id}:${attachment.id}`,
+                attachment.type
+              )
+
+              const supp = this.document.createElement('supplementary-material')
+
+              supp.setAttributeNS(
+                XLINK_NAMESPACE,
+                'xlink:href',
+                `suppl/${filename}`
+              )
+
+              const [mimeType, mimeSubType] = attachment.type.split('/')
+
+              if (mimeType) {
+                supp.setAttribute('mimetype', mimeType)
+
+                if (mimeSubType) {
+                  supp.setAttribute('mime-subtype', mimeSubType)
+                }
+              }
+
+              // TODO: might need title, length, etc for data files
+
+              p.appendChild(supp)
+            }
+          }
+        }
+      }
+
+      return element
+    }
+  }
+
+  private fixBody = (body: Element, fragment: ManuscriptFragment) => {
+    fragment.descendants(node => {
+      if (node.attrs.id) {
+        // remove suppressed titles
+        if (node.attrs.titleSuppressed) {
+          const title = body.querySelector(
+            `#${normalizeID(node.attrs.id)} > title`
+          )
+
+          if (title && title.parentNode) {
+            title.parentNode.removeChild(title)
+          }
+        }
+
+        // remove suppressed captions
+        if (node.attrs.suppressCaption) {
+          // TODO: need to query deeper?
+          const caption = body.querySelector(
+            `#${normalizeID(node.attrs.id)} > caption`
+          )
+
+          if (caption && caption.parentNode) {
+            caption.parentNode.removeChild(caption)
+          }
+        }
+
+        // move captions to the top of tables
+        if (isNodeType<TableElementNode>(node, 'table_element')) {
+          const tableElement = body.querySelector(
+            `#${normalizeID(node.attrs.id)}`
+          )
+
+          if (tableElement) {
+            for (const childNode of tableElement.childNodes) {
+              switch (childNode.nodeName) {
+                case 'caption': {
+                  if (node.attrs.suppressCaption) {
+                    tableElement.removeChild(childNode)
+                  } else {
+                    tableElement.insertBefore(
+                      childNode,
+                      tableElement.firstChild
+                    )
+                  }
+                  break
+                }
+
+                case 'table': {
+                  this.fixTable(childNode, node)
+                  break
+                }
+              }
+            }
+          }
+        }
+
+        if (isNodeType<FigureElementNode>(node, 'figure_element')) {
+          const figureGroup = body.querySelector(
+            `#${normalizeID(node.attrs.id)}`
+          )
+
+          if (figureGroup) {
+            const figures = body.querySelectorAll(
+              `#${normalizeID(node.attrs.id)} > fig`
+            )
+
+            const caption = body.querySelector(
+              `#${normalizeID(node.attrs.id)} > caption`
+            )
+
+            // replace a single-figure fig-group with the figure
+            if (figures.length === 1) {
+              const figure = figures[0]
+
+              // move any caption into the figure
+              if (caption) {
+                figure.insertBefore(caption, figure.firstChild)
+              }
+
+              // replace the figure element with the figure
+              if (figureGroup.parentElement) {
+                figureGroup.parentElement.replaceChild(figure, figureGroup)
+              }
+            }
+          }
+        }
+      }
+    })
+  }
+
+  private fixTable = (table: ChildNode, node: ManuscriptNode) => {
+    const rows = Array.from(table.childNodes)
+
+    const theadRows = rows.splice(0, 1)
+    const tfootRows = rows.splice(-1, 1)
+
+    // thead
+    if (node.attrs.suppressHeader) {
+      for (const row of theadRows) {
+        table.removeChild(row)
+      }
+    } else {
+      const thead = this.document.createElement('thead')
+
+      for (const row of theadRows) {
+        thead.appendChild(row)
+      }
+
+      table.appendChild(thead)
+    }
+
+    // tfoot
+    if (node.attrs.suppressFooter) {
+      for (const row of tfootRows) {
+        table.removeChild(row)
+      }
+    } else {
+      const tfoot = this.document.createElement('tfoot')
+
+      for (const row of tfootRows) {
+        tfoot.appendChild(row)
+      }
+
+      table.appendChild(tfoot)
+    }
+
+    // tbody
+    const tbody = this.document.createElement('tbody')
+
+    for (const row of rows) {
+      tbody.appendChild(row)
+    }
+
+    table.appendChild(tbody)
+  }
+
+  private moveAbstract = (front: HTMLElement, body: HTMLElement) => {
+    const sections = body.querySelectorAll(':scope > sec')
+
+    const abstractSection = Array.from(sections).find(section => {
+      if (section.getAttribute('sec-type') === 'abstract') {
+        return true
+      }
+
+      const sectionTitle = section.querySelector(':scope > title')
+
+      if (!sectionTitle) {
+        return false
+      }
+
+      return sectionTitle.textContent === 'Abstract'
+    })
+
+    if (abstractSection && abstractSection.parentNode) {
+      const abstractNode = this.document.createElement('abstract')
+
+      // TODO: ensure that abstract section schema is valid
+      while (abstractSection.firstChild) {
+        abstractNode.appendChild(abstractSection.firstChild)
+      }
+
+      abstractSection.parentNode.removeChild(abstractSection)
+
+      const articleMeta = front.querySelector(':scope > article-meta')
+
+      if (articleMeta) {
+        insertAbstractNode(articleMeta, abstractNode)
+      }
+    }
+  }
 }

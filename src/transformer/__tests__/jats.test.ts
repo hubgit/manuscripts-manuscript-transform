@@ -14,26 +14,35 @@
  * limitations under the License.
  */
 
+import projectDumpWithCitations from '@manuscripts/examples/data/project-dump-2.json'
 import projectDump from '@manuscripts/examples/data/project-dump.json'
 import { Section } from '@manuscripts/manuscripts-json-schema'
-import { JSDOM } from 'jsdom'
-import libxml from 'libxmljs'
-import { serializeToJATS } from '../jats'
+import { parseXml } from 'libxmljs2'
+import { JATSTransformer } from '../jats'
 import { parseProjectBundle, ProjectBundle } from '../project-bundle'
 import { submissions } from './__helpers__/submissions'
 
 const input = projectDump as ProjectBundle
+const inputWithCitations = projectDumpWithCitations as ProjectBundle
 
 const cloneProjectBundle = (input: ProjectBundle): ProjectBundle =>
   JSON.parse(JSON.stringify(input))
+
+const parseXMLWithDTD = (data: string) =>
+  parseXml(data, {
+    dtdload: true,
+    dtdvalid: true,
+    nonet: true,
+  })
 
 describe('jats', () => {
   test('export latest version', () => {
     const projectBundle = cloneProjectBundle(input)
 
-    const { doc, modelMap } = parseProjectBundle(projectBundle, JSDOM.fragment)
+    const { doc, modelMap } = parseProjectBundle(projectBundle)
 
-    const result = serializeToJATS(doc.content, modelMap)
+    const transformer = new JATSTransformer()
+    const result = transformer.serializeToJATS(doc.content, modelMap)
 
     expect(result).toMatchSnapshot('jats-export')
   })
@@ -41,9 +50,10 @@ describe('jats', () => {
   test('export v1.1', () => {
     const projectBundle = cloneProjectBundle(input)
 
-    const { doc, modelMap } = parseProjectBundle(projectBundle, JSDOM.fragment)
+    const { doc, modelMap } = parseProjectBundle(projectBundle)
 
-    const result = serializeToJATS(doc.content, modelMap, '1.1')
+    const transformer = new JATSTransformer()
+    const result = transformer.serializeToJATS(doc.content, modelMap, '1.1')
 
     expect(result).toMatchSnapshot('jats-export-1.1')
   })
@@ -51,7 +61,7 @@ describe('jats', () => {
   test('export unknown version', () => {
     const projectBundle = cloneProjectBundle(input)
 
-    const { doc, modelMap } = parseProjectBundle(projectBundle, JSDOM.fragment)
+    const { doc, modelMap } = parseProjectBundle(projectBundle)
 
     expect(() => {
       // @ts-ignore (deliberately invalid)
@@ -78,14 +88,14 @@ describe('jats', () => {
 
     projectBundle.data.push(model)
 
-    const { doc, modelMap } = parseProjectBundle(projectBundle, JSDOM.fragment)
+    const { doc, modelMap } = parseProjectBundle(projectBundle)
 
-    const xml = serializeToJATS(doc.content, modelMap)
+    const transformer = new JATSTransformer()
+    const xml = transformer.serializeToJATS(doc.content, modelMap)
 
-    const parser = new DOMParser()
-    const resultDoc = parser.parseFromString(xml, 'application/xml')
+    const resultDoc = parseXMLWithDTD(xml)
 
-    const result = resultDoc.querySelector('front > article-meta > abstract')
+    const result = resultDoc.get('/article/front/article-meta/abstract')
 
     expect(result).not.toBeNull()
   })
@@ -109,14 +119,14 @@ describe('jats', () => {
 
     projectBundle.data.push(model)
 
-    const { doc, modelMap } = parseProjectBundle(projectBundle, JSDOM.fragment)
+    const { doc, modelMap } = parseProjectBundle(projectBundle)
 
-    const xml = serializeToJATS(doc.content, modelMap)
+    const transformer = new JATSTransformer()
+    const xml = transformer.serializeToJATS(doc.content, modelMap)
 
-    const parser = new DOMParser()
-    const resultDoc = parser.parseFromString(xml, 'application/xml')
+    const resultDoc = parseXMLWithDTD(xml)
 
-    const result = resultDoc.querySelector('front > article-meta > abstract')
+    const result = resultDoc.get('/article/front/article-meta/abstract')
 
     expect(result).not.toBeNull()
   })
@@ -124,9 +134,10 @@ describe('jats', () => {
   test('handle ID', () => {
     const projectBundle = cloneProjectBundle(input)
 
-    const { doc, modelMap } = parseProjectBundle(projectBundle, JSDOM.fragment)
+    const { doc, modelMap } = parseProjectBundle(projectBundle)
 
-    const result = serializeToJATS(
+    const transformer = new JATSTransformer()
+    const result = transformer.serializeToJATS(
       doc.content,
       modelMap,
       '1.2',
@@ -140,9 +151,15 @@ describe('jats', () => {
   test('handle DOI', () => {
     const projectBundle = cloneProjectBundle(input)
 
-    const { doc, modelMap } = parseProjectBundle(projectBundle, JSDOM.fragment)
+    const { doc, modelMap } = parseProjectBundle(projectBundle)
 
-    const result = serializeToJATS(doc.content, modelMap, '1.2', '10.0000/123')
+    const transformer = new JATSTransformer()
+    const result = transformer.serializeToJATS(
+      doc.content,
+      modelMap,
+      '1.2',
+      '10.0000/123'
+    )
 
     expect(result).toMatchSnapshot('jats-export-doi')
   })
@@ -150,13 +167,14 @@ describe('jats', () => {
   test('add journal ID', () => {
     const projectBundle = cloneProjectBundle(input)
 
-    const { doc, modelMap } = parseProjectBundle(projectBundle, JSDOM.fragment)
+    const { doc, modelMap } = parseProjectBundle(projectBundle)
 
     for (const submission of submissions) {
       modelMap.set(submission._id, submission)
     }
 
-    const result = serializeToJATS(
+    const transformer = new JATSTransformer()
+    const xml = transformer.serializeToJATS(
       doc.content,
       modelMap,
       '1.2',
@@ -164,27 +182,37 @@ describe('jats', () => {
       '123'
     )
 
-    expect(result).toMatchSnapshot('jats-export-submitted')
+    expect(xml).toMatchSnapshot('jats-export-submitted')
 
-    const output = new DOMParser().parseFromString(result, 'application/xml')
+    const output = parseXMLWithDTD(xml)
 
-    expect(output.querySelector('journal-id')!.textContent).toBe('bar')
-    expect(output.querySelector('journal-title')!.textContent).toBe('Bar')
-    expect(output.querySelector('issn')!.textContent).toBe('2222-2222')
+    expect(output.get('//journal-id')!.text()).toBe('bar')
+    expect(output.get('//journal-title')!.text()).toBe('Bar')
+    expect(output.get('//issn')!.text()).toBe('2222-2222')
   })
 
   test('DTD validation', () => {
     const projectBundle = cloneProjectBundle(input)
 
-    const { doc, modelMap } = parseProjectBundle(projectBundle, JSDOM.fragment)
+    const { doc, modelMap } = parseProjectBundle(projectBundle)
 
-    const data = serializeToJATS(doc.content, modelMap)
+    const transformer = new JATSTransformer()
+    const xml = transformer.serializeToJATS(doc.content, modelMap)
 
-    const { errors } = libxml.parseXmlString(data, {
-      dtdload: true,
-      dtdvalid: true,
-      nonet: true,
-    })
+    const { errors } = parseXMLWithDTD(xml)
+
+    expect(errors).toHaveLength(0)
+  })
+
+  test('DTD validation: article with title markup and citations', () => {
+    const projectBundle = cloneProjectBundle(inputWithCitations)
+
+    const { doc, modelMap } = parseProjectBundle(projectBundle)
+
+    const transformer = new JATSTransformer()
+    const xml = transformer.serializeToJATS(doc.content, modelMap)
+
+    const { errors } = parseXMLWithDTD(xml)
 
     expect(errors).toHaveLength(0)
   })

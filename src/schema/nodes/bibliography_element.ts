@@ -15,6 +15,7 @@
  */
 
 import { NodeSpec } from 'prosemirror-model'
+import { nodeFromHTML } from '../../lib/html'
 import { ManuscriptNode } from '../types'
 
 interface Attrs {
@@ -32,15 +33,6 @@ const createBodyElement = (node: BibliographyElementNode) => {
   dom.id = node.attrs.id
 
   return dom
-}
-
-const parseBodyElement = (node: BibliographyElementNode): Node => {
-  // return document.createRange().createContextualFragment(node.attrs.contents)
-  //   .firstChild as HTMLDivElement
-
-  const dom = document.createElement('div')
-  dom.innerHTML = node.attrs.contents // TODO: sanitize?
-  return dom.firstChild || createBodyElement(node)
 }
 
 export const bibliographyElement: NodeSpec = {
@@ -70,8 +62,9 @@ export const bibliographyElement: NodeSpec = {
   toDOM: node => {
     const bibliographyElementNode = node as BibliographyElementNode
 
-    return bibliographyElementNode.attrs.contents
-      ? parseBodyElement(bibliographyElementNode)
-      : createBodyElement(bibliographyElementNode)
+    return (
+      nodeFromHTML(bibliographyElementNode.attrs.contents) ||
+      createBodyElement(bibliographyElementNode)
+    )
   },
 }

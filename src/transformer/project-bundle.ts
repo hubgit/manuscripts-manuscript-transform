@@ -31,7 +31,6 @@ export interface ProjectBundle {
 
 export const parseProjectBundle = (
   projectBundle: ProjectBundle,
-  parseFragment?: (contents: string) => DocumentFragment,
   manuscriptID?: string
 ) => {
   const manuscriptData = manuscriptID
@@ -46,7 +45,7 @@ export const parseProjectBundle = (
     modelMap.set(component._id, component)
   }
 
-  const decoder = new Decoder(modelMap, parseFragment)
+  const decoder = new Decoder(modelMap)
 
   const doc = decoder.createArticleNode()
 
