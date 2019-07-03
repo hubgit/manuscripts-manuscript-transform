@@ -59,7 +59,7 @@
     "prosemirror-state": "^1.2.3",
     "prosemirror-view": "^1.9.10",
     "rimraf": "^2.6.3",
-    "rxdb": "^8.2.0",
+    "rxdb": "gitlab:mpapp-public/rxdb#upstream-fork",
     "tslint": "^5.18.0",
     "typescript": "^3.5.2"
   },
