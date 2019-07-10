@@ -45,24 +45,6 @@ export const italic: MarkSpec = {
   toDOM: () => ['i'],
 }
 
-export const link: MarkSpec = {
-  attrs: {
-    href: {},
-    title: { default: null },
-  },
-  inclusive: false,
-  parseDOM: [
-    {
-      getAttrs: dom => ({
-        href: (dom as HTMLAnchorElement).getAttribute('href'),
-        title: (dom as HTMLAnchorElement).getAttribute('title'),
-      }),
-      tag: 'a[href]',
-    },
-  ],
-  toDOM: node => ['a', node.attrs],
-}
-
 export const smallcaps: MarkSpec = {
   parseDOM: [
     { style: 'font-variant=small-caps' },

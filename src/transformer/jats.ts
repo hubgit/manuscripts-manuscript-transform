@@ -740,6 +740,24 @@ export class JATSTransformer {
 
         return xref
       },
+      link: node => {
+        const text = node.textContent
+
+        if (!text) {
+          return ''
+        }
+
+        if (!node.attrs.href) {
+          return text
+        }
+
+        const linkNode = this.document.createElement('ext-link')
+        linkNode.setAttribute('ext-link-type', 'uri')
+        linkNode.setAttributeNS(XLINK_NAMESPACE, 'xlink:href', node.attrs.href)
+        linkNode.textContent = text
+
+        return linkNode
+      },
       list_item: () => ['list-item', 0],
       listing: node => {
         const code = this.document.createElement('code')
@@ -798,7 +816,6 @@ export class JATSTransformer {
       bold: () => ['bold'],
       code: () => ['code', { position: 'anchor' }], // TODO: inline?
       italic: () => ['italic'],
-      link: node => ['a', { href: node.attrs.href }],
       smallcaps: () => ['sc'],
       strikethrough: () => ['strike'],
       superscript: () => ['sup'],

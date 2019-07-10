@@ -16,7 +16,7 @@
 
 import projectDumpWithCitations from '@manuscripts/examples/data/project-dump-2.json'
 import projectDump from '@manuscripts/examples/data/project-dump.json'
-import { Section } from '@manuscripts/manuscripts-json-schema'
+import { ParagraphElement, Section } from '@manuscripts/manuscripts-json-schema'
 import { parseXml } from 'libxmljs2'
 import { JATSTransformer } from '../jats'
 import { parseProjectBundle, ProjectBundle } from '../project-bundle'
@@ -211,6 +211,36 @@ describe('jats', () => {
 
     const transformer = new JATSTransformer()
     const xml = transformer.serializeToJATS(doc.content, modelMap)
+
+    const { errors } = parseXMLWithDTD(xml)
+
+    expect(errors).toHaveLength(0)
+  })
+
+  test('Export link', () => {
+    const projectBundle = cloneProjectBundle(input)
+
+    const id = 'MPParagraphElement:150780D7-CFED-4529-9398-77B5C7625044'
+
+    projectBundle.data = projectBundle.data.map(model => {
+      if (model._id === id) {
+        const paragraphElement = model as ParagraphElement
+
+        paragraphElement.contents = paragraphElement.contents.replace(
+          /The first section/,
+          'The <a href="https://example.com">first</a> section'
+        )
+      }
+
+      return model
+    })
+
+    const { doc, modelMap } = parseProjectBundle(projectBundle)
+
+    const transformer = new JATSTransformer()
+    const xml = transformer.serializeToJATS(doc.content, modelMap)
+
+    expect(xml).toMatchSnapshot('jats-export-link')
 
     const { errors } = parseXMLWithDTD(xml)
 

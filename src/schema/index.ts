@@ -19,7 +19,6 @@ import {
   bold,
   code,
   italic,
-  link,
   smallcaps,
   strikethrough,
   subscript,
@@ -42,6 +41,7 @@ import { footnotesElement } from './nodes/footnotes_element'
 import { hardBreak } from './nodes/hard_break'
 import { inlineEquation } from './nodes/inline_equation'
 import { inlineFootnote } from './nodes/inline_footnote'
+import { link } from './nodes/link'
 import { bulletList, listItem, orderedList } from './nodes/list'
 import { listing } from './nodes/listing'
 import { listingElement } from './nodes/listing_element'
@@ -75,6 +75,7 @@ export * from './nodes/footnotes_element'
 export * from './nodes/hard_break'
 export * from './nodes/inline_equation'
 export * from './nodes/inline_footnote'
+export * from './nodes/link'
 export * from './nodes/list'
 export * from './nodes/listing'
 export * from './nodes/listing_element'
@@ -95,7 +96,6 @@ export const schema = new Schema<Nodes, Marks>({
     bold,
     code,
     italic,
-    link,
     smallcaps,
     strikethrough,
     subscript,
@@ -120,6 +120,7 @@ export const schema = new Schema<Nodes, Marks>({
     hard_break: hardBreak,
     inline_equation: inlineEquation,
     inline_footnote: inlineFootnote,
+    link,
     list_item: listItem,
     listing,
     listing_element: listingElement,
