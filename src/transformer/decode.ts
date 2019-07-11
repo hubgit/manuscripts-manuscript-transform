@@ -33,6 +33,7 @@ import {
   TableElement,
   TOCElement,
 } from '@manuscripts/manuscripts-json-schema'
+import debug from 'debug'
 import { DOMParser, ParseOptions } from 'prosemirror-model'
 import { RxDocument } from 'rxdb'
 import {
@@ -68,6 +69,8 @@ import {
 } from './object-types'
 import { chooseSectionNodeType, guessSectionCategory } from './section-category'
 import { timestamp } from './timestamp'
+
+const warn = debug('manuscripts-transform')
 
 const parser = DOMParser.fromSchema(schema)
 
@@ -164,6 +167,10 @@ const getSections = (modelMap: Map<string, Model>) =>
   getModelsByType<Section>(modelMap, ObjectTypes.Section).sort(
     sortSectionsByPriority
   )
+
+export const isManuscriptNode = (
+  model: ManuscriptNode | null
+): model is ManuscriptNode => model !== null
 
 export class Decoder {
   private readonly modelMap: Map<string, Model>
@@ -407,7 +414,9 @@ export class Decoder {
         }
       }
 
-      const elementNodes = elements.map(this.decode)
+      const elementNodes: ManuscriptNode[] = elements
+        .map(this.decode)
+        .filter(isManuscriptNode)
 
       const sectionTitleNode: SectionTitleNode = model.title
         ? this.parseContents(`<h1>${model.title}</h1>`, {
@@ -514,9 +523,10 @@ export class Decoder {
     this.modelMap = modelMap
   }
 
-  public decode = (model: Model) => {
+  public decode = (model: Model): ManuscriptNode | null => {
     if (!this.creators[model.objectType]) {
-      throw new Error('No converter for ' + model.objectType)
+      warn(`No converter for ${model.objectType}`)
+      return null
     }
 
     return this.creators[model.objectType](model)
@@ -530,7 +540,9 @@ export class Decoder {
       section => !section.path || section.path.length <= 1
     )
 
-    const rootSectionNodes = rootSections.map(this.decode) as SectionNode[]
+    const rootSectionNodes = rootSections
+      .map(this.decode)
+      .filter(isManuscriptNode) as SectionNode[]
 
     if (!rootSectionNodes.length) {
       rootSectionNodes.push(schema.nodes.section.createAndFill({
