@@ -527,7 +527,7 @@ export class Decoder {
 
   public createArticleNode = () => {
     const rootSections = getSections(this.modelMap).filter(
-      section => section.path.length <= 1
+      section => !section.path || section.path.length <= 1
     )
 
     const rootSectionNodes = rootSections.map(this.decode) as SectionNode[]

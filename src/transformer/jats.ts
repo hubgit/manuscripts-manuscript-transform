@@ -61,7 +61,7 @@ type MarkSpecs = {
   [key in Marks]: (mark: ManuscriptMark, inline: boolean) => DOMOutputSpec
 }
 
-const warn = debug('jats:warn')
+const warn = debug('manuscripts-transform')
 
 const XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink'
 

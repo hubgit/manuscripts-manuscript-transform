@@ -22,7 +22,7 @@
     "prebuild": "rimraf dist",
     "prettier": "prettier --write \"src/**/*.{ts,tsx}\" \"*.{js,json}\"",
     "preversion": "npm-run-all --parallel typecheck lint test",
-    "test": "DEBUG=jats:warn XML_CATALOG_FILES=./node_modules/@jats4r/dtds/schema/catalog.xml jest",
+    "test": "DEBUG=manuscripts-transform XML_CATALOG_FILES=./node_modules/@jats4r/dtds/schema/catalog.xml jest",
     "typecheck": "tsc --noEmit",
     "version": "yarn build"
   },
