@@ -16,7 +16,11 @@
 
 import projectDumpWithCitations from '@manuscripts/examples/data/project-dump-2.json'
 import projectDump from '@manuscripts/examples/data/project-dump.json'
-import { ParagraphElement, Section } from '@manuscripts/manuscripts-json-schema'
+import {
+  ObjectTypes,
+  ParagraphElement,
+  Section,
+} from '@manuscripts/manuscripts-json-schema'
 import { parseXml } from 'libxmljs2'
 import { JATSTransformer } from '../jats'
 import { parseProjectBundle, ProjectBundle } from '../project-bundle'
@@ -240,10 +244,69 @@ describe('jats', () => {
     const transformer = new JATSTransformer()
     const xml = transformer.serializeToJATS(doc.content, modelMap)
 
-    expect(xml).toMatchSnapshot('jats-export-link')
+    const { errors } = parseXMLWithDTD(xml)
+
+    expect(errors).toHaveLength(0)
+
+    const output = parseXMLWithDTD(xml)
+
+    const link = output.get('//ext-link[@ext-link-type="uri"]')
+
+    expect(link).not.toBeNull()
+    expect(link!.text()).toBe('first')
+
+    const attrs: { [key: string]: string } = {}
+
+    for (const attr of link!.attrs()) {
+      attrs[attr.name()] = attr.value()
+    }
+
+    expect(attrs.href).toBe('https://example.com')
+  })
+
+  test('Export with missing bibliography element', () => {
+    const projectBundle = cloneProjectBundle(input)
+
+    const id = 'MPSection:E07B0D52-9642-4D58-E577-26F8804E3DEE'
+
+    projectBundle.data = projectBundle.data.filter(
+      model =>
+        model.objectType !== ObjectTypes.BibliographyElement && model._id !== id
+    )
+
+    const { doc, modelMap } = parseProjectBundle(projectBundle)
+
+    const transformer = new JATSTransformer()
+    const xml = transformer.serializeToJATS(doc.content, modelMap)
 
     const { errors } = parseXMLWithDTD(xml)
 
     expect(errors).toHaveLength(0)
+
+    const output = parseXMLWithDTD(xml)
+
+    const refs = output.find('//ref-list/ref')
+
+    expect(refs).toHaveLength(1)
+  })
+
+  test('Markup in citations', () => {
+    const projectBundle = cloneProjectBundle(inputWithCitations)
+
+    const { doc, modelMap } = parseProjectBundle(projectBundle)
+
+    const transformer = new JATSTransformer()
+    const xml = transformer.serializeToJATS(doc.content, modelMap)
+
+    const output = parseXMLWithDTD(xml)
+
+    const refs = output.find('//xref[@ref-type="bibr"]')
+
+    expect(refs).toHaveLength(2)
+
+    expect(refs[0].child(0)!.type()).toBe('text')
+    expect(refs[0].text()).toBe('1,2')
+    expect(refs[1].child(0)!.type()).toBe('text')
+    expect(refs[1].text()).toBe('3–5')
   })
 })

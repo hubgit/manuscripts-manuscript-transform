@@ -27,3 +27,11 @@ export const nodeFromHTML = (html: string) => {
 
   return template.content.firstChild
 }
+
+export const textFromHTML = (html: string) => {
+  const template = document.createElement('template')
+
+  template.innerHTML = html
+
+  return template.content.textContent
+}

@@ -22,11 +22,12 @@
     "prebuild": "rimraf dist",
     "prettier": "prettier --write \"src/**/*.{ts,tsx}\" \"*.{js,json}\"",
     "preversion": "npm-run-all --parallel typecheck lint test",
-    "test": "XML_CATALOG_FILES=./node_modules/@jats4r/dtds/schema/catalog.xml jest",
+    "test": "DEBUG=jats:warn XML_CATALOG_FILES=./node_modules/@jats4r/dtds/schema/catalog.xml jest",
     "typecheck": "tsc --noEmit",
     "version": "yarn build"
   },
   "dependencies": {
+    "debug": "^4.1.1",
     "prosemirror-model": "^1.7.1",
     "uuid": "^3.3.2",
     "w3c-xmlserializer": "^1.1.2"
@@ -43,6 +44,7 @@
     "@manuscripts/manuscripts-json-schema": "^1.14.2",
     "@manuscripts/publish": "^0.2.2",
     "@manuscripts/tslint-config": "^0.1.3",
+    "@types/debug": "^4.1.4",
     "@types/jest": "^24.0.15",
     "@types/jsdom": "^12.2.4",
     "@types/prosemirror-model": "^1.7.1",

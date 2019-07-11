@@ -23,8 +23,9 @@ import {
   Model,
   ObjectTypes,
 } from '@manuscripts/manuscripts-json-schema'
+import debug from 'debug'
 import { DOMOutputSpec, DOMParser, DOMSerializer } from 'prosemirror-model'
-import { nodeFromHTML } from '../lib/html'
+import { nodeFromHTML, textFromHTML } from '../lib/html'
 import { iterateChildren } from '../lib/utils'
 import {
   FigureElementNode,
@@ -59,6 +60,8 @@ type NodeSpecs = { [key in Nodes]: (node: ManuscriptNode) => DOMOutputSpec }
 type MarkSpecs = {
   [key in Marks]: (mark: ManuscriptMark, inline: boolean) => DOMOutputSpec
 }
+
+const warn = debug('jats:warn')
 
 const XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink'
 
@@ -162,6 +165,18 @@ export class JATSTransformer {
       document: this.document,
     })
 
+  private validateContributor = (contributor: Contributor) => {
+    if (!contributor.bibliographicName) {
+      throw new Error(`${contributor._id} has no bibliographicName`)
+    }
+
+    const { family, given } = contributor.bibliographicName
+
+    if (!family && !given) {
+      throw new Error(`${contributor._id} has neither family nor given name`)
+    }
+  }
+
   private buildContributors = (articleMeta: Node) => {
     const contributors = this.models.filter(
       hasObjectType<Contributor>(ObjectTypes.Contributor)
@@ -175,6 +190,13 @@ export class JATSTransformer {
       contributors.sort((a, b) => Number(a.priority) - Number(b.priority))
 
       contributors.forEach(contributor => {
+        try {
+          this.validateContributor(contributor)
+        } catch (error) {
+          warn(error.message)
+          return
+        }
+
         const contrib = this.document.createElement('contrib')
         contrib.setAttribute('contrib-type', 'author')
         contrib.setAttribute('id', normalizeID(contributor._id))
@@ -419,10 +441,12 @@ export class JATSTransformer {
           // TODO: convert markup to JATS?
           // p.innerHTML = footnote.contents
 
-          const content = nodeFromHTML(footnote.contents)
+          if (footnote.contents) {
+            const text = textFromHTML(footnote.contents)
 
-          if (content) {
-            p.textContent = content.textContent
+            if (text !== null && text.length) {
+              p.textContent = text
+            }
           }
 
           fn.appendChild(p)
@@ -433,161 +457,164 @@ export class JATSTransformer {
     }
 
     // bibliography element
-    const refList = this.document.querySelector('ref-list')
+    let refList = this.document.querySelector('ref-list')
 
-    if (refList) {
-      // move ref-list from body to back
-      back.appendChild(refList)
+    if (!refList) {
+      warn('No bibliography element, creating a ref-list anyway')
+      refList = this.document.createElement('ref-list')
+    }
 
-      const bibliographyItems = this.models.filter(
-        hasObjectType<BibliographyItem>(ObjectTypes.BibliographyItem)
-      )
+    // move ref-list from body to back
+    back.appendChild(refList)
 
-      const bibliographyItemIDsSet: Set<string> = new Set()
+    const bibliographyItems = this.models.filter(
+      hasObjectType<BibliographyItem>(ObjectTypes.BibliographyItem)
+    )
 
-      const xrefs = this.document.querySelectorAll('xref[ref-type=bibr][rid]')
+    const bibliographyItemIDsSet: Set<string> = new Set()
 
-      for (const xref of xrefs) {
-        const attribute = xref.getAttribute('rid')
+    const xrefs = this.document.querySelectorAll('xref[ref-type=bibr][rid]')
 
-        if (attribute) {
-          for (const rid of attribute.split(/\s+/)) {
-            bibliographyItemIDsSet.add(rid)
-          }
+    for (const xref of xrefs) {
+      const attribute = xref.getAttribute('rid')
+
+      if (attribute) {
+        for (const rid of attribute.split(/\s+/)) {
+          bibliographyItemIDsSet.add(rid)
         }
       }
+    }
 
-      for (const bibliographyItemID of bibliographyItemIDsSet) {
-        const bibliographyItem = bibliographyItems.find(
-          bibliographyItem =>
-            normalizeID(bibliographyItem._id) === bibliographyItemID
-        )
+    for (const bibliographyItemID of bibliographyItemIDsSet) {
+      const bibliographyItem = bibliographyItems.find(
+        bibliographyItem =>
+          normalizeID(bibliographyItem._id) === bibliographyItemID
+      )
 
-        if (bibliographyItem) {
-          const ref = this.document.createElement('ref')
-          ref.setAttribute('id', normalizeID(bibliographyItem._id))
+      if (bibliographyItem) {
+        const ref = this.document.createElement('ref')
+        ref.setAttribute('id', normalizeID(bibliographyItem._id))
 
-          const citation = this.document.createElement('element-citation')
+        const citation = this.document.createElement('element-citation')
 
-          // TODO: add citation elements depending on publication type
+        // TODO: add citation elements depending on publication type
 
-          if (bibliographyItem.type) {
-            switch (bibliographyItem.type) {
-              case 'article':
-              case 'article-journal':
-                citation.setAttribute('publication-type', 'journal')
-                break
+        if (bibliographyItem.type) {
+          switch (bibliographyItem.type) {
+            case 'article':
+            case 'article-journal':
+              citation.setAttribute('publication-type', 'journal')
+              break
 
-              default:
-                citation.setAttribute('publication-type', bibliographyItem.type)
-                break
-            }
-          } else {
-            citation.setAttribute('publication-type', 'journal')
+            default:
+              citation.setAttribute('publication-type', bibliographyItem.type)
+              break
           }
-
-          if (bibliographyItem.author) {
-            bibliographyItem.author.forEach(author => {
-              const name = this.document.createElement('name')
-
-              if (author.family) {
-                const node = this.document.createElement('surname')
-                node.textContent = author.family
-                name.appendChild(node)
-              }
-
-              if (author.given) {
-                const node = this.document.createElement('given-names')
-                node.textContent = author.given
-                name.appendChild(node)
-              }
-
-              citation.appendChild(name)
-            })
-          }
-
-          if (bibliographyItem.title) {
-            const node = this.document.createElement('article-title')
-            node.textContent = bibliographyItem.title
-            citation.appendChild(node)
-          }
-
-          if (bibliographyItem['container-title']) {
-            const node = this.document.createElement('source')
-            node.textContent = bibliographyItem['container-title']
-            citation.appendChild(node)
-          }
-
-          if (bibliographyItem.volume) {
-            const node = this.document.createElement('volume')
-            node.textContent = String(bibliographyItem.volume)
-            citation.appendChild(node)
-          }
-
-          if (bibliographyItem.issue) {
-            const node = this.document.createElement('issue')
-            node.textContent = String(bibliographyItem.issue)
-            citation.appendChild(node)
-          }
-
-          if (bibliographyItem['page-first']) {
-            const node = this.document.createElement('fpage')
-            node.textContent = String(bibliographyItem['page-first'])
-            citation.appendChild(node)
-          } else if (bibliographyItem.page) {
-            const pageString = String(bibliographyItem.page)
-
-            if (/^\d+$/.test(pageString)) {
-              const node = this.document.createElement('fpage')
-              node.textContent = pageString
-              citation.appendChild(node)
-            } else if (/^\d+-\d+$/.test(pageString)) {
-              const [fpage, lpage] = pageString.split('-')
-
-              const fpageNode = this.document.createElement('fpage')
-              fpageNode.textContent = fpage
-              citation.appendChild(fpageNode)
-
-              const lpageNode = this.document.createElement('lpage')
-              lpageNode.textContent = lpage
-              citation.appendChild(lpageNode)
-            } else {
-              // TODO: check page-range contents?
-              const node = this.document.createElement('page-range')
-              node.textContent = pageString
-              citation.appendChild(node)
-            }
-          }
-
-          if (bibliographyItem.issued) {
-            const dateParts = bibliographyItem.issued['date-parts']
-
-            if (dateParts && dateParts.length) {
-              const [[year, month, day]] = dateParts
-
-              if (year) {
-                const node = this.document.createElement('year')
-                node.textContent = String(year)
-                citation.appendChild(node)
-              }
-
-              if (month) {
-                const node = this.document.createElement('month')
-                node.textContent = String(month)
-                citation.appendChild(node)
-              }
-
-              if (day) {
-                const node = this.document.createElement('day')
-                node.textContent = String(day)
-                citation.appendChild(node)
-              }
-            }
-          }
-
-          ref.appendChild(citation)
-          refList.appendChild(ref)
+        } else {
+          citation.setAttribute('publication-type', 'journal')
         }
+
+        if (bibliographyItem.author) {
+          bibliographyItem.author.forEach(author => {
+            const name = this.document.createElement('name')
+
+            if (author.family) {
+              const node = this.document.createElement('surname')
+              node.textContent = author.family
+              name.appendChild(node)
+            }
+
+            if (author.given) {
+              const node = this.document.createElement('given-names')
+              node.textContent = author.given
+              name.appendChild(node)
+            }
+
+            citation.appendChild(name)
+          })
+        }
+
+        if (bibliographyItem.title) {
+          const node = this.document.createElement('article-title')
+          node.textContent = bibliographyItem.title
+          citation.appendChild(node)
+        }
+
+        if (bibliographyItem['container-title']) {
+          const node = this.document.createElement('source')
+          node.textContent = bibliographyItem['container-title']
+          citation.appendChild(node)
+        }
+
+        if (bibliographyItem.volume) {
+          const node = this.document.createElement('volume')
+          node.textContent = String(bibliographyItem.volume)
+          citation.appendChild(node)
+        }
+
+        if (bibliographyItem.issue) {
+          const node = this.document.createElement('issue')
+          node.textContent = String(bibliographyItem.issue)
+          citation.appendChild(node)
+        }
+
+        if (bibliographyItem['page-first']) {
+          const node = this.document.createElement('fpage')
+          node.textContent = String(bibliographyItem['page-first'])
+          citation.appendChild(node)
+        } else if (bibliographyItem.page) {
+          const pageString = String(bibliographyItem.page)
+
+          if (/^\d+$/.test(pageString)) {
+            const node = this.document.createElement('fpage')
+            node.textContent = pageString
+            citation.appendChild(node)
+          } else if (/^\d+-\d+$/.test(pageString)) {
+            const [fpage, lpage] = pageString.split('-')
+
+            const fpageNode = this.document.createElement('fpage')
+            fpageNode.textContent = fpage
+            citation.appendChild(fpageNode)
+
+            const lpageNode = this.document.createElement('lpage')
+            lpageNode.textContent = lpage
+            citation.appendChild(lpageNode)
+          } else {
+            // TODO: check page-range contents?
+            const node = this.document.createElement('page-range')
+            node.textContent = pageString
+            citation.appendChild(node)
+          }
+        }
+
+        if (bibliographyItem.issued) {
+          const dateParts = bibliographyItem.issued['date-parts']
+
+          if (dateParts && dateParts.length) {
+            const [[year, month, day]] = dateParts
+
+            if (year) {
+              const node = this.document.createElement('year')
+              node.textContent = String(year)
+              citation.appendChild(node)
+            }
+
+            if (month) {
+              const node = this.document.createElement('month')
+              node.textContent = String(month)
+              citation.appendChild(node)
+            }
+
+            if (day) {
+              const node = this.document.createElement('day')
+              node.textContent = String(day)
+              citation.appendChild(node)
+            }
+          }
+        }
+
+        ref.appendChild(citation)
+        refList.appendChild(ref)
       }
     }
 
@@ -608,43 +635,77 @@ export class JATSTransformer {
       bullet_list: () => ['list', { 'list-type': 'bullet' }, 0],
       caption: () => ['caption', ['p', 0]],
       citation: node => {
-        const xref = this.document.createElement('xref')
-        xref.setAttribute('ref-type', 'bibr')
+        if (!node.attrs.rid) {
+          warn(`${node.attrs.id} has no rid`)
+          return node.attrs.label
+        }
 
         const citation = getModel<Citation>(node.attrs.rid)
 
-        // NOTE: https://www.ncbi.nlm.nih.gov/pmc/pmcdoc/tagging-guidelines/article/tags.html#el-xref
-        if (citation) {
-          xref.setAttribute(
-            'rid',
-            citation.embeddedCitationItems
-              .map(item => normalizeID(item.bibliographyItem))
-              .join(' ')
-          )
+        if (!citation) {
+          warn(`Missing citation ${node.attrs.rid}`)
+          return ''
         }
 
+        const rids = citation.embeddedCitationItems.filter(item => {
+          if (!this.modelMap.has(item.bibliographyItem)) {
+            warn(
+              `Missing ${item.bibliographyItem} referenced by ${citation._id}`
+            )
+            return false
+          }
+
+          return true
+        })
+
+        if (!rids.length) {
+          warn(`${citation._id} has no confirmed rids`)
+          return ''
+        }
+
+        const xref = this.document.createElement('xref')
+        xref.setAttribute('ref-type', 'bibr')
+
+        // NOTE: https://www.ncbi.nlm.nih.gov/pmc/pmcdoc/tagging-guidelines/article/tags.html#el-xref
+        xref.setAttribute(
+          'rid',
+          rids.map(item => normalizeID(item.bibliographyItem)).join(' ')
+        )
+
         if (node.attrs.contents) {
-          // TODO: strip markup?
           // TODO: convert markup to JATS?
-          xref.innerHTML = node.attrs.contents
+          // xref.innerHTML = node.attrs.contents
+          const text = textFromHTML(node.attrs.contents)
+
+          if (text !== null && text.length) {
+            xref.textContent = text
+          }
         }
 
         return xref
       },
       cross_reference: node => {
-        const xref = this.document.createElement('xref')
-        xref.setAttribute('ref-type', 'fig')
+        if (!node.attrs.rid) {
+          warn(`${node.attrs.id} has no rid`)
+          return node.attrs.label
+        }
 
         const auxiliaryObjectReference = getModel<AuxiliaryObjectReference>(
           node.attrs.rid
         )
 
-        if (auxiliaryObjectReference) {
-          xref.setAttribute(
-            'rid',
-            normalizeID(auxiliaryObjectReference.referencedObject)
-          )
+        if (!auxiliaryObjectReference) {
+          warn(`Missing model ${node.attrs.rid}`)
+          return node.attrs.label
         }
+
+        const xref = this.document.createElement('xref')
+        xref.setAttribute('ref-type', 'fig')
+
+        xref.setAttribute(
+          'rid',
+          normalizeID(auxiliaryObjectReference.referencedObject)
+        )
 
         xref.textContent = node.attrs.label
 
