@@ -1,7 +1,6 @@
 import { NodeSpec } from 'prosemirror-model'
 
 
-debugger;
 export const rmq_pos_start:NodeSpec = {
   attrs:{
     commentId:{},
