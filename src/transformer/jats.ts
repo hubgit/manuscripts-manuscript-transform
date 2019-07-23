@@ -871,17 +871,40 @@ export class JATSTransformer {
       text: node => node.text!,
       toc_element: node => ['p', { id: normalizeID(node.attrs.id) }],
       toc_section: node => ['sec', { id: normalizeID(node.attrs.id) }, 0],
+
+      rmq_pos_start: node=> {
+        let access = node.attrs.access;
+        let commentId = node.attrs.commentId;
+        let groupId = node.attrs.groupId;
+        return ["rmq_pos_start", {
+          "data-rmq-access": access,
+          "data-rmq-comment-id": commentId,
+          "data-rmq-group-id": groupId,
+        }]
+      },
+      rmq_pos_end: node=> {
+        let access = node.attrs.access;
+        let commentId = node.attrs.commentId;
+        let groupId = node.attrs.groupId;
+        return ["rmq_pos_end", {
+          "data-rmq-access": access,
+          "data-rmq-comment-id": commentId,
+          "data-rmq-group-id": groupId,
+        }]
+      }
     }
 
     const marks: MarkSpecs = {
       bold: () => ['bold'],
-      code: () => ['code', { position: 'anchor' }], // TODO: inline?
+      code: () => ['code', {position: 'anchor'}], // TODO: inline?
       italic: () => ['italic'],
       smallcaps: () => ['sc'],
       strikethrough: () => ['strike'],
       superscript: () => ['sup'],
       subscript: () => ['sub'],
       underline: () => ['underline'],
+      rmq: node => ['rmq']
+
     }
 
     this.serializer = new DOMSerializer<ManuscriptSchema>(nodes, marks)

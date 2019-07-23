@@ -41,6 +41,7 @@ export type Marks =
   | 'subscript'
   | 'superscript'
   | 'underline'
+  | 'rmq'
 
 export type Nodes =
   | 'bibliography_element'
@@ -78,6 +79,8 @@ export type Nodes =
   | 'text'
   | 'toc_element'
   | 'toc_section'
+  | 'rmq_pos_start'
+  | 'rmq_pos_end'
 
 export type ManuscriptSchema = Schema<Nodes, Marks>
 

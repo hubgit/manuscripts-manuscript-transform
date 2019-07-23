@@ -90,3 +90,45 @@ export const underline: MarkSpec = {
   parseDOM: [{ tag: 'u' }, { style: 'text-decoration=underline' }],
   toDOM: () => ['u'],
 }
+
+
+export const rmq:MarkSpec = {
+  attrs:{
+    commentId:{},
+    access: {},
+    groupId: {}
+  },
+  toDOM: node=> {
+    let access = node.attrs.access;
+    let commentId = node.attrs.commentId;
+    let groupId = node.attrs.groupId;
+
+    let accessClass = 'rmq-annotator-hl='+access;
+    if (!groupId){
+      return ["span", {
+        class: 'rmq-annotator-hl '+accessClass,
+        "data-rmq-access":access,
+        "data-rmq-comment-id":commentId,
+
+      }]
+    }else{
+      return ["span", {
+        class: 'rmq-annotator-hl '+accessClass,
+        "data-rmq-access":access,
+        "data-rmq-comment-id":commentId,
+        "data-rmq-group-id":groupId,
+      }]
+    }
+  },
+
+  parseDOM: [
+    {
+      tag: "span",
+      getAttrs: dom=>{
+        let access = parseInt((dom as any).getAttribute("data-rmq-access"));
+        let commentId = (dom as any).getAttribute("data-rmq-comment-id");
+        let groupId = (dom as any).getAttribute("data-rmq-group-id");
+        return {access,commentId,groupId};
+      }
+    }]
+}

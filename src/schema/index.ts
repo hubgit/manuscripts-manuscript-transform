@@ -24,6 +24,7 @@ import {
   subscript,
   superscript,
   underline,
+  rmq
 } from './marks'
 import { bibliographyElement } from './nodes/bibliography_element'
 import { bibliographySection } from './nodes/bibliography_section'
@@ -56,6 +57,9 @@ import { tableElement } from './nodes/table_element'
 import { text } from './nodes/text'
 import { tocElement } from './nodes/toc_element'
 import { tocSection } from './nodes/toc_section'
+
+import { rmq_pos_start,rmq_pos_end } from './nodes/rmq_pos'
+
 import { Marks, Nodes } from './types'
 
 export * from './types'
@@ -90,6 +94,8 @@ export * from './nodes/table_element'
 export * from './nodes/text'
 export * from './nodes/toc_element'
 export * from './nodes/toc_section'
+export * from './nodes/rmq_pos'
+
 
 export const schema = new Schema<Nodes, Marks>({
   marks: {
@@ -101,6 +107,7 @@ export const schema = new Schema<Nodes, Marks>({
     subscript,
     superscript,
     underline,
+    rmq
   },
   nodes: {
     bibliography_element: bibliographyElement,
@@ -138,5 +145,7 @@ export const schema = new Schema<Nodes, Marks>({
     text,
     toc_element: tocElement,
     toc_section: tocSection,
+    rmq_pos_start:rmq_pos_start,
+    rmq_pos_end:rmq_pos_end
   },
 })
