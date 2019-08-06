@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`sectionTree siblings should match snapshot 1`] = `
+Array [
+  Object {
+    "_id": "MPSection:786116A4-364C-428B-9B05-FE447B1AEEFB",
+    "containerID": "MPProject:ADC69637-C321-4158-8E24-F92068D4727D",
+    "createdAt": 1558720146,
+    "elementIDs": Array [],
+    "manuscriptID": "MPManuscript:B3BB2CD8-F944-47C3-9F01-1996DBD417EE",
+    "objectType": "MPSection",
+    "path": Array [
+      "MPSection:369BC11C-4281-4BED-9AA3-5ABE066BF575",
+      "MPSection:786116A4-364C-428B-9B05-FE447B1AEEFB",
+    ],
+    "priority": 2,
+    "sessionID": "02b8ed9b-43bc-41a0-9732-f478f7fab0cc",
+    "title": "Subsection",
+    "updatedAt": 1558720168,
+  },
+]
+`;
