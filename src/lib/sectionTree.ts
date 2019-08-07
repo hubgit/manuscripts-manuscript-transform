@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
-import { Model } from '@manuscripts/manuscripts-json-schema'
+import { Model, ObjectTypes } from '@manuscripts/manuscripts-json-schema'
+import _isEqual from 'lodash.isequal'
 
-interface SectionProperties {
+interface SectionLike extends Model {
   path?: string[]
   priority?: number
+  elementIDs?: string[]
 }
 
-export default (modelMap: Map<string, Model & SectionProperties>) => ({
+interface ScheduledChange {
+  nextParentModel?: SectionLike | null
+  blocksToUpdate: string[]
+}
+
+export const walkSectionTree = (modelMap: Map<string, SectionLike>) => ({
   getPath(id: string) {
     const doc = modelMap.get(id)
     if (!doc) {
@@ -45,7 +52,7 @@ export default (modelMap: Map<string, Model & SectionProperties>) => ({
   },
 
   children(id: string | null) {
-    const children: Array<Model & SectionProperties> = []
+    const children: SectionLike[] = []
     modelMap.forEach(model => {
       let path
       try {
@@ -71,3 +78,70 @@ export default (modelMap: Map<string, Model & SectionProperties>) => ({
     return this.children(parent && parent._id)
   },
 })
+
+export const mergeElementIDs = (model: SectionLike, nextChildren: string[]) => {
+  const elementIDs = model.elementIDs || []
+  const nonSectionElementIDs = elementIDs.filter(
+    id => id.indexOf('MPSection:') !== 0
+  )
+  return [...nonSectionElementIDs, ...nextChildren]
+}
+
+export const isTreeChange = (
+  model: SectionLike,
+  modelMap: Map<string, SectionLike>
+) => {
+  if (model.objectType !== ObjectTypes.Section) return false
+
+  const currentModel = modelMap.get(model._id)
+  if (!currentModel) return true
+
+  if (currentModel.priority !== model.priority!) return true
+
+  if (!_isEqual(currentModel.path, model.path)) return true
+
+  return false
+}
+
+export const treeUpdateQueue = (
+  callback: (...changes: ScheduledChange[]) => void
+) => {
+  let queue: Set<string | null> = new Set()
+  let timer: NodeJS.Timer
+
+  const emptyQueue = (modelMap: Map<string, SectionLike>) => {
+    const changes: ScheduledChange[] = []
+    queue.forEach(id => {
+      const nextChildren = walkSectionTree(modelMap)
+        .children(id)
+        .map(model => model._id)
+
+      const parent = id ? modelMap.get(id) : null
+      if (parent) {
+        parent.elementIDs = mergeElementIDs(parent, nextChildren)
+      }
+
+      changes.push({
+        nextParentModel: parent,
+        blocksToUpdate: nextChildren,
+      })
+    })
+
+    callback(...changes)
+
+    queue = new Set()
+  }
+
+  return (model: SectionLike, modelMap: Map<string, SectionLike>) => {
+    const parent = walkSectionTree(modelMap).parent(model._id)
+    queue.add(parent && parent._id)
+
+    modelMap.set(model._id, model)
+
+    const newParent = walkSectionTree(modelMap).parent(model._id)
+    queue.add(newParent && newParent._id)
+
+    clearTimeout(timer)
+    timer = setTimeout(() => emptyQueue(modelMap), 1000)
+  }
+}

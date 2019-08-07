@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`sectionTree siblings should match snapshot 1`] = `
+exports[`walkSectionTree siblings should match snapshot 1`] = `
 Array [
   Object {
     "_id": "MPSection:786116A4-364C-428B-9B05-FE447B1AEEFB",
