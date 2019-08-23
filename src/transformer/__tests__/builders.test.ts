@@ -19,6 +19,7 @@ import {
   BibliographyItem,
   ObjectTypes,
 } from '@manuscripts/manuscripts-json-schema'
+import { CSL } from '../../types/csl'
 import {
   buildAffiliation,
   buildAuxiliaryObjectReference,
@@ -29,9 +30,9 @@ import {
   buildContributor,
   buildFigure,
   buildKeyword,
+  buildLibraryCollection,
   buildManuscript,
   buildProject,
-  StructuredDate,
 } from '../builders'
 import { ExtraObjectTypes } from '../object-types'
 
@@ -107,7 +108,7 @@ describe('commands', () => {
 
   it('buildBibliographicDate', () => {
     const cslDate = { 'date-parts': [['1998', '20', '1']] }
-    const date = buildBibliographicDate(cslDate as Partial<StructuredDate>)
+    const date = buildBibliographicDate(cslDate as Partial<CSL.Date>)
     expect(date._id).toMatch(/MPBibliographicDate:\S+/)
     expect(date.objectType).toMatch(ObjectTypes.BibliographicDate)
     expect(date['date-parts']).toEqual(cslDate['date-parts'])
@@ -136,6 +137,16 @@ describe('commands', () => {
     expect(keyword.name).toMatch('foo')
     expect(keyword._id).toMatch(/MPKeyword:\S+/)
     expect(keyword.objectType).toMatch(ObjectTypes.Keyword)
+  })
+
+  it('buildLibraryCollection', () => {
+    const libraryCollection = buildLibraryCollection('Mr Derp', 'foo')
+    expect(libraryCollection.owners).toEqual(['Mr Derp'])
+    expect(libraryCollection.writers).toEqual([])
+    expect(libraryCollection.viewers).toEqual([])
+    expect(libraryCollection.name).toMatch('foo')
+    expect(libraryCollection._id).toMatch(/MPLibraryCollection:\S+/)
+    expect(libraryCollection.objectType).toMatch(ObjectTypes.LibraryCollection)
   })
 
   it('buildFigure', () => {

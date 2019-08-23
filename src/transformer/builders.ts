@@ -28,6 +28,7 @@ import {
   Footnote,
   InlineMathFragment,
   Keyword,
+  LibraryCollection,
   Manuscript,
   ObjectTypes,
   ParagraphElement,
@@ -157,6 +158,18 @@ export const buildCitation = (
 export const buildKeyword = (name: string): Build<Keyword> => ({
   _id: generateID(ObjectTypes.Keyword),
   objectType: ObjectTypes.Keyword,
+  name,
+})
+
+export const buildLibraryCollection = (
+  owner: string,
+  name: string
+): Build<LibraryCollection> => ({
+  _id: generateID(ObjectTypes.LibraryCollection),
+  objectType: ObjectTypes.LibraryCollection,
+  owners: [owner],
+  writers: [],
+  viewers: [],
   name,
 })
 
