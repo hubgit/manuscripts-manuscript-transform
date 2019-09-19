@@ -36,7 +36,8 @@ import {
   Section,
   UserProfileAffiliation,
 } from '@manuscripts/manuscripts-json-schema'
-import { CSL } from '..'
+import { xmlSerializer } from '../transformer/serializer'
+import { CSL } from '../types/csl'
 import { generateID } from './id'
 import {
   AuxiliaryObjectReference,
@@ -253,12 +254,29 @@ export const buildSection = (
   }
 }
 
-export const buildParagraph = (contents: string): Build<ParagraphElement> => ({
-  _id: generateID(ObjectTypes.ParagraphElement),
-  objectType: ObjectTypes.ParagraphElement,
-  elementType: 'p',
-  contents,
-})
+export const buildParagraph = (
+  placeholderInnerHTML: string
+): Build<ParagraphElement> => {
+  const _id = generateID(ObjectTypes.ParagraphElement)
+
+  const element = document.createElementNS('http://www.w3.org/1999/xhtml', 'p')
+  element.setAttribute('id', _id)
+  element.setAttribute('class', 'MPElement')
+
+  if (placeholderInnerHTML) {
+    element.setAttribute('data-placeholder-text', placeholderInnerHTML)
+  }
+
+  const contents = xmlSerializer.serializeToString(element)
+
+  return {
+    _id,
+    objectType: ObjectTypes.ParagraphElement,
+    elementType: 'p',
+    contents,
+    placeholderInnerHTML,
+  }
+}
 
 export const buildColor = (value: string, priority: number): Build<Color> => ({
   _id: generateID(ObjectTypes.Color),

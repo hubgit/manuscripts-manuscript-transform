@@ -32,34 +32,35 @@ import {
   buildKeyword,
   buildLibraryCollection,
   buildManuscript,
+  buildParagraph,
   buildProject,
 } from '../builders'
 import { ExtraObjectTypes } from '../object-types'
 
 describe('commands', () => {
-  it('buildProject', () => {
+  test('build project', () => {
     const proj = buildProject('Mr Derp')
     expect(proj._id).toMatch(/MPProject:\S+/)
-    expect(proj.objectType).toEqual(ObjectTypes.Project)
+    expect(proj.objectType).toBe(ObjectTypes.Project)
     expect(proj.owners).toEqual(['Mr Derp'])
     expect(proj.writers).toEqual([])
     expect(proj.viewers).toEqual([])
-    expect(proj.title).toEqual('')
+    expect(proj.title).toBe('')
   })
 
-  it('buildManuscript', () => {
+  test('build manuscript', () => {
     const manuscriptA = buildManuscript('Teh title')
     expect(manuscriptA._id).toMatch(/MPManuscript:\S+/)
-    expect(manuscriptA.objectType).toEqual(ObjectTypes.Manuscript)
-    expect(manuscriptA.title).toEqual('Teh title')
+    expect(manuscriptA.objectType).toBe(ObjectTypes.Manuscript)
+    expect(manuscriptA.title).toBe('Teh title')
 
     const manuscriptB = buildManuscript()
     expect(manuscriptB._id).toMatch(/MPManuscript:\S+/)
-    expect(manuscriptB.objectType).toEqual(ObjectTypes.Manuscript)
-    expect(manuscriptB.title).toEqual('')
+    expect(manuscriptB.objectType).toBe(ObjectTypes.Manuscript)
+    expect(manuscriptB.title).toBe('')
   })
 
-  it('buildContributor', () => {
+  test('build contributor', () => {
     const name: BibliographicName = {
       _id: 'contributor-a',
       objectType: ObjectTypes.BibliographicName,
@@ -67,20 +68,20 @@ describe('commands', () => {
       family: 'Derp',
     }
     const contributor = buildContributor(name, 'author', 3)
-    expect(contributor.objectType).toEqual(ObjectTypes.Contributor)
-    expect(contributor.priority).toEqual(3)
-    expect(contributor.role).toEqual('author')
+    expect(contributor.objectType).toBe(ObjectTypes.Contributor)
+    expect(contributor.priority).toBe(3)
+    expect(contributor.role).toBe('author')
     expect(contributor.affiliations).toEqual([])
-    expect(contributor.bibliographicName.nonDroppingParticle).toEqual(
+    expect(contributor.bibliographicName.nonDroppingParticle).toBe(
       name.nonDroppingParticle
     )
-    expect(contributor.bibliographicName.family).toEqual(name.family)
-    expect(contributor.bibliographicName.objectType).toEqual(
+    expect(contributor.bibliographicName.family).toBe(name.family)
+    expect(contributor.bibliographicName.objectType).toBe(
       ObjectTypes.BibliographicName
     )
   })
 
-  it('buildBibliographyItem', () => {
+  test('build bibliography item', () => {
     const data: Partial<BibliographyItem> = {
       title: 'Bibliography item title',
       DOI: 'xyz',
@@ -88,33 +89,33 @@ describe('commands', () => {
     }
     const item = buildBibliographyItem(data)
     expect(item._id).toMatch(/MPBibliographyItem:\S+/)
-    expect(item.objectType).toMatch(ObjectTypes.BibliographyItem)
-    expect(item.title).toMatch(data.title!)
-    expect(item.DOI).toMatch(data.DOI!)
-    expect(item.URL).toMatch(data.URL!)
+    expect(item.objectType).toBe(ObjectTypes.BibliographyItem)
+    expect(item.title).toBe(data.title!)
+    expect(item.DOI).toBe(data.DOI!)
+    expect(item.URL).toBe(data.URL!)
   })
 
-  it('buildBibliographicName', () => {
+  test('build bibliographic name', () => {
     const name = {
       given: 'Herp',
       family: 'Derp',
     }
     const bibName = buildBibliographicName(name)
-    expect(bibName.given).toMatch(name.given)
-    expect(bibName.family).toMatch(name.family)
+    expect(bibName.given).toBe(name.given)
+    expect(bibName.family).toBe(name.family)
     expect(bibName._id).toMatch(/MPBibliographicName:\S+/)
-    expect(bibName.objectType).toMatch(ObjectTypes.BibliographicName)
+    expect(bibName.objectType).toBe(ObjectTypes.BibliographicName)
   })
 
-  it('buildBibliographicDate', () => {
+  test('build bibliographic date', () => {
     const cslDate = { 'date-parts': [['1998', '20', '1']] }
     const date = buildBibliographicDate(cslDate as Partial<CSL.Date>)
     expect(date._id).toMatch(/MPBibliographicDate:\S+/)
-    expect(date.objectType).toMatch(ObjectTypes.BibliographicDate)
+    expect(date.objectType).toBe(ObjectTypes.BibliographicDate)
     expect(date['date-parts']).toEqual(cslDate['date-parts'])
   })
 
-  it('buildAuxiliaryObjectReference', () => {
+  test('build auxiliary object reference', () => {
     const auxRef = buildAuxiliaryObjectReference('x', 'y')
     expect(auxRef._id).toMatch(/MPAuxiliaryObjectReference:\S+/)
     expect(auxRef.objectType).toMatch(ExtraObjectTypes.AuxiliaryObjectReference)
@@ -122,24 +123,24 @@ describe('commands', () => {
     expect(auxRef.referencedObject).toMatch('y')
   })
 
-  it('buildCitation', () => {
+  test('build citation', () => {
     const citation = buildCitation('x', ['y'])
     expect(citation._id).toMatch(/MPCitation:\S+/)
-    expect(citation.containingObject).toMatch('x')
-    expect(citation.embeddedCitationItems.length).toEqual(1)
-    expect(citation.embeddedCitationItems[0].objectType).toEqual(
+    expect(citation.containingObject).toBe('x')
+    expect(citation.embeddedCitationItems.length).toBe(1)
+    expect(citation.embeddedCitationItems[0].objectType).toBe(
       ObjectTypes.CitationItem
     )
   })
 
-  it('buildKeyword', () => {
+  test('build keyword', () => {
     const keyword = buildKeyword('foo')
-    expect(keyword.name).toMatch('foo')
+    expect(keyword.name).toBe('foo')
     expect(keyword._id).toMatch(/MPKeyword:\S+/)
     expect(keyword.objectType).toMatch(ObjectTypes.Keyword)
   })
 
-  it('buildLibraryCollection', () => {
+  test('build library collection', () => {
     const libraryCollection = buildLibraryCollection('Mr Derp', 'foo')
     expect(libraryCollection.owners).toEqual(['Mr Derp'])
     expect(libraryCollection.writers).toEqual([])
@@ -149,24 +150,36 @@ describe('commands', () => {
     expect(libraryCollection.objectType).toMatch(ObjectTypes.LibraryCollection)
   })
 
-  it('buildFigure', () => {
+  test('build figure', () => {
     const file = new Blob(['foo'], {
       type: 'image/png',
     })
 
     const fig = buildFigure(file as File)
     expect(fig._id).toMatch(/MPFigure:\S+/)
-    expect(fig.objectType).toMatch(ObjectTypes.Figure)
-    expect(fig.contentType).toMatch(file.type)
+    expect(fig.objectType).toBe(ObjectTypes.Figure)
+    expect(fig.contentType).toBe(file.type)
     expect(fig.src).toMatch(
       /^blob:https:\/\/localhost\/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}$/
     )
   })
 
-  it('buildAffiliation', () => {
+  test('build affiliation', () => {
     const aff = buildAffiliation('x')
     expect(aff._id).toMatch(/MPAffiliation:\S+/)
-    expect(aff.objectType).toMatch(ObjectTypes.Affiliation)
-    expect(aff.institution).toMatch('x')
+    expect(aff.objectType).toBe(ObjectTypes.Affiliation)
+    expect(aff.institution).toBe('x')
+  })
+
+  test('build paragraph', () => {
+    const placeholder = 'Start writing!'
+
+    const paragraph = buildParagraph(placeholder)
+    expect(paragraph._id).toMatch(/^MPParagraphElement:\S+$/)
+    expect(paragraph.objectType).toBe(ObjectTypes.ParagraphElement)
+    expect(paragraph.placeholderInnerHTML).toBe(placeholder)
+    expect(paragraph.contents).toBe(
+      `<p xmlns="http://www.w3.org/1999/xhtml" id="${paragraph._id}" class="MPElement" data-placeholder-text="${placeholder}"></p>`
+    )
   })
 })
