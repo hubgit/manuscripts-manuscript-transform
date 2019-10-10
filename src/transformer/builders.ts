@@ -26,6 +26,7 @@ import {
   EmbeddedModel,
   Figure,
   Footnote,
+  Highlight,
   InlineMathFragment,
   Keyword,
   LibraryCollection,
@@ -283,4 +284,9 @@ export const buildColor = (value: string, priority: number): Build<Color> => ({
   objectType: ObjectTypes.Color,
   priority,
   value,
+})
+
+export const buildHighlight = (): Build<Highlight> => ({
+  _id: generateID(ObjectTypes.Highlight),
+  objectType: ObjectTypes.Highlight,
 })

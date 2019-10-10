@@ -22,6 +22,7 @@ import {
   Figure,
   FigureElement,
   FootnotesElement,
+  HighlightMarker,
   ListElement,
   Listing,
   ListingElement,
@@ -59,6 +60,7 @@ import {
   TableNode,
   TOCElementNode,
 } from '../schema'
+import { insertHighlightMarkers } from './highlight-markers'
 import { generateNodeID } from './id'
 import { PlaceholderElement } from './models'
 import {
@@ -199,9 +201,15 @@ export class Decoder {
       const figcaptionNode: FigCaptionNode = schema.nodes.figcaption.create()
 
       const figcaption: FigCaptionNode = model.caption
-        ? this.parseContents(`<figcaption>${model.caption}</figcaption>`, {
-            topNode: figcaptionNode,
-          })
+        ? this.parseContents(
+            'caption',
+            model.caption,
+            'figcaption',
+            model.highlightMarkers,
+            {
+              topNode: figcaptionNode,
+            }
+          )
         : figcaptionNode
 
       // TODO: use layout to prefill figures?
@@ -226,7 +234,10 @@ export class Decoder {
 
             const figcaption: FigCaptionNode = figureModel.title
               ? this.parseContents(
-                  `<figcaption>${figureModel.title}</figcaption>`,
+                  'title',
+                  figureModel.title,
+                  'figcaption',
+                  figureModel.highlightMarkers,
                   {
                     topNode: figcaptionNode,
                   }
@@ -297,9 +308,15 @@ export class Decoder {
       const figcaptionNode: FigCaptionNode = schema.nodes.figcaption.create()
 
       const figcaption: FigCaptionNode = model.caption
-        ? this.parseContents(`<figcaption>${model.caption}</figcaption>`, {
-            topNode: figcaptionNode,
-          })
+        ? this.parseContents(
+            'caption',
+            model.caption,
+            'figcaption',
+            model.highlightMarkers,
+            {
+              topNode: figcaptionNode,
+            }
+          )
         : figcaptionNode
 
       return schema.nodes.equation_element.createChecked(
@@ -324,21 +341,33 @@ export class Decoder {
       switch (model.elementType) {
         case 'ol':
           // TODO: wrap inline text in paragraphs
-          return this.parseContents(model.contents || '<ol></ol>', {
-            topNode: schema.nodes.ordered_list.create({
-              id: model._id,
-              paragraphStyle: model.paragraphStyle,
-            }),
-          }) as OrderedListNode
+          return this.parseContents(
+            'contents',
+            model.contents || '<ol></ol>',
+            undefined,
+            model.highlightMarkers,
+            {
+              topNode: schema.nodes.ordered_list.create({
+                id: model._id,
+                paragraphStyle: model.paragraphStyle,
+              }),
+            }
+          ) as OrderedListNode
 
         case 'ul':
           // TODO: wrap inline text in paragraphs
-          return this.parseContents(model.contents || '<ul></ul>', {
-            topNode: schema.nodes.bullet_list.create({
-              id: model._id,
-              paragraphStyle: model.paragraphStyle,
-            }),
-          }) as BulletListNode
+          return this.parseContents(
+            'contents',
+            model.contents || '<ul></ul>',
+            undefined,
+            model.highlightMarkers,
+            {
+              topNode: schema.nodes.bullet_list.create({
+                id: model._id,
+                paragraphStyle: model.paragraphStyle,
+              }),
+            }
+          ) as BulletListNode
 
         default:
           throw new Error('Unknown list element type')
@@ -364,9 +393,15 @@ export class Decoder {
       const figcaptionNode: FigCaptionNode = schema.nodes.figcaption.create()
 
       const figcaption: FigCaptionNode = model.caption
-        ? this.parseContents(`<figcaption>${model.caption}</figcaption>`, {
-            topNode: figcaptionNode,
-          })
+        ? this.parseContents(
+            'caption',
+            model.caption,
+            'figcaption',
+            model.highlightMarkers,
+            {
+              topNode: figcaptionNode,
+            }
+          )
         : figcaptionNode
 
       return schema.nodes.listing_element.createChecked(
@@ -380,13 +415,19 @@ export class Decoder {
     [ObjectTypes.ParagraphElement]: data => {
       const model = data as ParagraphElement
 
-      return this.parseContents(model.contents || '<p></p>', {
-        topNode: schema.nodes.paragraph.create({
-          id: model._id,
-          paragraphStyle: model.paragraphStyle,
-          placeholder: model.placeholderInnerHTML,
-        }),
-      }) as ParagraphNode
+      return this.parseContents(
+        'contents',
+        model.contents || '<p></p>',
+        undefined,
+        model.highlightMarkers,
+        {
+          topNode: schema.nodes.paragraph.create({
+            id: model._id,
+            paragraphStyle: model.paragraphStyle,
+            placeholder: model.placeholderInnerHTML,
+          }),
+        }
+      ) as ParagraphNode
     },
     [ObjectTypes.Section]: data => {
       const model = data as Section
@@ -419,9 +460,15 @@ export class Decoder {
         .filter(isManuscriptNode)
 
       const sectionTitleNode: SectionTitleNode = model.title
-        ? this.parseContents(`<h1>${model.title}</h1>`, {
-            topNode: schema.nodes.section_title.create(),
-          })
+        ? this.parseContents(
+            'title',
+            model.title,
+            'h1',
+            model.highlightMarkers,
+            {
+              topNode: schema.nodes.section_title.create(),
+            }
+          )
         : schema.nodes.section_title.create()
 
       const nestedSections = getSections(this.modelMap)
@@ -455,11 +502,17 @@ export class Decoder {
       const tableModel = this.getModel<Table>(model.containedObjectID)
 
       const table: TableNode | PlaceholderNode = tableModel
-        ? (this.parseContents(tableModel.contents, {
-            topNode: schema.nodes.table.create({
-              id: tableModel._id,
-            }),
-          }) as TableNode)
+        ? (this.parseContents(
+            'contents',
+            tableModel.contents,
+            undefined,
+            tableModel.highlightMarkers,
+            {
+              topNode: schema.nodes.table.create({
+                id: tableModel._id,
+              }),
+            }
+          ) as TableNode)
         : (schema.nodes.placeholder.create({
             id: model.containedObjectID,
             label: 'A table',
@@ -468,9 +521,15 @@ export class Decoder {
       const figcaptionNode: FigCaptionNode = schema.nodes.figcaption.create()
 
       const figcaption: FigCaptionNode = model.caption
-        ? this.parseContents(`<figcaption>${model.caption}</figcaption>`, {
-            topNode: figcaptionNode,
-          })
+        ? this.parseContents(
+            'caption',
+            model.caption,
+            'figcaption',
+            model.highlightMarkers,
+            {
+              topNode: figcaptionNode,
+            }
+          )
         : figcaptionNode
 
       const content = [table, figcaption]
@@ -558,8 +617,22 @@ export class Decoder {
     )
   }
 
-  public parseContents = (contents: string, options?: ParseOptions) => {
-    const html = contents.trim()
+  public parseContents = (
+    field: string,
+    contents: string,
+    wrapper?: string,
+    highlightMarkers: HighlightMarker[] = [],
+    options?: ParseOptions
+  ) => {
+    const contentsWithHighlightMarkers = highlightMarkers.length
+      ? insertHighlightMarkers(field, contents, highlightMarkers)
+      : contents
+
+    const wrappedContents = wrapper
+      ? `<${wrapper}>${contentsWithHighlightMarkers}</${wrapper}>`
+      : contentsWithHighlightMarkers
+
+    const html = wrappedContents.trim()
 
     if (!html.length) {
       throw new Error('No HTML to parse')

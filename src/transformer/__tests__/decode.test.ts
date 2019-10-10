@@ -22,6 +22,7 @@ import {
 import { ManuscriptNode, ManuscriptNodeType, schema } from '../../schema'
 import { Decoder, getModelData, sortSectionsByPriority } from '../decode'
 import { createTestDoc, createTestModelMap } from './__helpers__/doc'
+import { createTestModelMapWithHighlights } from './__helpers__/highlights'
 
 const countDescendantsOfType = (
   node: ManuscriptNode,
@@ -121,5 +122,15 @@ describe('decoder', () => {
     expect(sortSectionsByPriority(sectionA, sectionA)).toEqual(0)
     expect(sortSectionsByPriority(sectionA, sectionB)).toEqual(-1)
     expect(sortSectionsByPriority(sectionB, sectionA)).toEqual(1)
+  })
+
+  test('decode highlight markers', () => {
+    const modelMap = createTestModelMapWithHighlights()
+
+    const decoder = new Decoder(modelMap)
+
+    const result = decoder.createArticleNode()
+
+    expect(result).toMatchSnapshot()
   })
 })

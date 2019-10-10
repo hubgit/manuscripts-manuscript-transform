@@ -65,7 +65,6 @@ export interface AuxiliaryObjectReference extends ContainedModel {
 export interface CommentSelector {
   from: number
   to: number
-  text: string
 }
 
 export interface CommentAnnotation extends ManuscriptModel {
@@ -73,6 +72,7 @@ export interface CommentAnnotation extends ManuscriptModel {
   selector?: CommentSelector
   target: string
   userID: string
+  originalText?: string
 }
 
 export interface PlaceholderElement extends ContainedModel {

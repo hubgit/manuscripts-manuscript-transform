@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`encoder 1`] = `
+exports[`encoder encode a test doc 1`] = `
 Map {
   "MPSection:DFCBE345-A12D-451E-8320-723F25D2F472" => Object {
     "_id": "MPSection:DFCBE345-A12D-451E-8320-723F25D2F472",
@@ -438,6 +438,126 @@ const x = 'y'",
     "contents": "<div xmlns=\\"http://www.w3.org/1999/xhtml\\" class=\\"csl-bib-body\\" id=\\"MPBibliographyElement:5987B3BA-D894-4700-90D6-114E20B9F3B1\\"></div>",
     "elementType": "div",
     "objectType": "MPBibliographyElement",
+  },
+}
+`;
+
+exports[`encoder encode highlight markers 1`] = `
+Map {
+  "MPSection:1" => Object {
+    "_id": "MPSection:1",
+    "category": undefined,
+    "elementIDs": Array [
+      "MPParagraphElement:1",
+      "MPFigureElement:1",
+    ],
+    "highlightMarkers": Array [
+      Object {
+        "_id": "MPHighlightMarker:3",
+        "field": "title",
+        "highlightID": "MPHighlight:2",
+        "objectType": "MPHighlightMarker",
+        "offset": 23,
+        "start": true,
+      },
+      Object {
+        "_id": "MPHighlightMarker:4",
+        "field": "title",
+        "highlightID": "MPHighlight:2",
+        "objectType": "MPHighlightMarker",
+        "offset": 32,
+        "start": false,
+      },
+    ],
+    "objectType": "MPSection",
+    "path": Array [
+      "MPSection:1",
+    ],
+    "priority": 1,
+    "title": "A section title with a highlight",
+    "titleSuppressed": undefined,
+  },
+  "MPParagraphElement:1" => Object {
+    "_id": "MPParagraphElement:1",
+    "contents": "<p xmlns=\\"http://www.w3.org/1999/xhtml\\" id=\\"MPParagraphElement:1\\" class=\\"MPElement MPParagraphStyle_1\\" data-object-type=\\"MPParagraphElement\\">This sentence contains a highlight.</p>",
+    "elementType": "p",
+    "highlightMarkers": Array [
+      Object {
+        "_id": "MPHighlightMarker:1",
+        "field": "contents",
+        "highlightID": "MPHighlight:1",
+        "objectType": "MPHighlightMarker",
+        "offset": 166,
+        "start": true,
+      },
+      Object {
+        "_id": "MPHighlightMarker:2",
+        "field": "contents",
+        "highlightID": "MPHighlight:1",
+        "objectType": "MPHighlightMarker",
+        "offset": 175,
+        "start": false,
+      },
+    ],
+    "objectType": "MPParagraphElement",
+    "paragraphStyle": "MPParagraphStyle:1",
+    "placeholderInnerHTML": "",
+  },
+  "MPFigureElement:1" => Object {
+    "_id": "MPFigureElement:1",
+    "caption": "A figure with a caption",
+    "containedObjectIDs": Array [
+      "MPFigure:1",
+    ],
+    "elementType": "figure",
+    "figureLayout": undefined,
+    "figureStyle": "MPFigureStyle:1",
+    "highlightMarkers": Array [
+      Object {
+        "_id": "MPHighlightMarker:5",
+        "field": "caption",
+        "highlightID": "MPHighlight:3",
+        "objectType": "MPHighlightMarker",
+        "offset": 16,
+        "start": true,
+      },
+      Object {
+        "_id": "MPHighlightMarker:6",
+        "field": "caption",
+        "highlightID": "MPHighlight:3",
+        "objectType": "MPHighlightMarker",
+        "offset": 23,
+        "start": false,
+      },
+    ],
+    "listingID": undefined,
+    "objectType": "MPFigureElement",
+    "suppressCaption": undefined,
+  },
+  "MPFigure:1" => Object {
+    "_id": "MPFigure:1",
+    "contentType": undefined,
+    "highlightMarkers": Array [
+      Object {
+        "_id": "MPHighlightMarker:7",
+        "field": "title",
+        "highlightID": "MPHighlight:4",
+        "objectType": "MPHighlightMarker",
+        "offset": 0,
+        "start": true,
+      },
+      Object {
+        "_id": "MPHighlightMarker:8",
+        "field": "title",
+        "highlightID": "MPHighlight:4",
+        "objectType": "MPHighlightMarker",
+        "offset": 1,
+        "start": false,
+      },
+    ],
+    "listingAttachment": undefined,
+    "objectType": "MPFigure",
+    "title": "A figure",
   },
 }
 `;

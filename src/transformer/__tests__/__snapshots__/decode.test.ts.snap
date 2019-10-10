@@ -3993,3 +3993,184 @@ const x = 'y'",
   "type": "manuscript",
 }
 `;
+
+exports[`decoder decode highlight markers 1`] = `
+Object {
+  "attrs": Object {
+    "id": "MPManuscript:1",
+  },
+  "content": Array [
+    Object {
+      "attrs": Object {
+        "category": "",
+        "id": "MPSection:1",
+        "titleSuppressed": false,
+      },
+      "content": Array [
+        Object {
+          "content": Array [
+            Object {
+              "text": "A section title with a ",
+              "type": "text",
+            },
+            Object {
+              "attrs": Object {
+                "id": "MPHighlightMarker:3",
+                "position": "start",
+                "rid": "MPHighlight:2",
+              },
+              "type": "highlight_marker",
+            },
+            Object {
+              "text": "highlight",
+              "type": "text",
+            },
+            Object {
+              "attrs": Object {
+                "id": "MPHighlightMarker:4",
+                "position": "end",
+                "rid": "MPHighlight:2",
+              },
+              "type": "highlight_marker",
+            },
+          ],
+          "type": "section_title",
+        },
+        Object {
+          "attrs": Object {
+            "id": "MPParagraphElement:1",
+            "paragraphStyle": "MPParagraphStyle:1",
+            "placeholder": "",
+          },
+          "content": Array [
+            Object {
+              "text": "This sentence contains a ",
+              "type": "text",
+            },
+            Object {
+              "attrs": Object {
+                "id": "MPHighlightMarker:1",
+                "position": "start",
+                "rid": "MPHighlight:1",
+              },
+              "type": "highlight_marker",
+            },
+            Object {
+              "text": "highlight",
+              "type": "text",
+            },
+            Object {
+              "attrs": Object {
+                "id": "MPHighlightMarker:2",
+                "position": "end",
+                "rid": "MPHighlight:1",
+              },
+              "type": "highlight_marker",
+            },
+            Object {
+              "text": ".",
+              "type": "text",
+            },
+          ],
+          "type": "paragraph",
+        },
+        Object {
+          "attrs": Object {
+            "figureLayout": "",
+            "figureStyle": "MPFigureStyle:1",
+            "id": "MPFigureElement:1",
+            "label": "",
+            "suppressCaption": false,
+          },
+          "content": Array [
+            Object {
+              "attrs": Object {
+                "contentType": "",
+                "id": "MPFigure:1",
+                "label": "",
+                "listingAttachment": undefined,
+                "src": "",
+              },
+              "content": Array [
+                Object {
+                  "content": Array [
+                    Object {
+                      "attrs": Object {
+                        "id": "MPHighlightMarker:7",
+                        "position": "start",
+                        "rid": "MPHighlight:4",
+                      },
+                      "type": "highlight_marker",
+                    },
+                    Object {
+                      "text": "A",
+                      "type": "text",
+                    },
+                    Object {
+                      "attrs": Object {
+                        "id": "MPHighlightMarker:8",
+                        "position": "end",
+                        "rid": "MPHighlight:4",
+                      },
+                      "type": "highlight_marker",
+                    },
+                    Object {
+                      "text": " figure",
+                      "type": "text",
+                    },
+                  ],
+                  "type": "figcaption",
+                },
+              ],
+              "type": "figure",
+            },
+            Object {
+              "content": Array [
+                Object {
+                  "text": "A figure with a ",
+                  "type": "text",
+                },
+                Object {
+                  "attrs": Object {
+                    "id": "MPHighlightMarker:5",
+                    "position": "start",
+                    "rid": "MPHighlight:3",
+                  },
+                  "type": "highlight_marker",
+                },
+                Object {
+                  "text": "caption",
+                  "type": "text",
+                },
+                Object {
+                  "attrs": Object {
+                    "id": "MPHighlightMarker:6",
+                    "position": "end",
+                    "rid": "MPHighlight:3",
+                  },
+                  "type": "highlight_marker",
+                },
+              ],
+              "type": "figcaption",
+            },
+            Object {
+              "attrs": Object {
+                "contents": "",
+                "id": "",
+                "isExecuting": false,
+                "isExpanded": false,
+                "language": "",
+                "languageKey": "null",
+              },
+              "type": "listing",
+            },
+          ],
+          "type": "figure_element",
+        },
+      ],
+      "type": "section",
+    },
+  ],
+  "type": "manuscript",
+}
+`;

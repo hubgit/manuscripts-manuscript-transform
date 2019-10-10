@@ -784,6 +784,7 @@ export class JATSTransformer {
         { id: normalizeID(node.attrs.id) },
       ],
       hard_break: () => ['break'],
+      highlight_marker: () => '',
       inline_equation: node => {
         const formula = this.document.createElement('inline-formula')
 

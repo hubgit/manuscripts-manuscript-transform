@@ -43,6 +43,11 @@ import {
   schema,
   TableElementNode,
 } from '../schema'
+import { isHighlightMarkerNode } from '../schema/nodes/highlight_marker'
+import {
+  extractHighlightMarkers,
+  isHighlightableModel,
+} from './highlight-markers'
 import { PlaceholderElement } from './models'
 import { nodeTypesMap } from './node-types'
 import { buildSectionCategory } from './section-category'
@@ -389,13 +394,19 @@ export const modelFromNode = (
 ): Model => {
   // TODO: in handlePaste, filter out non-standard IDs
 
-  const model = {
+  const data = {
     ...modelData(node, parent, path, priority),
     _id: node.attrs.id,
     objectType: nodeTypesMap.get(node.type)!,
   }
 
-  return model as Model
+  const model = data as Model
+
+  if (isHighlightableModel(model)) {
+    extractHighlightMarkers(model)
+  }
+
+  return model
 }
 
 interface PrioritizedValue {
@@ -415,6 +426,7 @@ export const encode = (node: ManuscriptNode): Map<string, Model> => {
     child: ManuscriptNode
   ) => {
     if (!child.attrs.id) return
+    if (isHighlightMarkerNode(child)) return
     if (placeholders.includes(child.type.name)) return
 
     const model = modelFromNode(child, parent, path, priority)
