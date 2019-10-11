@@ -16,12 +16,15 @@
 
 import {
   Affiliation,
+  AuxiliaryObjectReference,
   BibliographicDate,
   BibliographicName,
   BibliographyItem,
   Citation,
   CitationItem,
   Color,
+  CommentAnnotation,
+  Contribution,
   Contributor,
   EmbeddedModel,
   Figure,
@@ -40,14 +43,8 @@ import {
 import { xmlSerializer } from '../transformer/serializer'
 import { CSL } from '../types/csl'
 import { generateID } from './id'
-import {
-  AuxiliaryObjectReference,
-  CommentAnnotation,
-  CommentSelector,
-  ManuscriptModel,
-  ModelAttachment,
-} from './models'
-import { ExtraObjectTypes } from './object-types'
+import { CommentSelector, ManuscriptModel, ModelAttachment } from './models'
+import { timestamp } from './timestamp'
 
 export const DEFAULT_BUNDLE = 'MPBundle:www-zotero-org-styles-nature'
 export const DEFAULT_PAGE_LAYOUT = 'MPPageLayout:defaultA4'
@@ -133,8 +130,8 @@ export const buildAuxiliaryObjectReference = (
   containingObject: string,
   referencedObject: string
 ): Build<AuxiliaryObjectReference> => ({
-  _id: generateID(ExtraObjectTypes.AuxiliaryObjectReference),
-  objectType: ExtraObjectTypes.AuxiliaryObjectReference,
+  _id: generateID(ObjectTypes.AuxiliaryObjectReference),
+  objectType: ObjectTypes.AuxiliaryObjectReference,
   containingObject,
   referencedObject,
 })
@@ -208,14 +205,12 @@ export const buildUserProfileAffiliation = (
 })
 
 export const buildComment = (
-  userID: string,
   target: string,
   contents: string = '',
   selector?: CommentSelector
 ): Build<CommentAnnotation> => ({
-  _id: generateID(ExtraObjectTypes.CommentAnnotation),
-  objectType: ExtraObjectTypes.CommentAnnotation,
-  userID,
+  _id: generateID(ObjectTypes.CommentAnnotation),
+  objectType: ObjectTypes.CommentAnnotation,
   target,
   selector,
   contents,
@@ -289,4 +284,11 @@ export const buildColor = (value: string, priority: number): Build<Color> => ({
 export const buildHighlight = (): Build<Highlight> => ({
   _id: generateID(ObjectTypes.Highlight),
   objectType: ObjectTypes.Highlight,
+})
+
+export const buildContribution = (profileID: string): Contribution => ({
+  _id: generateID(ObjectTypes.Contribution),
+  objectType: ObjectTypes.Contribution,
+  profileID,
+  timestamp: timestamp(),
 })

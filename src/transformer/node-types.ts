@@ -22,7 +22,7 @@ export const nodeTypesMap: Map<ManuscriptNodeType, string> = new Map([
   [schema.nodes.bibliography_section, ObjectTypes.Section],
   [schema.nodes.bullet_list, ObjectTypes.ListElement],
   [schema.nodes.citation, ObjectTypes.Citation],
-  [schema.nodes.cross_reference, 'MPAuxiliaryObjectReference'],
+  [schema.nodes.cross_reference, ObjectTypes.AuxiliaryObjectReference],
   [schema.nodes.equation, ObjectTypes.Equation],
   [schema.nodes.equation_element, ObjectTypes.EquationElement],
   [schema.nodes.figure, ObjectTypes.Figure],

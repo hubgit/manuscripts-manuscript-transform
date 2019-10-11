@@ -16,6 +16,7 @@
 
 import {
   Affiliation,
+  AuxiliaryObjectReference,
   Citation,
   Contributor,
   Model,
@@ -35,7 +36,6 @@ import {
   schema,
 } from '../schema'
 import { generateAttachmentFilename } from './filename'
-import { AuxiliaryObjectReference } from './models'
 import { isNodeType } from './node-types'
 import { hasObjectType } from './object-types'
 import { findManuscript } from './project-bundle'

@@ -16,6 +16,7 @@
 
 import {
   Affiliation,
+  AuxiliaryObjectReference,
   BibliographyItem,
   Citation,
   Contributor,
@@ -41,7 +42,6 @@ import {
 } from '../schema'
 import { generateAttachmentFilename } from './filename'
 import { selectVersionIds, Version } from './jats-versions'
-import { AuxiliaryObjectReference } from './models'
 import { isExecutableNode, isNodeType } from './node-types'
 import { hasObjectType } from './object-types'
 import {

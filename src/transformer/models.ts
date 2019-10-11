@@ -56,23 +56,9 @@ export interface ManuscriptProps {
 
 export type ManuscriptModel = ContainedModel & ManuscriptProps
 
-export interface AuxiliaryObjectReference extends ContainedModel {
-  containingObject: string
-  referencedObject: string
-  auxiliaryObjectReferenceStyle?: string
-}
-
 export interface CommentSelector {
   from: number
   to: number
-}
-
-export interface CommentAnnotation extends ManuscriptModel {
-  contents: string
-  selector?: CommentSelector
-  target: string
-  userID: string
-  originalText?: string
 }
 
 export interface PlaceholderElement extends ContainedModel {

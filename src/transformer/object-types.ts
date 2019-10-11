@@ -25,8 +25,6 @@ import {
 import { ManuscriptModel, UserProfileWithAvatar } from './models'
 
 export enum ExtraObjectTypes {
-  AuxiliaryObjectReference = 'MPAuxiliaryObjectReference',
-  CommentAnnotation = 'MPCommentAnnotation',
   PlaceholderElement = 'MPPlaceholderElement',
 }
 
@@ -45,7 +43,7 @@ export const elementObjects = [
 export const manuscriptObjects = [
   ObjectTypes.Affiliation,
   ObjectTypes.Citation,
-  ExtraObjectTypes.CommentAnnotation,
+  ObjectTypes.CommentAnnotation,
   ObjectTypes.Contributor,
   ObjectTypes.Footnote,
   ObjectTypes.InlineMathFragment,

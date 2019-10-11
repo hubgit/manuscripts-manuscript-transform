@@ -35,7 +35,6 @@ import {
   buildParagraph,
   buildProject,
 } from '../builders'
-import { ExtraObjectTypes } from '../object-types'
 
 describe('commands', () => {
   test('build project', () => {
@@ -118,7 +117,7 @@ describe('commands', () => {
   test('build auxiliary object reference', () => {
     const auxRef = buildAuxiliaryObjectReference('x', 'y')
     expect(auxRef._id).toMatch(/MPAuxiliaryObjectReference:\S+/)
-    expect(auxRef.objectType).toMatch(ExtraObjectTypes.AuxiliaryObjectReference)
+    expect(auxRef.objectType).toMatch(ObjectTypes.AuxiliaryObjectReference)
     expect(auxRef.containingObject).toMatch('x')
     expect(auxRef.referencedObject).toMatch('y')
   })
