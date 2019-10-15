@@ -46,6 +46,17 @@ export const link: NodeSpec = {
         }
       },
     },
+    {
+      tag: 'span.citation[data-href]',
+      getAttrs: span => {
+        const dom = span as HTMLSpanElement
+
+        return {
+          href: dom.getAttribute('data-href') || '',
+        }
+      },
+      priority: 80,
+    },
   ],
   toDOM: node => ['a', node.attrs, 0],
 }

@@ -38,7 +38,7 @@ export const citation: NodeSpec = {
   },
   parseDOM: [
     {
-      tag: 'span.citation',
+      tag: 'span.citation[data-reference-id]',
       getAttrs: p => {
         const dom = p as HTMLSpanElement
 
