@@ -3994,6 +3994,92 @@ const x = 'y'",
 }
 `;
 
+exports[`decoder decode citations 1`] = `
+Object {
+  "attrs": Object {
+    "id": "MPManuscript:1",
+  },
+  "content": Array [
+    Object {
+      "attrs": Object {
+        "category": "",
+        "id": "MPSection:1",
+        "titleSuppressed": false,
+      },
+      "content": Array [
+        Object {
+          "content": Array [
+            Object {
+              "text": "A section",
+              "type": "text",
+            },
+          ],
+          "type": "section_title",
+        },
+        Object {
+          "attrs": Object {
+            "id": "MPParagraphElement:1",
+            "paragraphStyle": "MPParagraphStyle:1",
+            "placeholder": "",
+          },
+          "content": Array [
+            Object {
+              "text": "This sentence contains a citation",
+              "type": "text",
+            },
+            Object {
+              "attrs": Object {
+                "contents": "1",
+                "rid": "MPCitation:1",
+                "selectedText": "",
+              },
+              "type": "citation",
+            },
+            Object {
+              "text": ".",
+              "type": "text",
+            },
+          ],
+          "type": "paragraph",
+        },
+        Object {
+          "attrs": Object {
+            "id": "MPParagraphElement:2",
+            "paragraphStyle": "MPParagraphStyle:1",
+            "placeholder": "",
+          },
+          "content": Array [
+            Object {
+              "text": "This sentence contains a citation",
+              "type": "text",
+            },
+            Object {
+              "attrs": Object {
+                "href": "https://example.com",
+              },
+              "content": Array [
+                Object {
+                  "text": "example.com",
+                  "type": "text",
+                },
+              ],
+              "type": "link",
+            },
+            Object {
+              "text": ".",
+              "type": "text",
+            },
+          ],
+          "type": "paragraph",
+        },
+      ],
+      "type": "section",
+    },
+  ],
+  "type": "manuscript",
+}
+`;
+
 exports[`decoder decode highlight markers 1`] = `
 Object {
   "attrs": Object {
