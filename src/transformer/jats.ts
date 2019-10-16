@@ -913,7 +913,9 @@ export class JATSTransformer {
 
       node.forEach(childNode => {
         if (childNode.type === contentNodeType) {
-          element.appendChild(this.serializeNode(childNode))
+          if (childNode.attrs.id) {
+            element.appendChild(this.serializeNode(childNode))
+          }
         }
       })
 
@@ -1065,6 +1067,15 @@ export class JATSTransformer {
               // replace the figure element with the figure
               if (figureGroup.parentElement) {
                 figureGroup.parentElement.replaceChild(figure, figureGroup)
+              }
+            }
+
+            // remove empty figure group
+            if (figures.length === 0 && !caption) {
+              const parent = figureGroup.parentNode
+
+              if (parent) {
+                parent.removeChild(figureGroup)
               }
             }
           }

@@ -23,6 +23,7 @@ import {
 } from '@manuscripts/manuscripts-json-schema'
 import { parseXml } from 'libxmljs2'
 import { JATSTransformer } from '../jats'
+import { isFigure } from '../object-types'
 import { parseProjectBundle, ProjectBundle } from '../project-bundle'
 import { submissions } from './__helpers__/submissions'
 
@@ -308,5 +309,32 @@ describe('jats', () => {
     expect(refs[0].text()).toBe('1,2')
     expect(refs[1].child(0)!.type()).toBe('text')
     expect(refs[1].text()).toBe('3–5')
+  })
+
+  test('Export with empty figure', () => {
+    const projectBundle = cloneProjectBundle(input)
+
+    for (const model of projectBundle.data) {
+      if (isFigure(model)) {
+        delete model._id
+        break
+      }
+    }
+
+    const { doc, modelMap } = parseProjectBundle(projectBundle)
+
+    const transformer = new JATSTransformer()
+    const xml = transformer.serializeToJATS(doc.content, modelMap)
+
+    const { errors } = parseXMLWithDTD(xml)
+    expect(errors).toHaveLength(0)
+
+    const output = parseXMLWithDTD(xml)
+
+    const figures = output.find('//fig')
+    expect(figures).toHaveLength(3)
+
+    const figureGroups = output.find('//fig-group')
+    expect(figureGroups).toHaveLength(0)
   })
 })
