@@ -114,7 +114,8 @@ export class JATSTransformer {
     modelMap: Map<string, Model>,
     version: Version = '1.2',
     doi?: string,
-    id?: string
+    id?: string,
+    frontMatterOnly: boolean = false
   ) => {
     this.modelMap = modelMap
     this.models = Array.from(this.modelMap.values())
@@ -144,13 +145,15 @@ export class JATSTransformer {
     const front = this.buildFront(doi, id)
     article.appendChild(front)
 
-    const body = this.buildBody(fragment)
-    article.appendChild(body)
+    if (!frontMatterOnly) {
+      const body = this.buildBody(fragment)
+      article.appendChild(body)
 
-    const back = this.buildBack()
-    article.appendChild(back)
+      const back = this.buildBack()
+      article.appendChild(back)
 
-    this.moveAbstract(front, body)
+      this.moveAbstract(front, body)
+    }
 
     return xmlSerializer.serializeToString(this.document)
   }

@@ -337,4 +337,37 @@ describe('jats', () => {
     const figureGroups = output.find('//fig-group')
     expect(figureGroups).toHaveLength(0)
   })
+
+  test('Only export front matter', () => {
+    const projectBundle = cloneProjectBundle(input)
+
+    const { doc, modelMap } = parseProjectBundle(projectBundle)
+
+    const transformer = new JATSTransformer()
+    const xml = transformer.serializeToJATS(
+      doc.content,
+      modelMap,
+      '1.2',
+      '10.1234/5678',
+      '4567',
+      true
+    )
+
+    const { errors } = parseXMLWithDTD(xml)
+    expect(errors).toHaveLength(0)
+
+    const output = parseXMLWithDTD(xml)
+
+    const front = output.find('//front')
+    expect(front).toHaveLength(1)
+
+    const doi = output.find('//article-id[@pub-id-type="doi"]')
+    expect(doi).toHaveLength(1)
+
+    const body = output.find('//body')
+    expect(body).toHaveLength(0)
+
+    const back = output.find('//back')
+    expect(back).toHaveLength(0)
+  })
 })
