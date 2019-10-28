@@ -327,6 +327,15 @@ export class Decoder {
         content
       ) as FigureElementNode
     },
+    [ObjectTypes.Equation]: (data) => {
+      const model = data as Equation
+
+      return schema.nodes.equation.createChecked({
+        id: model._id,
+        SVGStringRepresentation: model.SVGStringRepresentation,
+        TeXRepresentation: model.TeXRepresentation,
+      }) as EquationNode
+    },
     [ObjectTypes.EquationElement]: (data) => {
       const model = data as EquationElement
 
@@ -426,6 +435,16 @@ export class Decoder {
         default:
           throw new Error('Unknown list element type')
       }
+    },
+    [ObjectTypes.Listing]: (data) => {
+      const model = data as Listing
+
+      return schema.nodes.listing.createChecked({
+        id: model._id,
+        contents: model.contents,
+        language: model.language,
+        languageKey: model.languageKey,
+      }) as ListingNode
     },
     [ObjectTypes.ListingElement]: (data) => {
       const model = data as ListingElement
