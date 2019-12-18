@@ -604,9 +604,11 @@ export class Decoder {
       .filter(isManuscriptNode) as SectionNode[]
 
     if (!rootSectionNodes.length) {
-      rootSectionNodes.push(schema.nodes.section.createAndFill({
-        id: generateNodeID(schema.nodes.section),
-      }) as SectionNode)
+      rootSectionNodes.push(
+        schema.nodes.section.createAndFill({
+          id: generateNodeID(schema.nodes.section),
+        }) as SectionNode
+      )
     }
 
     return schema.nodes.manuscript.create(
