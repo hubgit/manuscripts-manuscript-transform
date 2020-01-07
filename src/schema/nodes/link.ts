@@ -19,6 +19,7 @@ import { ManuscriptNode } from '../types'
 
 interface Attrs {
   href: string
+  title?: string
 }
 
 export interface LinkNode extends ManuscriptNode {
@@ -30,6 +31,7 @@ export const link: NodeSpec = {
   marks: '', // no marks
   attrs: {
     href: { default: '' },
+    title: { default: '' },
   },
   inline: true,
   group: 'inline',
@@ -43,6 +45,7 @@ export const link: NodeSpec = {
 
         return {
           href: dom.getAttribute('href') || '',
+          title: dom.getAttribute('title') || '',
         }
       },
     },
@@ -58,5 +61,15 @@ export const link: NodeSpec = {
       priority: 80,
     },
   ],
-  toDOM: node => ['a', node.attrs, 0],
+  toDOM: node => {
+    const { href, title } = node.attrs
+
+    const attrs: { [key: string]: string } = { href }
+
+    if (title) {
+      attrs.title = title
+    }
+
+    return ['a', attrs, 0]
+  },
 }

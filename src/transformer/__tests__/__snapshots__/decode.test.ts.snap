@@ -4056,6 +4056,7 @@ Object {
             Object {
               "attrs": Object {
                 "href": "https://example.com",
+                "title": "",
               },
               "content": Array [
                 Object {
