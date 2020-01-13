@@ -17,37 +17,35 @@
 import { NodeSpec } from 'prosemirror-model'
 import { ManuscriptNode } from '../types'
 
-export interface ActualManuscriptNode extends ManuscriptNode {
-  attrs: {
-    id: string
-  }
+interface Attrs {
+  id: string
 }
 
-export const manuscript: NodeSpec = {
-  content: '(section | bibliography_section | keywords_section | toc_section)+',
+export interface KeywordsSectionNode extends ManuscriptNode {
+  attrs: Attrs
+}
+
+export const keywordsSection: NodeSpec = {
+  content: 'section_title keywords_element',
   attrs: {
     id: { default: '' },
   },
-  group: 'block',
+  group: 'block sections',
+  selectable: false,
   parseDOM: [
     {
-      tag: 'article',
-      getAttrs: p => {
-        const dom = p as HTMLElement
-
-        return {
-          id: dom.getAttribute('id'),
-        }
-      },
+      tag: 'section.keywords',
     },
   ],
   toDOM: node => {
-    const manuscriptNode = node as ActualManuscriptNode
+    const keywordsSectionNode = node as KeywordsSectionNode
 
     return [
-      'article',
+      'section',
       {
-        id: manuscriptNode.attrs.id,
+        id: keywordsSectionNode.attrs.id,
+        class: 'keywords',
+        spellcheck: 'false',
       },
       0,
     ]

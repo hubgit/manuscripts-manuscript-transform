@@ -23,6 +23,7 @@ import {
   Footnote,
   FootnotesElement,
   InlineMathFragment,
+  KeywordsElement,
   ListElement,
   Listing,
   ListingElement,
@@ -59,6 +60,12 @@ const contents = (node: ManuscriptNode): string => {
   const output = serializer.serializeNode(node) as HTMLElement
 
   return xmlSerializer.serializeToString(output)
+}
+
+const htmlContents = (node: ManuscriptNode): string => {
+  const output = serializer.serializeNode(node) as HTMLElement
+
+  return output.outerHTML
 }
 
 export const inlineContents = (node: ManuscriptNode): string =>
@@ -324,6 +331,19 @@ const encoders: NodeEncoderMap = {
     TeXRepresentation: node.attrs.TeXRepresentation,
     SVGRepresentation: node.attrs.SVGRepresentation,
     SVGGlyphs: svgDefs(node.attrs.SVGRepresentation),
+  }),
+  keywords_element: (node): Partial<KeywordsElement> => ({
+    contents: htmlContents(node),
+    elementType: 'div',
+  }),
+  keywords_section: (node, parent, path, priority): Partial<Section> => ({
+    category: buildSectionCategory(node),
+    priority: priority.value++,
+    title: inlineContentsOfNodeType(node, node.type.schema.nodes.section_title),
+    path: path.concat([node.attrs.id]),
+    elementIDs: childElements(node)
+      .map(childNode => childNode.attrs.id)
+      .filter(id => id),
   }),
   ordered_list: (node): Partial<ListElement> => ({
     elementType: 'ol',

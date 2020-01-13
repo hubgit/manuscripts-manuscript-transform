@@ -17,13 +17,15 @@
 import projectDumpWithCitations from '@manuscripts/examples/data/project-dump-2.json'
 import projectDump from '@manuscripts/examples/data/project-dump.json'
 import {
+  Keyword,
+  Manuscript,
   ObjectTypes,
   ParagraphElement,
   Section,
 } from '@manuscripts/manuscripts-json-schema'
 import { parseXml } from 'libxmljs2'
 import { JATSTransformer } from '../jats'
-import { isFigure } from '../object-types'
+import { isFigure, isManuscript } from '../object-types'
 import { parseProjectBundle, ProjectBundle } from '../project-bundle'
 import { submissions } from './__helpers__/submissions'
 
@@ -369,5 +371,63 @@ describe('jats', () => {
 
     const back = output.find('//back')
     expect(back).toHaveLength(0)
+  })
+
+  test('handle keywords', () => {
+    const projectBundle = cloneProjectBundle(input)
+
+    const { doc, modelMap } = parseProjectBundle(projectBundle)
+
+    const keywords: Keyword[] = [
+      {
+        _id: 'MPKeyword:1',
+        objectType: 'MPKeyword',
+        createdAt: 0,
+        updatedAt: 0,
+        name: 'Foo',
+        containerID: 'MPProject:1',
+        sessionID: 'foo',
+        priority: 0,
+      },
+      {
+        _id: 'MPKeyword:2',
+        objectType: 'MPKeyword',
+        createdAt: 0,
+        updatedAt: 0,
+        name: 'Bar',
+        containerID: 'MPProject:1',
+        sessionID: 'foo',
+        priority: 0,
+      },
+    ]
+
+    for (const keyword of keywords) {
+      modelMap.set(keyword._id, keyword)
+    }
+
+    const manuscript = Array.from(modelMap.values()).find(
+      isManuscript
+    ) as Manuscript
+
+    manuscript.keywordIDs = keywords.map(keyword => keyword._id)
+
+    const transformer = new JATSTransformer()
+    const xml = transformer.serializeToJATS(
+      doc.content,
+      modelMap,
+      '1.2',
+      '10.0000/123',
+      '123'
+    )
+
+    expect(xml).toMatchSnapshot('jats-export-keywords')
+
+    const output = parseXMLWithDTD(xml)
+
+    const kwds = output.find('//kwd-group[@kwd-group-type="author"]/kwd')
+
+    expect(kwds).toHaveLength(2)
+    expect(kwds[0]!.text()).toBe('Foo')
+    expect(kwds[1]!.text()).toBe('Bar')
   })
 })

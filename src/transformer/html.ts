@@ -90,6 +90,16 @@ export class HTMLTransformer {
     }
     articleMeta.appendChild(articleTitle)
 
+    this.buildContributors(articleMeta)
+
+    // if (manuscript.keywordIDs) {
+    //   this.buildKeywords(articleMeta, manuscript.keywordIDs)
+    // }
+
+    return front
+  }
+
+  private buildContributors(articleMeta: HTMLDivElement) {
     const contributors = Array.from(this.modelMap.values()).filter(
       hasObjectType<Contributor>(ObjectTypes.Contributor)
     )
@@ -152,7 +162,7 @@ export class HTMLTransformer {
 
       affiliations.forEach(affiliation => {
         const affiliationItem = this.document.createElement('li')
-        affiliationItem.classList.add('affiliation-list-item')
+        affiliationItem.classList.add('affiliations-list-item')
         affiliationItem.setAttribute('id', affiliation._id)
 
         // TODO: all the institution fields
@@ -163,9 +173,26 @@ export class HTMLTransformer {
         affiliationList.appendChild(affiliationItem)
       })
     }
-
-    return front
   }
+
+  // private buildKeywords(articleMeta: Node, keywordIDs: string[]) {
+  //   const keywords = keywordIDs
+  //     .map(id => this.modelMap.get(id) as Keyword | undefined)
+  //     .filter(model => model && model.name) as Keyword[]
+  //
+  //   if (keywords.length) {
+  //     const keywordsList = this.document.createElement('ol')
+  //     keywordsList.classList.add('keywords-list')
+  //     articleMeta.appendChild(keywordsList)
+  //
+  //     for (const keyword of keywords) {
+  //       const kwd = this.document.createElement('li')
+  //       kwd.classList.add('keywords-list-item')
+  //       kwd.textContent = keyword.name
+  //       keywordsList.appendChild(kwd)
+  //     }
+  //   }
+  // }
 
   private buildBody = (fragment: ManuscriptFragment) => {
     const getModel = <T extends Model>(id?: string) =>

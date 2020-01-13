@@ -21,6 +21,7 @@ import {
   Citation,
   Contributor,
   Footnote,
+  Keyword,
   Model,
   ObjectTypes,
 } from '@manuscripts/manuscripts-json-schema'
@@ -309,6 +310,24 @@ export class JATSTransformer {
     }
   }
 
+  private buildKeywords(articleMeta: Node, keywordIDs: string[]) {
+    const keywords = keywordIDs
+      .map(id => this.modelMap.get(id) as Keyword | undefined)
+      .filter(model => model && model.name) as Keyword[]
+
+    if (keywords.length) {
+      const kwdGroup = this.document.createElement('kwd-group')
+      kwdGroup.setAttribute('kwd-group-type', 'author')
+      articleMeta.appendChild(kwdGroup)
+
+      for (const keyword of keywords) {
+        const kwd = this.document.createElement('kwd')
+        kwd.textContent = keyword.name
+        kwdGroup.appendChild(kwd)
+      }
+    }
+  }
+
   // tslint:disable-next-line:cyclomatic-complexity
   private buildFront = (doi?: string, id?: string) => {
     const manuscript = findManuscript(this.modelMap)
@@ -387,6 +406,10 @@ export class JATSTransformer {
     }
 
     this.buildContributors(articleMeta)
+
+    if (manuscript.keywordIDs) {
+      this.buildKeywords(articleMeta, manuscript.keywordIDs)
+    }
 
     return front
   }
@@ -805,6 +828,8 @@ export class JATSTransformer {
 
         return xref
       },
+      keywords_element: () => '',
+      keywords_section: () => '',
       link: node => {
         const text = node.textContent
 

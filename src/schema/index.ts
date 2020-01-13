@@ -42,6 +42,8 @@ import { hardBreak } from './nodes/hard_break'
 import { highlightMarker } from './nodes/highlight_marker'
 import { inlineEquation } from './nodes/inline_equation'
 import { inlineFootnote } from './nodes/inline_footnote'
+import { keywordsElement } from './nodes/keywords_element'
+import { keywordsSection } from './nodes/keywords_section'
 import { link } from './nodes/link'
 import { bulletList, listItem, orderedList } from './nodes/list'
 import { listing } from './nodes/listing'
@@ -77,6 +79,8 @@ export * from './nodes/hard_break'
 export * from './nodes/highlight_marker'
 export * from './nodes/inline_equation'
 export * from './nodes/inline_footnote'
+export * from './nodes/keywords_element'
+export * from './nodes/keywords_section'
 export * from './nodes/link'
 export * from './nodes/list'
 export * from './nodes/listing'
@@ -123,6 +127,8 @@ export const schema = new Schema<Nodes, Marks>({
     highlight_marker: highlightMarker,
     inline_equation: inlineEquation,
     inline_footnote: inlineFootnote,
+    keywords_element: keywordsElement,
+    keywords_section: keywordsSection,
     link,
     list_item: listItem,
     listing,

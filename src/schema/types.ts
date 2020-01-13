@@ -61,6 +61,8 @@ export type Nodes =
   | 'highlight_marker'
   | 'inline_equation'
   | 'inline_footnote'
+  | 'keywords_element'
+  | 'keywords_section'
   | 'link'
   | 'list_item'
   | 'listing'

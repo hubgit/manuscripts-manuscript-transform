@@ -24,6 +24,9 @@ export const chooseSectionNodeType = (
     case 'MPSectionCategory:bibliography':
       return schema.nodes.bibliography_section
 
+    case 'MPSectionCategory:keywords':
+      return schema.nodes.keywords_section
+
     case 'MPSectionCategory:toc':
       return schema.nodes.toc_section
 
@@ -42,6 +45,9 @@ export const guessSectionCategory = (
     case ObjectTypes.BibliographyElement:
       return 'MPSectionCategory:bibliography'
 
+    case ObjectTypes.KeywordsElement:
+      return 'MPSectionCategory:keywords'
+
     case ObjectTypes.TOCElement:
       return 'MPSectionCategory:toc'
 
@@ -54,6 +60,9 @@ export const buildSectionCategory = (node: ManuscriptNode) => {
   switch (node.type) {
     case schema.nodes.bibliography_section:
       return 'MPSectionCategory:bibliography'
+
+    case schema.nodes.keywords_section:
+      return 'MPSectionCategory:keywords'
 
     case schema.nodes.toc_section:
       return 'MPSectionCategory:toc'

@@ -15,41 +15,52 @@
  */
 
 import { NodeSpec } from 'prosemirror-model'
+import { nodeFromHTML } from '../../lib/html'
 import { ManuscriptNode } from '../types'
 
-export interface ActualManuscriptNode extends ManuscriptNode {
-  attrs: {
-    id: string
-  }
+interface Attrs {
+  id: string
+  contents: string
 }
 
-export const manuscript: NodeSpec = {
-  content: '(section | bibliography_section | keywords_section | toc_section)+',
+export interface KeywordsElementNode extends ManuscriptNode {
+  attrs: Attrs
+}
+
+const createBodyElement = (node: ManuscriptNode) => {
+  const dom = document.createElement('div')
+  dom.className = 'manuscript-keywords'
+  dom.id = node.attrs.id
+
+  return dom
+}
+
+export const keywordsElement: NodeSpec = {
+  atom: true,
   attrs: {
     id: { default: '' },
+    contents: { default: '' },
   },
   group: 'block',
+  selectable: false,
   parseDOM: [
     {
-      tag: 'article',
+      tag: 'div.manuscript-keywords',
       getAttrs: p => {
-        const dom = p as HTMLElement
+        const dom = p as HTMLDivElement
 
         return {
-          id: dom.getAttribute('id'),
+          contents: dom.innerHTML,
         }
       },
     },
   ],
   toDOM: node => {
-    const manuscriptNode = node as ActualManuscriptNode
+    const keywordsElementNode = node as KeywordsElementNode
 
-    return [
-      'article',
-      {
-        id: manuscriptNode.attrs.id,
-      },
-      0,
-    ]
+    return (
+      nodeFromHTML(keywordsElementNode.attrs.contents) ||
+      createBodyElement(keywordsElementNode)
+    )
   },
 }
