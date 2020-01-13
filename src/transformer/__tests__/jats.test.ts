@@ -235,7 +235,7 @@ describe('jats', () => {
 
         paragraphElement.contents = paragraphElement.contents.replace(
           /The first section/,
-          'The <a href="https://example.com">first</a> section'
+          'The <a href="https://example.com" title="An Example">first</a> section'
         )
       }
 
@@ -265,6 +265,7 @@ describe('jats', () => {
     }
 
     expect(attrs.href).toBe('https://example.com')
+    expect(attrs.title).toBe('An Example')
   })
 
   test('Export with missing bibliography element', () => {

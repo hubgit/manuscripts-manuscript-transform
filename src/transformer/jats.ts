@@ -846,6 +846,14 @@ export class JATSTransformer {
         linkNode.setAttributeNS(XLINK_NAMESPACE, 'xlink:href', node.attrs.href)
         linkNode.textContent = text
 
+        if (node.attrs.title) {
+          linkNode.setAttributeNS(
+            XLINK_NAMESPACE,
+            'xlink:title',
+            node.attrs.title
+          )
+        }
+
         return linkNode
       },
       list_item: () => ['list-item', 0],
