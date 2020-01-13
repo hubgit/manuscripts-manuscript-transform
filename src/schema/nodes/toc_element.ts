@@ -15,12 +15,14 @@
  */
 
 import { NodeSpec } from 'prosemirror-model'
+// import { buildElementClass } from '../../lib/attributes'
 import { nodeFromHTML } from '../../lib/html'
 import { ManuscriptNode } from '../types'
 
 interface Attrs {
   id: string
   contents: string
+  paragraphStyle: string
 }
 
 export interface TOCElementNode extends ManuscriptNode {
@@ -29,7 +31,8 @@ export interface TOCElementNode extends ManuscriptNode {
 
 const createBodyElement = (node: ManuscriptNode) => {
   const dom = document.createElement('div')
-  dom.className = 'manuscript-toc'
+  // dom.className = buildElementClass(node.attrs)
+  dom.classList.add('manuscript-toc')
   dom.id = node.attrs.id
 
   return dom
@@ -40,6 +43,7 @@ export const tocElement: NodeSpec = {
   attrs: {
     id: { default: '' },
     contents: { default: '' },
+    paragraphStyle: { default: '' },
   },
   group: 'block',
   selectable: false,

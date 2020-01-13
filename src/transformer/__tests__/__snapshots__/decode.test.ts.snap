@@ -106,6 +106,7 @@ Object {
   
 </div>",
             "id": "MPTOCElement:657C54DB-78B5-4206-E322-170F68263A01",
+            "paragraphStyle": "MPParagraphStyle:74D17A3A-33C0-43EB-9389-51335C698744",
           },
           "type": "toc_element",
         },
@@ -1500,6 +1501,7 @@ Object {
   
 </div>",
             "id": "MPTOCElement:657C54DB-78B5-4206-E322-170F68263A01",
+            "paragraphStyle": "MPParagraphStyle:74D17A3A-33C0-43EB-9389-51335C698744",
           },
           "type": "toc_element",
         },
@@ -2706,6 +2708,7 @@ Object {
   
 </div>",
             "id": "MPTOCElement:657C54DB-78B5-4206-E322-170F68263A01",
+            "paragraphStyle": "MPParagraphStyle:74D17A3A-33C0-43EB-9389-51335C698744",
           },
           "type": "toc_element",
         },

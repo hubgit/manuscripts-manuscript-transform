@@ -873,8 +873,8 @@ export class JATSTransformer {
       table_cell: () => ['td', 0],
       table_row: () => ['tr', 0],
       text: node => node.text!,
-      toc_element: node => ['p', { id: normalizeID(node.attrs.id) }],
-      toc_section: node => ['sec', { id: normalizeID(node.attrs.id) }, 0],
+      toc_element: () => '',
+      toc_section: () => '',
     }
 
     const marks: MarkSpecs = {

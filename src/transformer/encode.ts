@@ -61,12 +61,6 @@ const contents = (node: ManuscriptNode): string => {
   return xmlSerializer.serializeToString(output)
 }
 
-const htmlContents = (node: ManuscriptNode): string => {
-  const output = serializer.serializeNode(node) as HTMLElement
-
-  return output.outerHTML
-}
-
 export const inlineContents = (node: ManuscriptNode): string =>
   (serializer.serializeNode(node) as HTMLElement).innerHTML
 
@@ -180,6 +174,18 @@ const tableContents = (
   output.appendChild(buildTableSection('tfoot', tfoot, parent))
 
   return output.outerHTML
+}
+
+const tocContents = (node: ManuscriptNode): string => {
+  const input = serializer.serializeNode(node) as HTMLDivElement
+
+  input.classList.add('MPElement')
+
+  if (node.attrs.paragraphStyle) {
+    input.classList.add(node.attrs.paragraphStyle.replace(/:/g, '_'))
+  }
+
+  return input.outerHTML
 }
 
 const childElements = (node: ManuscriptNode): ManuscriptNode[] => {
@@ -359,8 +365,9 @@ const encoders: NodeEncoderMap = {
     tableStyle: node.attrs.tableStyle || undefined,
   }),
   toc_element: (node): Partial<TOCElement> => ({
-    contents: htmlContents(node),
-    // elementType: 'div', // TODO: https://gitlab.com/mpapp-private/manuscripts-json-schema/issues/47
+    contents: tocContents(node),
+    elementType: 'div',
+    paragraphStyle: node.attrs.paragraphStyle || undefined,
   }),
   toc_section: (node, parent, path, priority): Partial<Section> => ({
     category: buildSectionCategory(node),

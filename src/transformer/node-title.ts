@@ -54,9 +54,8 @@ export const nodeTitle = (node: ManuscriptNode) => {
 
   switch (node.type) {
     case nodes.section:
-      return snippetOfNodeType(node, nodes.section_title)
-
     case nodes.bibliography_section:
+    case nodes.toc_section:
       return snippetOfNodeType(node, nodes.section_title)
 
     case nodes.ordered_list:

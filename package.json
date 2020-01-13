@@ -41,7 +41,7 @@
     "@babel/preset-typescript": "^7.7.4",
     "@jats4r/dtds": "^0.0.3",
     "@manuscripts/examples": "^0.0.6",
-    "@manuscripts/manuscripts-json-schema": "^1.18.2",
+    "@manuscripts/manuscripts-json-schema": "^1.19.0",
     "@manuscripts/publish": "^0.2.2",
     "@manuscripts/tslint-config": "^0.1.4",
     "@types/debug": "^4.1.4",

@@ -574,6 +574,7 @@ export class Decoder {
       return schema.nodes.toc_element.create({
         id: model._id,
         contents: model.contents,
+        paragraphStyle: model.paragraphStyle,
       }) as TOCElementNode
     },
   }

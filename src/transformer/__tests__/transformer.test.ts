@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ObjectTypes } from '@manuscripts/manuscripts-json-schema'
 import { Decoder } from '../decode'
 import { encode } from '../encode'
 import { createTestModelMap } from './__helpers__/doc'
@@ -36,6 +37,11 @@ test('transformer', async () => {
   }
 
   for (const [id, item] of output.entries()) {
+    // ignore TOCElement as the classes are different
+    if (item.objectType === ObjectTypes.TOCElement) {
+      continue
+    }
+
     expect(item).toEqual(input.get(id))
   }
 })

@@ -17,7 +17,7 @@ Map {
   },
   "MPTOCElement:657C54DB-78B5-4206-E322-170F68263A01" => Object {
     "_id": "MPTOCElement:657C54DB-78B5-4206-E322-170F68263A01",
-    "contents": "<div id=\\"MPTOCElement:657C54DB-78B5-4206-E322-170F68263A01\\" class=\\"manuscript-toc\\" contenteditable=\\"false\\">
+    "contents": "<div id=\\"MPTOCElement:657C54DB-78B5-4206-E322-170F68263A01\\" class=\\"manuscript-toc MPElement MPParagraphStyle_74D17A3A-33C0-43EB-9389-51335C698744\\" contenteditable=\\"false\\">
   
     
     
@@ -100,7 +100,9 @@ Map {
 
   
 </div>",
+    "elementType": "div",
     "objectType": "MPTOCElement",
+    "paragraphStyle": "MPParagraphStyle:74D17A3A-33C0-43EB-9389-51335C698744",
   },
   "MPSection:77786D47-6060-4FBC-BC13-5FA754968D6A" => Object {
     "_id": "MPSection:77786D47-6060-4FBC-BC13-5FA754968D6A",
