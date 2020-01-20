@@ -46,8 +46,8 @@ export const keywordsElement: NodeSpec = {
   parseDOM: [
     {
       tag: 'div.manuscript-keywords',
-      getAttrs: p => {
-        const dom = p as HTMLDivElement
+      getAttrs: div => {
+        const dom = div as HTMLDivElement
 
         return {
           contents: dom.innerHTML,

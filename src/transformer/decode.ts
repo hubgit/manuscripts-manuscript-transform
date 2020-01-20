@@ -23,6 +23,7 @@ import {
   FigureElement,
   FootnotesElement,
   HighlightMarker,
+  KeywordsElement,
   ListElement,
   Listing,
   ListingElement,
@@ -334,6 +335,15 @@ export class Decoder {
         id: model._id,
         contents: model.contents,
       }) as FootnotesElementNode
+    },
+    [ObjectTypes.KeywordsElement]: data => {
+      const model = data as KeywordsElement
+
+      return schema.nodes.keywords_element.create({
+        id: model._id,
+        contents: model.contents,
+        // paragraphStyle: model.paragraphStyle,
+      }) as TOCElementNode
     },
     [ObjectTypes.ListElement]: data => {
       const model = data as ListElement
