@@ -45,6 +45,7 @@ export type Marks =
 export type Nodes =
   | 'bibliography_element'
   | 'bibliography_section'
+  | 'blockquote_element'
   | 'bullet_list'
   | 'caption'
   | 'citation'
@@ -72,6 +73,7 @@ export type Nodes =
   | 'paragraph'
   | 'placeholder'
   | 'placeholder_element'
+  | 'pullquote_element'
   | 'section'
   | 'section_title'
   | 'table'

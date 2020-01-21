@@ -30,6 +30,7 @@ import {
   Model,
   ObjectTypes,
   ParagraphElement,
+  QuoteElement,
   Section,
   Table,
   TableElement,
@@ -40,6 +41,7 @@ import { DOMParser, ParseOptions } from 'prosemirror-model'
 import { RxDocument } from 'rxdb'
 import {
   BibliographyElementNode,
+  BlockquoteElementNode,
   BulletListNode,
   EquationElementNode,
   EquationNode,
@@ -54,6 +56,7 @@ import {
   ParagraphNode,
   PlaceholderElementNode,
   PlaceholderNode,
+  PullquoteElementNode,
   schema,
   SectionNode,
   SectionTitleNode,
@@ -438,6 +441,44 @@ export class Decoder {
           }),
         }
       ) as ParagraphNode
+    },
+    [ObjectTypes.QuoteElement]: data => {
+      const model = data as QuoteElement
+
+      switch (model.quoteType) {
+        case 'block':
+          return this.parseContents(
+            'contents',
+            model.contents || '<p></p>',
+            undefined,
+            model.highlightMarkers,
+            {
+              topNode: schema.nodes.blockquote_element.create({
+                id: model._id,
+                paragraphStyle: model.paragraphStyle,
+                placeholder: model.placeholderInnerHTML,
+              }),
+            }
+          ) as BlockquoteElementNode
+
+        case 'pull':
+          return this.parseContents(
+            'contents',
+            model.contents || '<p></p>',
+            undefined,
+            model.highlightMarkers,
+            {
+              topNode: schema.nodes.pullquote_element.create({
+                id: model._id,
+                paragraphStyle: model.paragraphStyle,
+                placeholder: model.placeholderInnerHTML,
+              }),
+            }
+          ) as PullquoteElementNode
+
+        default:
+          throw new Error('Unknown block type')
+      }
     },
     [ObjectTypes.Section]: data => {
       const model = data as Section

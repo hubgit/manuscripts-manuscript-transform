@@ -27,6 +27,7 @@ import {
 } from './marks'
 import { bibliographyElement } from './nodes/bibliography_element'
 import { bibliographySection } from './nodes/bibliography_section'
+import { blockquoteElement } from './nodes/blockquote_element'
 import { caption } from './nodes/caption'
 import { citation } from './nodes/citation'
 import { crossReference } from './nodes/cross_reference'
@@ -52,6 +53,7 @@ import { manuscript } from './nodes/manuscript'
 import { paragraph } from './nodes/paragraph'
 import { placeholder } from './nodes/placeholder'
 import { placeholderElement } from './nodes/placeholder_element'
+import { pullquoteElement } from './nodes/pullquote_element'
 import { section } from './nodes/section'
 import { sectionTitle } from './nodes/section_title'
 import { table, tableCell, tableRow } from './nodes/table'
@@ -64,6 +66,7 @@ import { Marks, Nodes } from './types'
 export * from './types'
 export * from './nodes/bibliography_element'
 export * from './nodes/bibliography_section'
+export * from './nodes/blockquote_element'
 export * from './nodes/caption'
 export * from './nodes/citation'
 export * from './nodes/cross_reference'
@@ -89,6 +92,7 @@ export * from './nodes/manuscript'
 export * from './nodes/paragraph'
 export * from './nodes/placeholder'
 export * from './nodes/placeholder_element'
+export * from './nodes/pullquote_element'
 export * from './nodes/section'
 export * from './nodes/section_title'
 export * from './nodes/table'
@@ -111,6 +115,7 @@ export const schema = new Schema<Nodes, Marks>({
   nodes: {
     bibliography_element: bibliographyElement,
     bibliography_section: bibliographySection,
+    blockquote_element: blockquoteElement,
     bullet_list: bulletList,
     caption,
     citation,
@@ -138,6 +143,7 @@ export const schema = new Schema<Nodes, Marks>({
     paragraph,
     placeholder,
     placeholder_element: placeholderElement,
+    pullquote_element: pullquoteElement,
     section,
     section_title: sectionTitle,
     table,

@@ -29,6 +29,7 @@ import {
   ListingElement,
   Model,
   ParagraphElement,
+  QuoteElement,
   Section,
   Table,
   TableElement,
@@ -37,6 +38,7 @@ import {
 import { DOMSerializer } from 'prosemirror-model'
 import { iterateChildren } from '../lib/utils'
 import {
+  isHighlightMarkerNode,
   isSectionNode,
   ManuscriptNode,
   ManuscriptNodeType,
@@ -44,7 +46,6 @@ import {
   schema,
   TableElementNode,
 } from '../schema'
-import { isHighlightMarkerNode } from '../schema/nodes/highlight_marker'
 import {
   extractHighlightMarkers,
   isHighlightableModel,
@@ -275,6 +276,12 @@ const encoders: NodeEncoderMap = {
       .map(childNode => childNode.attrs.id)
       .filter(id => id),
   }),
+  blockquote_element: (node): Partial<QuoteElement> => ({
+    contents: contents(node),
+    paragraphStyle: node.attrs.paragraphStyle || undefined,
+    placeholderInnerHTML: node.attrs.placeholder || '',
+    quoteType: 'block',
+  }),
   bullet_list: (node): Partial<ListElement> => ({
     elementType: 'ul',
     contents: listContents(node),
@@ -358,6 +365,12 @@ const encoders: NodeEncoderMap = {
   }),
   placeholder_element: (): Partial<PlaceholderElement> => ({
     elementType: 'p',
+  }),
+  pullquote_element: (node): Partial<QuoteElement> => ({
+    contents: contents(node),
+    paragraphStyle: node.attrs.paragraphStyle || undefined,
+    placeholderInnerHTML: node.attrs.placeholder || '',
+    quoteType: 'pull',
   }),
   section: (node, parent, path, priority): Partial<Section> => ({
     category: buildSectionCategory(node),

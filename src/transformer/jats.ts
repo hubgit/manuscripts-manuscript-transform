@@ -658,6 +658,7 @@ export class JATSTransformer {
         { id: normalizeID(node.attrs.id) },
         0,
       ],
+      blockquote_element: () => ['disp-quote', { 'content-type': 'quote' }, 0],
       bullet_list: () => ['list', { 'list-type': 'bullet' }, 0],
       caption: () => ['caption', ['p', 0]],
       citation: node => {
@@ -888,6 +889,11 @@ export class JATSTransformer {
       placeholder_element: () => {
         throw new Error('Placeholder element!')
       },
+      pullquote_element: () => [
+        'disp-quote',
+        { 'content-type': 'pullquote' },
+        0,
+      ],
       section: node => {
         const attrs: { [key: string]: string } = {
           id: normalizeID(node.attrs.id),

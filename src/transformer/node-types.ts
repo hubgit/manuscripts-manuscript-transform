@@ -20,6 +20,7 @@ import { ManuscriptNode, ManuscriptNodeType, Nodes, schema } from '../schema'
 export const nodeTypesMap: Map<ManuscriptNodeType, string> = new Map([
   [schema.nodes.bibliography_element, ObjectTypes.BibliographyElement],
   [schema.nodes.bibliography_section, ObjectTypes.Section],
+  [schema.nodes.blockquote_element, ObjectTypes.QuoteElement],
   [schema.nodes.bullet_list, ObjectTypes.ListElement],
   [schema.nodes.citation, ObjectTypes.Citation],
   [schema.nodes.cross_reference, ObjectTypes.AuxiliaryObjectReference],
@@ -37,6 +38,7 @@ export const nodeTypesMap: Map<ManuscriptNodeType, string> = new Map([
   [schema.nodes.listing_element, ObjectTypes.ListingElement],
   [schema.nodes.ordered_list, ObjectTypes.ListElement],
   [schema.nodes.paragraph, ObjectTypes.ParagraphElement],
+  [schema.nodes.pullquote_element, ObjectTypes.QuoteElement],
   [schema.nodes.section, ObjectTypes.Section],
   [schema.nodes.table, ObjectTypes.Table],
   [schema.nodes.table_element, ObjectTypes.TableElement],
@@ -45,6 +47,8 @@ export const nodeTypesMap: Map<ManuscriptNodeType, string> = new Map([
 ])
 
 const elementNodeTypes: ManuscriptNodeType[] = [
+  schema.nodes.blockquote_element,
+  schema.nodes.pullquote_element,
   schema.nodes.listing_element,
   schema.nodes.equation_element,
   schema.nodes.figure_element,
