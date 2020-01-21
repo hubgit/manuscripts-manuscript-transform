@@ -61,6 +61,8 @@ export const nodeTitle = (node: ManuscriptNode) => {
 
     case nodes.ordered_list:
     case nodes.bullet_list:
+    case nodes.blockquote_element:
+    case nodes.pullquote_element:
       return snippetOfNodeType(node, nodes.paragraph)
 
     case nodes.figure_element:
