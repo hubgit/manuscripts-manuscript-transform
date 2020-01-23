@@ -63,12 +63,6 @@ const contents = (node: ManuscriptNode): string => {
   return xmlSerializer.serializeToString(output)
 }
 
-const htmlContents = (node: ManuscriptNode): string => {
-  const output = serializer.serializeNode(node) as HTMLElement
-
-  return output.outerHTML
-}
-
 export const inlineContents = (node: ManuscriptNode): string =>
   (serializer.serializeNode(node) as HTMLElement).innerHTML
 
@@ -184,13 +178,17 @@ const tableContents = (
   return output.outerHTML
 }
 
-const tocContents = (node: ManuscriptNode): string => {
+const elementContents = (node: ManuscriptNode): string => {
   const input = serializer.serializeNode(node) as HTMLDivElement
 
   input.classList.add('MPElement')
 
   if (node.attrs.paragraphStyle) {
     input.classList.add(node.attrs.paragraphStyle.replace(/:/g, '_'))
+  }
+
+  if (node.attrs.id) {
+    input.setAttribute('id', node.attrs.id)
   }
 
   return input.outerHTML
@@ -340,8 +338,9 @@ const encoders: NodeEncoderMap = {
     SVGGlyphs: svgDefs(node.attrs.SVGRepresentation),
   }),
   keywords_element: (node): Partial<KeywordsElement> => ({
-    contents: htmlContents(node),
+    contents: elementContents(node),
     elementType: 'div',
+    paragraphStyle: node.attrs.paragraphStyle || undefined,
   }),
   keywords_section: (node, parent, path, priority): Partial<Section> => ({
     category: buildSectionCategory(node),
@@ -398,7 +397,7 @@ const encoders: NodeEncoderMap = {
     tableStyle: node.attrs.tableStyle || undefined,
   }),
   toc_element: (node): Partial<TOCElement> => ({
-    contents: tocContents(node),
+    contents: elementContents(node),
     elementType: 'div',
     paragraphStyle: node.attrs.paragraphStyle || undefined,
   }),

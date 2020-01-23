@@ -21,6 +21,7 @@ import { ManuscriptNode } from '../types'
 interface Attrs {
   id: string
   contents: string
+  paragraphStyle: string
 }
 
 export interface KeywordsElementNode extends ManuscriptNode {
@@ -40,6 +41,7 @@ export const keywordsElement: NodeSpec = {
   attrs: {
     id: { default: '' },
     contents: { default: '' },
+    paragraphStyle: { default: '' },
   },
   group: 'block',
   selectable: false,

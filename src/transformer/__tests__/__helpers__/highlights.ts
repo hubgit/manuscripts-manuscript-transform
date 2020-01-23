@@ -18,6 +18,8 @@ import {
   Figure,
   FigureElement,
   Highlight,
+  Keyword,
+  KeywordsElement,
   Manuscript,
   Model,
   ObjectTypes,
@@ -231,6 +233,80 @@ export const createTestModelMapWithHighlights = () => {
   }
 
   modelMap.set(sectionWithHighlights._id, sectionWithHighlights)
+
+  return modelMap
+}
+
+export const createTestModelMapWithKeywords = () => {
+  const modelMap = new Map<string, Model>()
+
+  const project: Project = {
+    objectType: ObjectTypes.Project,
+    _id: 'MPProject:1',
+    createdAt: 0,
+    updatedAt: 0,
+    sessionID: 'test',
+    owners: [],
+    writers: [],
+    viewers: [],
+  }
+
+  const manuscript: Manuscript = {
+    objectType: ObjectTypes.Manuscript,
+    _id: 'MPManuscript:1',
+    createdAt: 0,
+    updatedAt: 0,
+    containerID: project._id,
+    sessionID: 'test',
+  }
+
+  const keyword: Keyword = {
+    objectType: ObjectTypes.Keyword,
+    _id: 'MPKeyword:1',
+    createdAt: 0,
+    updatedAt: 0,
+    containerID: project._id,
+    sessionID: 'test',
+    name: 'test',
+  }
+
+  modelMap.set(keyword._id, keyword)
+
+  manuscript.keywordIDs = [keyword._id]
+
+  modelMap.set(manuscript._id, manuscript)
+
+  const keywordsElement: KeywordsElement = {
+    objectType: ObjectTypes.KeywordsElement,
+    _id: 'MPKeywordsElement:1',
+    createdAt: 0,
+    updatedAt: 0,
+    containerID: project._id,
+    manuscriptID: manuscript._id,
+    sessionID: 'test',
+    paragraphStyle: 'MPParagraphStyle:1',
+    elementType: 'div',
+    contents: `<p id="MPKeywordsElement:1" class="keywords MPElement MPParagraphStyle_1">test</p>`,
+  }
+
+  modelMap.set(keywordsElement._id, keywordsElement)
+
+  const sectionWithKeywordsElement: Section = {
+    objectType: ObjectTypes.Section,
+    _id: 'MPSection:1',
+    createdAt: 0,
+    updatedAt: 0,
+    manuscriptID: manuscript._id,
+    containerID: project._id,
+    sessionID: 'test',
+    priority: 1,
+    path: ['MPSection:1'],
+    elementIDs: [keywordsElement._id],
+    category: 'MPSectionCategory:keywords',
+    title: 'Keywords',
+  }
+
+  modelMap.set(sectionWithKeywordsElement._id, sectionWithKeywordsElement)
 
   return modelMap
 }

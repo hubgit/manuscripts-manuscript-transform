@@ -563,3 +563,28 @@ Map {
   },
 }
 `;
+
+exports[`encoder encode keywords element 1`] = `
+Map {
+  "MPSection:1" => Object {
+    "_id": "MPSection:1",
+    "category": "MPSectionCategory:keywords",
+    "elementIDs": Array [
+      "MPKeywordsElement:1",
+    ],
+    "objectType": "MPSection",
+    "path": Array [
+      "MPSection:1",
+    ],
+    "priority": 1,
+    "title": "Keywords",
+  },
+  "MPKeywordsElement:1" => Object {
+    "_id": "MPKeywordsElement:1",
+    "contents": "<p id=\\"MPKeywordsElement:1\\" class=\\"keywords MPElement MPParagraphStyle_1\\">test</p>",
+    "elementType": "div",
+    "objectType": "MPKeywordsElement",
+    "paragraphStyle": "MPParagraphStyle:1",
+  },
+}
+`;

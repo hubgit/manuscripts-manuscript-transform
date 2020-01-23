@@ -18,7 +18,10 @@ import { Decoder } from '../decode'
 import { encode } from '../encode'
 import { ManuscriptModel } from '../models'
 import { createTestDoc } from './__helpers__/doc'
-import { createTestModelMapWithHighlights } from './__helpers__/highlights'
+import {
+  createTestModelMapWithHighlights,
+  createTestModelMapWithKeywords,
+} from './__helpers__/highlights'
 
 describe('encoder', () => {
   test('encode a test doc', async () => {
@@ -31,6 +34,40 @@ describe('encoder', () => {
 
   test('encode highlight markers', async () => {
     const modelMap = createTestModelMapWithHighlights()
+
+    const decoder = new Decoder(modelMap)
+
+    const doc = decoder.createArticleNode()
+
+    const result = encode(doc)
+
+    expect(result).toMatchSnapshot()
+
+    const ensureModel = (model: Partial<ManuscriptModel>): ManuscriptModel => {
+      model.containerID = 'MPProject:1'
+      model.manuscriptID = 'MPManuscript:1'
+      model.sessionID = 'test'
+      model.createdAt = 0
+      model.updatedAt = 0
+
+      for (const key of Object.keys(model)) {
+        const value = model[key as keyof ManuscriptModel]
+        if (value === undefined || value === '') {
+          delete model[key as keyof ManuscriptModel]
+        }
+      }
+
+      return model as ManuscriptModel
+    }
+
+    for (const item of result.values()) {
+      const model = ensureModel(item)
+      expect(model).toEqual(modelMap.get(model._id))
+    }
+  })
+
+  test('encode keywords element', async () => {
+    const modelMap = createTestModelMapWithKeywords()
 
     const decoder = new Decoder(modelMap)
 

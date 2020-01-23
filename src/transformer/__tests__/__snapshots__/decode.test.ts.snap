@@ -4264,3 +4264,39 @@ Object {
   "type": "manuscript",
 }
 `;
+
+exports[`decoder decode keyword element 1`] = `
+Object {
+  "attrs": Object {
+    "id": "MPManuscript:1",
+  },
+  "content": Array [
+    Object {
+      "attrs": Object {
+        "id": "MPSection:1",
+      },
+      "content": Array [
+        Object {
+          "content": Array [
+            Object {
+              "text": "Keywords",
+              "type": "text",
+            },
+          ],
+          "type": "section_title",
+        },
+        Object {
+          "attrs": Object {
+            "contents": "<p id=\\"MPKeywordsElement:1\\" class=\\"keywords MPElement MPParagraphStyle_1\\">test</p>",
+            "id": "MPKeywordsElement:1",
+            "paragraphStyle": "MPParagraphStyle:1",
+          },
+          "type": "keywords_element",
+        },
+      ],
+      "type": "keywords_section",
+    },
+  ],
+  "type": "manuscript",
+}
+`;

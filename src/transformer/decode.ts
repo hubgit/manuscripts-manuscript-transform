@@ -345,7 +345,7 @@ export class Decoder {
       return schema.nodes.keywords_element.create({
         id: model._id,
         contents: model.contents,
-        // paragraphStyle: model.paragraphStyle,
+        paragraphStyle: model.paragraphStyle,
       }) as TOCElementNode
     },
     [ObjectTypes.ListElement]: data => {

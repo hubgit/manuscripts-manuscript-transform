@@ -23,7 +23,10 @@ import { ManuscriptNode, ManuscriptNodeType, schema } from '../../schema'
 import { Decoder, getModelData, sortSectionsByPriority } from '../decode'
 import { createTestModelMapWithCitations } from './__helpers__/citations'
 import { createTestDoc, createTestModelMap } from './__helpers__/doc'
-import { createTestModelMapWithHighlights } from './__helpers__/highlights'
+import {
+  createTestModelMapWithHighlights,
+  createTestModelMapWithKeywords,
+} from './__helpers__/highlights'
 
 const countDescendantsOfType = (
   node: ManuscriptNode,
@@ -137,6 +140,16 @@ describe('decoder', () => {
 
   test('decode citations', () => {
     const modelMap = createTestModelMapWithCitations()
+
+    const decoder = new Decoder(modelMap)
+
+    const result = decoder.createArticleNode()
+
+    expect(result).toMatchSnapshot()
+  })
+
+  test('decode keyword element', () => {
+    const modelMap = createTestModelMapWithKeywords()
 
     const decoder = new Decoder(modelMap)
 
