@@ -276,6 +276,7 @@ const encoders: NodeEncoderMap = {
   }),
   blockquote_element: (node): Partial<QuoteElement> => ({
     contents: contents(node),
+    elementType: 'div',
     paragraphStyle: node.attrs.paragraphStyle || undefined,
     placeholderInnerHTML: node.attrs.placeholder || '',
     quoteType: 'block',
@@ -367,6 +368,7 @@ const encoders: NodeEncoderMap = {
   }),
   pullquote_element: (node): Partial<QuoteElement> => ({
     contents: contents(node),
+    elementType: 'div',
     paragraphStyle: node.attrs.paragraphStyle || undefined,
     placeholderInnerHTML: node.attrs.placeholder || '',
     quoteType: 'pull',
