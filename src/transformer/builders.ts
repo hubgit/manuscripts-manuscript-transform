@@ -40,7 +40,7 @@ import {
   Section,
   UserProfileAffiliation,
 } from '@manuscripts/manuscripts-json-schema'
-import { xmlSerializer } from '../transformer/serializer'
+import serializeToXML from 'w3c-xmlserializer'
 import { CSL } from '../types/csl'
 import { generateID } from './id'
 import { CommentSelector, ManuscriptModel, ModelAttachment } from './models'
@@ -263,7 +263,7 @@ export const buildParagraph = (
     element.setAttribute('data-placeholder-text', placeholderInnerHTML)
   }
 
-  const contents = xmlSerializer.serializeToString(element)
+  const contents = serializeToXML(element)
 
   return {
     _id,

@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-import { XMLSerializer } from 'w3c-xmlserializer'
+import serializeToString from 'w3c-xmlserializer'
 
-export const xmlSerializer = new XMLSerializer.interface()
+export const xmlSerializer = { serializeToString }

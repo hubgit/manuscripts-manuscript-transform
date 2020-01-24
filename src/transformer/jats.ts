@@ -27,6 +27,7 @@ import {
 } from '@manuscripts/manuscripts-json-schema'
 import debug from 'debug'
 import { DOMOutputSpec, DOMParser, DOMSerializer } from 'prosemirror-model'
+import serializeToXML from 'w3c-xmlserializer'
 import { nodeFromHTML, textFromHTML } from '../lib/html'
 import { iterateChildren } from '../lib/utils'
 import {
@@ -50,7 +51,6 @@ import {
   findManuscript,
 } from './project-bundle'
 import { sectionCategorySuffix } from './section-category'
-import { xmlSerializer } from './serializer'
 
 interface Attrs {
   [key: string]: string
@@ -156,7 +156,7 @@ export class JATSTransformer {
       this.moveAbstract(front, body)
     }
 
-    return xmlSerializer.serializeToString(this.document)
+    return serializeToXML(this.document)
   }
 
   private serializeFragment = (fragment: ManuscriptFragment) =>

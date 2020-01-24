@@ -36,6 +36,7 @@ import {
   TOCElement,
 } from '@manuscripts/manuscripts-json-schema'
 import { DOMSerializer } from 'prosemirror-model'
+import serializeToXML from 'w3c-xmlserializer'
 import { iterateChildren } from '../lib/utils'
 import {
   isHighlightMarkerNode,
@@ -53,14 +54,13 @@ import {
 import { PlaceholderElement } from './models'
 import { nodeTypesMap } from './node-types'
 import { buildSectionCategory } from './section-category'
-import { xmlSerializer } from './serializer'
 
 const serializer = DOMSerializer.fromSchema(schema)
 
 const contents = (node: ManuscriptNode): string => {
   const output = serializer.serializeNode(node) as HTMLElement
 
-  return xmlSerializer.serializeToString(output)
+  return serializeToXML(output)
 }
 
 export const inlineContents = (node: ManuscriptNode): string =>
@@ -85,7 +85,7 @@ const listContents = (node: ManuscriptNode): string => {
     parent.removeChild(p)
   }
 
-  return xmlSerializer.serializeToString(output)
+  return serializeToXML(output)
 }
 
 const svgDefs = (svg: string): string | undefined => {
@@ -94,7 +94,7 @@ const svgDefs = (svg: string): string | undefined => {
 
   const defs = template.content.querySelector('defs')
 
-  return defs ? xmlSerializer.serializeToString(defs) : undefined
+  return defs ? serializeToXML(defs) : undefined
 }
 
 const tableRowDisplayStyle = (tagName: string, parent: ManuscriptNode) => {

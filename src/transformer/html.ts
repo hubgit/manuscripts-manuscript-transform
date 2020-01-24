@@ -23,6 +23,7 @@ import {
   ObjectTypes,
 } from '@manuscripts/manuscripts-json-schema'
 import { DOMOutputSpec, DOMSerializer } from 'prosemirror-model'
+import serializeToXML from 'w3c-xmlserializer'
 import {
   CitationNode,
   CrossReferenceNode,
@@ -39,7 +40,6 @@ import { generateAttachmentFilename } from './filename'
 import { isNodeType } from './node-types'
 import { hasObjectType } from './object-types'
 import { findManuscript } from './project-bundle'
-import { xmlSerializer } from './serializer'
 
 export class HTMLTransformer {
   private document: Document
@@ -67,7 +67,7 @@ export class HTMLTransformer {
 
     this.fixBody(fragment, attachmentUrlPrefix)
 
-    return xmlSerializer.serializeToString(this.document)
+    return serializeToXML(this.document)
   }
 
   private buildFront = () => {

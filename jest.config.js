@@ -4,6 +4,7 @@ module.exports = {
   setupFiles: ['./src/tests.ts'],
   // setupTestFrameworkScriptFile: 'jest-enzyme',
   // snapshotSerializers: ['enzyme-to-json/serializer'],
+  testEnvironment: 'jest-environment-jsdom-sixteen',
   testPathIgnorePatterns: ['/node_modules/'],
   testRegex: '__tests__.*\\.test\\.tsx?$',
   transform: {
