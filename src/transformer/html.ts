@@ -19,6 +19,7 @@ import {
   AuxiliaryObjectReference,
   Citation,
   Contributor,
+  Figure,
   Model,
   ObjectTypes,
 } from '@manuscripts/manuscripts-json-schema'
@@ -61,7 +62,7 @@ export class HTMLTransformer {
     const article = this.document.createElement('article')
     this.document.documentElement.appendChild(article)
 
-    article.appendChild(this.buildFront())
+    article.appendChild(this.buildFront(modelMap, attachmentUrlPrefix))
     article.appendChild(this.buildBody(fragment))
     // article.appendChild(this.buildBack())
 
@@ -70,7 +71,10 @@ export class HTMLTransformer {
     return serializeToXML(this.document)
   }
 
-  private buildFront = () => {
+  private buildFront = (
+    modelMap: Map<string, Model>,
+    attachmentUrlPrefix: string
+  ) => {
     // at this point we assume that there is only one manuscript - resources
     // associated with others should have been stripped out via parseProjectBundle
     const manuscript = findManuscript(this.modelMap)
@@ -80,6 +84,27 @@ export class HTMLTransformer {
     }
 
     const front = this.document.createElement('header')
+
+    if (manuscript.headerFigure) {
+      const figure = modelMap.get(manuscript.headerFigure) as Figure | undefined
+
+      if (figure) {
+        const headerFigure = document.createElement('figure')
+        headerFigure.setAttribute('id', figure._id)
+        front.appendChild(headerFigure)
+
+        const filename = generateAttachmentFilename(
+          figure._id,
+          figure.contentType
+        )
+
+        const img = this.document.createElement('img')
+        img.setAttribute('src', attachmentUrlPrefix + filename)
+        headerFigure.appendChild(img)
+
+        // TODO: title, credit
+      }
+    }
 
     const articleMeta = this.document.createElement('div')
     front.appendChild(articleMeta)
