@@ -30,7 +30,7 @@ export interface PullquoteElementNode extends ManuscriptNode {
 }
 
 export const pullquoteElement: NodeSpec = {
-  content: 'paragraph+',
+  content: 'paragraph+ attribution',
   attrs: {
     id: { default: '' },
     paragraphStyle: { default: '' }, // TODO: default paragraph style

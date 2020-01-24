@@ -25,6 +25,7 @@ import {
   superscript,
   underline,
 } from './marks'
+import { attribution } from './nodes/attribution'
 import { bibliographyElement } from './nodes/bibliography_element'
 import { bibliographySection } from './nodes/bibliography_section'
 import { blockquoteElement } from './nodes/blockquote_element'
@@ -64,6 +65,7 @@ import { tocSection } from './nodes/toc_section'
 import { Marks, Nodes } from './types'
 
 export * from './types'
+export * from './nodes/attribution'
 export * from './nodes/bibliography_element'
 export * from './nodes/bibliography_section'
 export * from './nodes/blockquote_element'
@@ -113,6 +115,7 @@ export const schema = new Schema<Nodes, Marks>({
     underline,
   },
   nodes: {
+    attribution,
     bibliography_element: bibliographyElement,
     bibliography_section: bibliographySection,
     blockquote_element: blockquoteElement,

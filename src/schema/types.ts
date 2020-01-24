@@ -43,6 +43,7 @@ export type Marks =
   | 'underline'
 
 export type Nodes =
+  | 'attribution'
   | 'bibliography_element'
   | 'bibliography_section'
   | 'blockquote_element'

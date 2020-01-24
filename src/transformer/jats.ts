@@ -652,6 +652,7 @@ export class JATSTransformer {
       id ? (this.modelMap.get(id) as T | undefined) : undefined
 
     const nodes: NodeSpecs = {
+      attribution: () => ['attrib', 0],
       bibliography_element: () => '',
       bibliography_section: node => [
         'ref-list',
