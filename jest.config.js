@@ -1,5 +1,6 @@
 module.exports = {
   clearMocks: true,
+  collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/types/*'],
   coverageReporters: ['text-summary'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'json'],
   setupFiles: ['./src/tests.ts'],
