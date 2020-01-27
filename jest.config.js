@@ -1,5 +1,6 @@
 module.exports = {
   clearMocks: true,
+  coverageReporters: ['text-summary'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'json'],
   setupFiles: ['./src/tests.ts'],
   // setupTestFrameworkScriptFile: 'jest-enzyme',

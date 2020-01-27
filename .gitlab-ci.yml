@@ -8,8 +8,9 @@ build:
     - yarn install --frozen-lockfile --non-interactive
     - yarn run typecheck
     - yarn run lint
-    - yarn run test
+    - yarn run test --coverage
     - yarn run build
+  coverage: '/Statements\s*:\s*(\d+\.\d+)%/'
   tags:
     - nodejs-8
   artifacts:
