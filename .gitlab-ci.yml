@@ -8,7 +8,7 @@ build:
     - yarn install --frozen-lockfile --non-interactive
     - yarn run typecheck
     - yarn run lint
-    - yarn run test --coverage
+    - yarn run test --ci --coverage --reporters=default --reporters=jest-junit
     - yarn run build
   coverage: '/Statements\s*:\s*(\d+\.\d+)%/'
   tags:
@@ -16,6 +16,8 @@ build:
   artifacts:
     paths:
       - dist/
+    reports:
+      junit: junit.xml
 
 publish:
   stage: deploy
