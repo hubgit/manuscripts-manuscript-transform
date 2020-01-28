@@ -51,3 +51,7 @@ export const tocSection: NodeSpec = {
     ]
   },
 }
+
+export const isTOCSectionNode = (
+  node: ManuscriptNode
+): node is TOCSectionNode => node.type === node.type.schema.nodes.toc_section

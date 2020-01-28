@@ -17,6 +17,16 @@
 import { Element, ObjectTypes } from '@manuscripts/manuscripts-json-schema'
 import { ManuscriptNode, ManuscriptNodeType, schema } from '../schema'
 
+const sectionNodeTypes: ManuscriptNodeType[] = [
+  schema.nodes.bibliography_section,
+  schema.nodes.keywords_section,
+  schema.nodes.section,
+  schema.nodes.toc_section,
+]
+
+export const isAnySectionNode = (node: ManuscriptNode): boolean =>
+  sectionNodeTypes.includes(node.type)
+
 export const chooseSectionNodeType = (
   category?: string
 ): ManuscriptNodeType => {
