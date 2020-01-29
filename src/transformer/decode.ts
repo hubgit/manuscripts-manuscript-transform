@@ -69,6 +69,7 @@ import { generateNodeID } from './id'
 import { PlaceholderElement } from './models'
 import {
   ExtraObjectTypes,
+  hasObjectType,
   isFigure,
   isManuscript,
   isUserProfile,
@@ -177,6 +178,15 @@ const getSections = (modelMap: Map<string, Model>) =>
 export const isManuscriptNode = (
   model: ManuscriptNode | null
 ): model is ManuscriptNode => model !== null
+
+const isParagraphElement = hasObjectType<ParagraphElement>(
+  ObjectTypes.ParagraphElement
+)
+
+const hasParentSection = (id: string) => (section: Section) =>
+  section.path &&
+  section.path.length > 1 &&
+  section.path[section.path.length - 2] === id
 
 export class Decoder {
   private readonly modelMap: Map<string, Model>
@@ -480,8 +490,11 @@ export class Decoder {
           throw new Error('Unknown block type')
       }
     },
+    // tslint:disable-next-line:cyclomatic-complexity
     [ObjectTypes.Section]: data => {
       const model = data as Section
+
+      const isKeywordsSection = model.category === 'MPSectionCategory:keywords'
 
       const elements: Element[] = []
 
@@ -490,6 +503,11 @@ export class Decoder {
           const element = this.getModel<Element>(id)
 
           if (element) {
+            // ignore deprecated editable paragraph elements in keywords sections
+            if (isKeywordsSection && isParagraphElement(element)) {
+              continue
+            }
+
             elements.push(element)
           } else {
             const placeholderElement: PlaceholderElement = {
@@ -523,8 +541,7 @@ export class Decoder {
         : schema.nodes.section_title.create()
 
       const nestedSections = getSections(this.modelMap)
-        .filter(section => section.path && section.path.length > 1)
-        .filter(section => section.path[section.path.length - 2] === model._id)
+        .filter(hasParentSection(model._id))
         .map(this.creators[ObjectTypes.Section]) as SectionNode[]
 
       const sectionCategory = model.category || guessSectionCategory(elements)

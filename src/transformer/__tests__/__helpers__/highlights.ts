@@ -310,3 +310,66 @@ export const createTestModelMapWithKeywords = () => {
 
   return modelMap
 }
+
+export const createTestModelMapWithDeprecatedKeywords = () => {
+  const modelMap = new Map<string, Model>()
+
+  const project: Project = {
+    objectType: ObjectTypes.Project,
+    _id: 'MPProject:1',
+    createdAt: 0,
+    updatedAt: 0,
+    sessionID: 'test',
+    owners: [],
+    writers: [],
+    viewers: [],
+  }
+
+  const manuscript: Manuscript = {
+    objectType: ObjectTypes.Manuscript,
+    _id: 'MPManuscript:1',
+    createdAt: 0,
+    updatedAt: 0,
+    containerID: project._id,
+    sessionID: 'test',
+  }
+
+  modelMap.set(manuscript._id, manuscript)
+
+  const paragraphElement: ParagraphElement = {
+    objectType: ObjectTypes.ParagraphElement,
+    _id: 'MPParagraphElement:1',
+    createdAt: 0,
+    updatedAt: 0,
+    containerID: project._id,
+    manuscriptID: manuscript._id,
+    sessionID: 'test',
+    paragraphStyle: 'MPParagraphStyle:1',
+    elementType: 'p',
+    contents: `<p id="MPParagraphElement:1" class="MPElement MPParagraphStyle_1">test</p>`,
+  }
+
+  modelMap.set(paragraphElement._id, paragraphElement)
+
+  const keywordsSectionWithParagraphElement: Section = {
+    objectType: ObjectTypes.Section,
+    _id: 'MPSection:1',
+    createdAt: 0,
+    updatedAt: 0,
+    manuscriptID: manuscript._id,
+    containerID: project._id,
+    sessionID: 'test',
+    priority: 1,
+    path: ['MPSection:1'],
+    elementIDs: [paragraphElement._id],
+    category: 'MPSectionCategory:keywords',
+    title: 'Keywords',
+  }
+
+  modelMap.set(
+    keywordsSectionWithParagraphElement._id,
+    keywordsSectionWithParagraphElement
+  )
+
+  return modelMap
+}

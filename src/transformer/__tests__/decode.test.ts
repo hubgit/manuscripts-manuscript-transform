@@ -24,6 +24,7 @@ import { Decoder, getModelData, sortSectionsByPriority } from '../decode'
 import { createTestModelMapWithCitations } from './__helpers__/citations'
 import { createTestDoc, createTestModelMap } from './__helpers__/doc'
 import {
+  createTestModelMapWithDeprecatedKeywords,
   createTestModelMapWithHighlights,
   createTestModelMapWithKeywords,
 } from './__helpers__/highlights'
@@ -150,6 +151,16 @@ describe('decoder', () => {
 
   test('decode keyword element', () => {
     const modelMap = createTestModelMapWithKeywords()
+
+    const decoder = new Decoder(modelMap)
+
+    const result = decoder.createArticleNode()
+
+    expect(result).toMatchSnapshot()
+  })
+
+  test('decode keywords section with paragraph element', () => {
+    const modelMap = createTestModelMapWithDeprecatedKeywords()
 
     const decoder = new Decoder(modelMap)
 
