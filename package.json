@@ -22,7 +22,8 @@
     "prebuild": "rimraf dist",
     "prettier": "prettier --write \"src/**/*.{ts,tsx}\" \"*.{js,json}\"",
     "preversion": "npm-run-all --parallel typecheck lint test",
-    "test": "DEBUG=manuscripts-transform XML_CATALOG_FILES=./node_modules/@jats4r/dtds/schema/catalog.xml jest",
+    "test": "XML_CATALOG_FILES=./node_modules/@jats4r/dtds/schema/catalog.xml jest",
+    "test:debug": "DEBUG=manuscripts-transform yarn test",
     "typecheck": "tsc --noEmit",
     "version": "yarn build"
   },
@@ -35,7 +36,9 @@
   "devDependencies": {
     "@babel/core": "^7.7.5",
     "@babel/plugin-proposal-class-properties": "^7.7.4",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.8.3",
     "@babel/plugin-proposal-object-rest-spread": "^7.7.4",
+    "@babel/plugin-proposal-optional-chaining": "^7.8.3",
     "@babel/polyfill": "^7.7.0",
     "@babel/preset-env": "^7.7.6",
     "@babel/preset-typescript": "^7.7.4",

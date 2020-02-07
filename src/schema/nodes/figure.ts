@@ -38,7 +38,7 @@ export const figure: NodeSpec = {
     listingAttachment: { default: undefined },
   },
   selectable: false,
-  group: 'block element',
+  group: 'block',
   parseDOM: [
     {
       tag: 'figure',

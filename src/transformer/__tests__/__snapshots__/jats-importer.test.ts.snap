@@ -1,0 +1,1909 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`JATS importer parses full JATS body to a ProseMirror doc 1`] = `
+Object {
+  "content": Array [
+    Object {
+      "content": Array [
+        Object {
+          "attrs": Object {
+            "category": "",
+            "titleSuppressed": false,
+          },
+          "content": Array [
+            Object {
+              "content": Array [
+                Object {
+                  "text": "Paragraphs",
+                  "type": "text",
+                },
+              ],
+              "type": "section_title",
+            },
+            Object {
+              "attrs": Object {
+                "paragraphStyle": "",
+                "placeholder": "",
+              },
+              "content": Array [
+                Object {
+                  "text": "A paragraph.",
+                  "type": "text",
+                },
+              ],
+              "type": "paragraph",
+            },
+          ],
+          "type": "section",
+        },
+        Object {
+          "attrs": Object {
+            "category": "",
+            "titleSuppressed": false,
+          },
+          "content": Array [
+            Object {
+              "content": Array [
+                Object {
+                  "text": "Lists",
+                  "type": "text",
+                },
+              ],
+              "type": "section_title",
+            },
+            Object {
+              "attrs": Object {
+                "paragraphStyle": "",
+              },
+              "content": Array [
+                Object {
+                  "attrs": Object {
+                    "placeholder": "List item",
+                  },
+                  "content": Array [
+                    Object {
+                      "attrs": Object {
+                        "paragraphStyle": "",
+                        "placeholder": "",
+                      },
+                      "content": Array [
+                        Object {
+                          "text": "An ordered list",
+                          "type": "text",
+                        },
+                      ],
+                      "type": "paragraph",
+                    },
+                  ],
+                  "type": "list_item",
+                },
+                Object {
+                  "attrs": Object {
+                    "placeholder": "List item",
+                  },
+                  "content": Array [
+                    Object {
+                      "attrs": Object {
+                        "paragraphStyle": "",
+                        "placeholder": "",
+                      },
+                      "content": Array [
+                        Object {
+                          "text": "With two items",
+                          "type": "text",
+                        },
+                      ],
+                      "type": "paragraph",
+                    },
+                  ],
+                  "type": "list_item",
+                },
+              ],
+              "type": "ordered_list",
+            },
+            Object {
+              "attrs": Object {
+                "paragraphStyle": "",
+              },
+              "content": Array [
+                Object {
+                  "attrs": Object {
+                    "placeholder": "List item",
+                  },
+                  "content": Array [
+                    Object {
+                      "attrs": Object {
+                        "paragraphStyle": "",
+                        "placeholder": "",
+                      },
+                      "content": Array [
+                        Object {
+                          "text": "An ordered list",
+                          "type": "text",
+                        },
+                      ],
+                      "type": "paragraph",
+                    },
+                    Object {
+                      "attrs": Object {
+                        "paragraphStyle": "",
+                      },
+                      "content": Array [
+                        Object {
+                          "attrs": Object {
+                            "placeholder": "List item",
+                          },
+                          "content": Array [
+                            Object {
+                              "attrs": Object {
+                                "paragraphStyle": "",
+                                "placeholder": "",
+                              },
+                              "content": Array [
+                                Object {
+                                  "text": "With a nested ordered list",
+                                  "type": "text",
+                                },
+                              ],
+                              "type": "paragraph",
+                            },
+                          ],
+                          "type": "list_item",
+                        },
+                        Object {
+                          "attrs": Object {
+                            "placeholder": "List item",
+                          },
+                          "content": Array [
+                            Object {
+                              "attrs": Object {
+                                "paragraphStyle": "",
+                                "placeholder": "",
+                              },
+                              "content": Array [
+                                Object {
+                                  "text": "With two items",
+                                  "type": "text",
+                                },
+                              ],
+                              "type": "paragraph",
+                            },
+                          ],
+                          "type": "list_item",
+                        },
+                      ],
+                      "type": "ordered_list",
+                    },
+                  ],
+                  "type": "list_item",
+                },
+              ],
+              "type": "ordered_list",
+            },
+            Object {
+              "attrs": Object {
+                "paragraphStyle": "",
+              },
+              "content": Array [
+                Object {
+                  "attrs": Object {
+                    "placeholder": "List item",
+                  },
+                  "content": Array [
+                    Object {
+                      "attrs": Object {
+                        "paragraphStyle": "",
+                        "placeholder": "",
+                      },
+                      "content": Array [
+                        Object {
+                          "text": "A bullet list",
+                          "type": "text",
+                        },
+                      ],
+                      "type": "paragraph",
+                    },
+                    Object {
+                      "attrs": Object {
+                        "paragraphStyle": "",
+                      },
+                      "content": Array [
+                        Object {
+                          "attrs": Object {
+                            "placeholder": "List item",
+                          },
+                          "content": Array [
+                            Object {
+                              "attrs": Object {
+                                "paragraphStyle": "",
+                                "placeholder": "",
+                              },
+                              "content": Array [
+                                Object {
+                                  "text": "With a nested bullet list",
+                                  "type": "text",
+                                },
+                              ],
+                              "type": "paragraph",
+                            },
+                          ],
+                          "type": "list_item",
+                        },
+                        Object {
+                          "attrs": Object {
+                            "placeholder": "List item",
+                          },
+                          "content": Array [
+                            Object {
+                              "attrs": Object {
+                                "paragraphStyle": "",
+                                "placeholder": "",
+                              },
+                              "content": Array [
+                                Object {
+                                  "text": "With two items",
+                                  "type": "text",
+                                },
+                              ],
+                              "type": "paragraph",
+                            },
+                          ],
+                          "type": "list_item",
+                        },
+                      ],
+                      "type": "bullet_list",
+                    },
+                  ],
+                  "type": "list_item",
+                },
+              ],
+              "type": "bullet_list",
+            },
+            Object {
+              "attrs": Object {
+                "paragraphStyle": "",
+              },
+              "content": Array [
+                Object {
+                  "attrs": Object {
+                    "placeholder": "List item",
+                  },
+                  "content": Array [
+                    Object {
+                      "attrs": Object {
+                        "paragraphStyle": "",
+                        "placeholder": "",
+                      },
+                      "content": Array [
+                        Object {
+                          "text": "A bullet list",
+                          "type": "text",
+                        },
+                      ],
+                      "type": "paragraph",
+                    },
+                    Object {
+                      "attrs": Object {
+                        "paragraphStyle": "",
+                      },
+                      "content": Array [
+                        Object {
+                          "attrs": Object {
+                            "placeholder": "List item",
+                          },
+                          "content": Array [
+                            Object {
+                              "attrs": Object {
+                                "paragraphStyle": "",
+                                "placeholder": "",
+                              },
+                              "content": Array [
+                                Object {
+                                  "text": "With a nested ordered list",
+                                  "type": "text",
+                                },
+                              ],
+                              "type": "paragraph",
+                            },
+                          ],
+                          "type": "list_item",
+                        },
+                        Object {
+                          "attrs": Object {
+                            "placeholder": "List item",
+                          },
+                          "content": Array [
+                            Object {
+                              "attrs": Object {
+                                "paragraphStyle": "",
+                                "placeholder": "",
+                              },
+                              "content": Array [
+                                Object {
+                                  "text": "With two items",
+                                  "type": "text",
+                                },
+                              ],
+                              "type": "paragraph",
+                            },
+                          ],
+                          "type": "list_item",
+                        },
+                      ],
+                      "type": "ordered_list",
+                    },
+                  ],
+                  "type": "list_item",
+                },
+              ],
+              "type": "bullet_list",
+            },
+          ],
+          "type": "section",
+        },
+        Object {
+          "attrs": Object {
+            "category": "",
+            "titleSuppressed": false,
+          },
+          "content": Array [
+            Object {
+              "content": Array [
+                Object {
+                  "text": "Figures",
+                  "type": "text",
+                },
+              ],
+              "type": "section_title",
+            },
+            Object {
+              "attrs": Object {
+                "figureLayout": "",
+                "figureStyle": "",
+                "label": "",
+                "suppressCaption": false,
+              },
+              "content": Array [
+                Object {
+                  "attrs": Object {
+                    "contentType": "image/jpeg",
+                    "label": "",
+                    "listingAttachment": undefined,
+                    "src": "",
+                  },
+                  "content": Array [
+                    Object {
+                      "content": Array [
+                        Object {
+                          "text": "Test",
+                          "type": "text",
+                        },
+                      ],
+                      "type": "figcaption",
+                    },
+                  ],
+                  "type": "figure",
+                },
+                Object {
+                  "type": "figcaption",
+                },
+                Object {
+                  "attrs": Object {
+                    "contents": "",
+                    "isExecuting": false,
+                    "isExpanded": false,
+                    "language": "",
+                    "languageKey": "null",
+                  },
+                  "type": "listing",
+                },
+              ],
+              "type": "figure_element",
+            },
+          ],
+          "type": "section",
+        },
+        Object {
+          "attrs": Object {
+            "category": "",
+            "titleSuppressed": false,
+          },
+          "content": Array [
+            Object {
+              "content": Array [
+                Object {
+                  "text": "Tables",
+                  "type": "text",
+                },
+              ],
+              "type": "section_title",
+            },
+            Object {
+              "attrs": Object {
+                "expandListing": false,
+                "label": "",
+                "paragraphStyle": "",
+                "suppressCaption": false,
+                "suppressFooter": false,
+                "suppressHeader": false,
+                "tableStyle": "",
+              },
+              "content": Array [
+                Object {
+                  "content": Array [
+                    Object {
+                      "attrs": Object {
+                        "placeholder": "",
+                      },
+                      "content": Array [
+                        Object {
+                          "attrs": Object {
+                            "background": null,
+                            "colspan": 1,
+                            "colwidth": null,
+                            "placeholder": "Data",
+                            "rowspan": 1,
+                          },
+                          "content": Array [
+                            Object {
+                              "text": "Test",
+                              "type": "text",
+                            },
+                          ],
+                          "type": "table_cell",
+                        },
+                        Object {
+                          "attrs": Object {
+                            "background": null,
+                            "colspan": 1,
+                            "colwidth": null,
+                            "placeholder": "Data",
+                            "rowspan": 1,
+                          },
+                          "content": Array [
+                            Object {
+                              "text": "Test",
+                              "type": "text",
+                            },
+                          ],
+                          "type": "table_cell",
+                        },
+                      ],
+                      "type": "table_row",
+                    },
+                    Object {
+                      "attrs": Object {
+                        "placeholder": "",
+                      },
+                      "content": Array [
+                        Object {
+                          "attrs": Object {
+                            "background": null,
+                            "colspan": 1,
+                            "colwidth": null,
+                            "placeholder": "Data",
+                            "rowspan": 1,
+                          },
+                          "content": Array [
+                            Object {
+                              "text": "Test",
+                              "type": "text",
+                            },
+                          ],
+                          "type": "table_cell",
+                        },
+                        Object {
+                          "attrs": Object {
+                            "background": null,
+                            "colspan": 1,
+                            "colwidth": null,
+                            "placeholder": "Data",
+                            "rowspan": 1,
+                          },
+                          "type": "table_cell",
+                        },
+                      ],
+                      "type": "table_row",
+                    },
+                    Object {
+                      "attrs": Object {
+                        "placeholder": "",
+                      },
+                      "content": Array [
+                        Object {
+                          "attrs": Object {
+                            "background": null,
+                            "colspan": 1,
+                            "colwidth": null,
+                            "placeholder": "Data",
+                            "rowspan": 1,
+                          },
+                          "content": Array [
+                            Object {
+                              "text": "Test",
+                              "type": "text",
+                            },
+                          ],
+                          "type": "table_cell",
+                        },
+                        Object {
+                          "attrs": Object {
+                            "background": null,
+                            "colspan": 1,
+                            "colwidth": null,
+                            "placeholder": "Data",
+                            "rowspan": 1,
+                          },
+                          "type": "table_cell",
+                        },
+                      ],
+                      "type": "table_row",
+                    },
+                    Object {
+                      "attrs": Object {
+                        "placeholder": "",
+                      },
+                      "content": Array [
+                        Object {
+                          "attrs": Object {
+                            "background": null,
+                            "colspan": 1,
+                            "colwidth": null,
+                            "placeholder": "Data",
+                            "rowspan": 1,
+                          },
+                          "type": "table_cell",
+                        },
+                        Object {
+                          "attrs": Object {
+                            "background": null,
+                            "colspan": 1,
+                            "colwidth": null,
+                            "placeholder": "Data",
+                            "rowspan": 1,
+                          },
+                          "content": Array [
+                            Object {
+                              "text": "Test",
+                              "type": "text",
+                            },
+                          ],
+                          "type": "table_cell",
+                        },
+                      ],
+                      "type": "table_row",
+                    },
+                  ],
+                  "type": "table",
+                },
+                Object {
+                  "content": Array [
+                    Object {
+                      "text": "Test",
+                      "type": "text",
+                    },
+                  ],
+                  "type": "figcaption",
+                },
+                Object {
+                  "attrs": Object {
+                    "contents": "",
+                    "isExecuting": false,
+                    "isExpanded": false,
+                    "language": "",
+                    "languageKey": "null",
+                  },
+                  "type": "listing",
+                },
+              ],
+              "type": "table_element",
+            },
+          ],
+          "type": "section",
+        },
+        Object {
+          "attrs": Object {
+            "category": "",
+            "titleSuppressed": false,
+          },
+          "content": Array [
+            Object {
+              "content": Array [
+                Object {
+                  "text": "Equations",
+                  "type": "text",
+                },
+              ],
+              "type": "section_title",
+            },
+            Object {
+              "attrs": Object {
+                "paragraphStyle": "",
+                "placeholder": "",
+              },
+              "content": Array [
+                Object {
+                  "text": "This paragraph contains an inline equation:",
+                  "type": "text",
+                },
+                Object {
+                  "attrs": Object {
+                    "SVGRepresentation": "",
+                    "TeXRepresentation": "2+3=5",
+                  },
+                  "type": "inline_equation",
+                },
+              ],
+              "type": "paragraph",
+            },
+            Object {
+              "attrs": Object {
+                "suppressCaption": true,
+              },
+              "content": Array [
+                Object {
+                  "attrs": Object {
+                    "SVGStringRepresentation": "",
+                    "TeXRepresentation": "E=mc^2",
+                  },
+                  "type": "equation",
+                },
+                Object {
+                  "type": "figcaption",
+                },
+              ],
+              "type": "equation_element",
+            },
+          ],
+          "type": "section",
+        },
+        Object {
+          "attrs": Object {
+            "category": "",
+            "titleSuppressed": false,
+          },
+          "content": Array [
+            Object {
+              "content": Array [
+                Object {
+                  "text": "Listings",
+                  "type": "text",
+                },
+              ],
+              "type": "section_title",
+            },
+            Object {
+              "attrs": Object {
+                "suppressCaption": true,
+              },
+              "content": Array [
+                Object {
+                  "attrs": Object {
+                    "contents": "",
+                    "isExecuting": false,
+                    "isExpanded": false,
+                    "language": "",
+                    "languageKey": "null",
+                  },
+                  "type": "listing",
+                },
+                Object {
+                  "type": "figcaption",
+                },
+              ],
+              "type": "listing_element",
+            },
+          ],
+          "type": "section",
+        },
+        Object {
+          "attrs": Object {
+            "category": "",
+            "titleSuppressed": false,
+          },
+          "content": Array [
+            Object {
+              "content": Array [
+                Object {
+                  "text": "Inline",
+                  "type": "text",
+                },
+              ],
+              "type": "section_title",
+            },
+            Object {
+              "attrs": Object {
+                "paragraphStyle": "",
+                "placeholder": "",
+              },
+              "content": Array [
+                Object {
+                  "text": "This paragraph contains ",
+                  "type": "text",
+                },
+                Object {
+                  "marks": Array [
+                    Object {
+                      "type": "bold",
+                    },
+                  ],
+                  "text": "bold",
+                  "type": "text",
+                },
+                Object {
+                  "text": ", ",
+                  "type": "text",
+                },
+                Object {
+                  "marks": Array [
+                    Object {
+                      "type": "italic",
+                    },
+                  ],
+                  "text": "italic",
+                  "type": "text",
+                },
+                Object {
+                  "text": ", ",
+                  "type": "text",
+                },
+                Object {
+                  "marks": Array [
+                    Object {
+                      "type": "underline",
+                    },
+                  ],
+                  "text": "underlined",
+                  "type": "text",
+                },
+                Object {
+                  "text": ", ",
+                  "type": "text",
+                },
+                Object {
+                  "marks": Array [
+                    Object {
+                      "type": "superscript",
+                    },
+                  ],
+                  "text": "superscript",
+                  "type": "text",
+                },
+                Object {
+                  "text": " and ",
+                  "type": "text",
+                },
+                Object {
+                  "marks": Array [
+                    Object {
+                      "type": "subscript",
+                    },
+                  ],
+                  "text": "subscript",
+                  "type": "text",
+                },
+                Object {
+                  "text": " text.",
+                  "type": "text",
+                },
+              ],
+              "type": "paragraph",
+            },
+            Object {
+              "attrs": Object {
+                "paragraphStyle": "",
+                "placeholder": "",
+              },
+              "content": Array [
+                Object {
+                  "text": "This paragraph contains ",
+                  "type": "text",
+                },
+                Object {
+                  "attrs": Object {
+                    "href": "",
+                    "title": "",
+                  },
+                  "content": Array [
+                    Object {
+                      "text": "a link",
+                      "type": "text",
+                    },
+                  ],
+                  "type": "link",
+                },
+                Object {
+                  "text": ".",
+                  "type": "text",
+                },
+              ],
+              "type": "paragraph",
+            },
+          ],
+          "type": "section",
+        },
+        Object {
+          "attrs": Object {
+            "category": "",
+            "titleSuppressed": false,
+          },
+          "content": Array [
+            Object {
+              "content": Array [
+                Object {
+                  "text": "Quotes",
+                  "type": "text",
+                },
+              ],
+              "type": "section_title",
+            },
+            Object {
+              "attrs": Object {
+                "paragraphStyle": "",
+                "placeholder": "",
+              },
+              "content": Array [
+                Object {
+                  "attrs": Object {
+                    "paragraphStyle": "",
+                    "placeholder": "",
+                  },
+                  "content": Array [
+                    Object {
+                      "text": "This is a block quote.",
+                      "type": "text",
+                    },
+                  ],
+                  "type": "paragraph",
+                },
+                Object {
+                  "content": Array [
+                    Object {
+                      "text": "It came from here.",
+                      "type": "text",
+                    },
+                  ],
+                  "type": "attribution",
+                },
+              ],
+              "type": "blockquote_element",
+            },
+          ],
+          "type": "section",
+        },
+        Object {
+          "attrs": Object {
+            "category": "",
+            "titleSuppressed": false,
+          },
+          "content": Array [
+            Object {
+              "content": Array [
+                Object {
+                  "text": "Citations",
+                  "type": "text",
+                },
+              ],
+              "type": "section_title",
+            },
+            Object {
+              "attrs": Object {
+                "paragraphStyle": "",
+                "placeholder": "",
+              },
+              "content": Array [
+                Object {
+                  "text": "This paragraph ends with a citation.",
+                  "type": "text",
+                },
+                Object {
+                  "attrs": Object {
+                    "label": "1",
+                  },
+                  "type": "cross_reference",
+                },
+              ],
+              "type": "paragraph",
+            },
+            Object {
+              "attrs": Object {
+                "paragraphStyle": "",
+                "placeholder": "",
+              },
+              "content": Array [
+                Object {
+                  "text": "This paragraph ends with two citations.",
+                  "type": "text",
+                },
+                Object {
+                  "attrs": Object {
+                    "label": "2,3",
+                  },
+                  "type": "cross_reference",
+                },
+              ],
+              "type": "paragraph",
+            },
+            Object {
+              "attrs": Object {
+                "paragraphStyle": "",
+                "placeholder": "",
+              },
+              "content": Array [
+                Object {
+                  "text": "This paragraph ends with all three citations.",
+                  "type": "text",
+                },
+                Object {
+                  "attrs": Object {
+                    "label": "1–3",
+                  },
+                  "type": "cross_reference",
+                },
+              ],
+              "type": "paragraph",
+            },
+          ],
+          "type": "section",
+        },
+      ],
+      "type": "manuscript",
+    },
+  ],
+  "type": "doc",
+}
+`;
+
+exports[`JATS importer parses minimal JATS body to a ProseMirror doc 1`] = `
+Object {
+  "content": Array [
+    Object {
+      "content": Array [
+        Object {
+          "attrs": Object {
+            "category": "",
+            "titleSuppressed": false,
+          },
+          "content": Array [
+            Object {
+              "content": Array [
+                Object {
+                  "text": "Paragraphs",
+                  "type": "text",
+                },
+              ],
+              "type": "section_title",
+            },
+            Object {
+              "attrs": Object {
+                "paragraphStyle": "",
+                "placeholder": "",
+              },
+              "content": Array [
+                Object {
+                  "text": "A paragraph.",
+                  "type": "text",
+                },
+              ],
+              "type": "paragraph",
+            },
+          ],
+          "type": "section",
+        },
+        Object {
+          "attrs": Object {
+            "category": "",
+            "titleSuppressed": false,
+          },
+          "content": Array [
+            Object {
+              "content": Array [
+                Object {
+                  "text": "Lists",
+                  "type": "text",
+                },
+              ],
+              "type": "section_title",
+            },
+            Object {
+              "attrs": Object {
+                "paragraphStyle": "",
+              },
+              "content": Array [
+                Object {
+                  "attrs": Object {
+                    "placeholder": "List item",
+                  },
+                  "content": Array [
+                    Object {
+                      "attrs": Object {
+                        "paragraphStyle": "",
+                        "placeholder": "",
+                      },
+                      "content": Array [
+                        Object {
+                          "text": "An ordered list",
+                          "type": "text",
+                        },
+                      ],
+                      "type": "paragraph",
+                    },
+                  ],
+                  "type": "list_item",
+                },
+                Object {
+                  "attrs": Object {
+                    "placeholder": "List item",
+                  },
+                  "content": Array [
+                    Object {
+                      "attrs": Object {
+                        "paragraphStyle": "",
+                        "placeholder": "",
+                      },
+                      "content": Array [
+                        Object {
+                          "text": "With two items",
+                          "type": "text",
+                        },
+                      ],
+                      "type": "paragraph",
+                    },
+                  ],
+                  "type": "list_item",
+                },
+              ],
+              "type": "ordered_list",
+            },
+            Object {
+              "attrs": Object {
+                "paragraphStyle": "",
+              },
+              "content": Array [
+                Object {
+                  "attrs": Object {
+                    "placeholder": "List item",
+                  },
+                  "content": Array [
+                    Object {
+                      "attrs": Object {
+                        "paragraphStyle": "",
+                        "placeholder": "",
+                      },
+                      "content": Array [
+                        Object {
+                          "text": "An ordered list",
+                          "type": "text",
+                        },
+                      ],
+                      "type": "paragraph",
+                    },
+                    Object {
+                      "attrs": Object {
+                        "paragraphStyle": "",
+                      },
+                      "content": Array [
+                        Object {
+                          "attrs": Object {
+                            "placeholder": "List item",
+                          },
+                          "content": Array [
+                            Object {
+                              "attrs": Object {
+                                "paragraphStyle": "",
+                                "placeholder": "",
+                              },
+                              "content": Array [
+                                Object {
+                                  "text": "With a nested ordered list",
+                                  "type": "text",
+                                },
+                              ],
+                              "type": "paragraph",
+                            },
+                          ],
+                          "type": "list_item",
+                        },
+                        Object {
+                          "attrs": Object {
+                            "placeholder": "List item",
+                          },
+                          "content": Array [
+                            Object {
+                              "attrs": Object {
+                                "paragraphStyle": "",
+                                "placeholder": "",
+                              },
+                              "content": Array [
+                                Object {
+                                  "text": "With two items",
+                                  "type": "text",
+                                },
+                              ],
+                              "type": "paragraph",
+                            },
+                          ],
+                          "type": "list_item",
+                        },
+                      ],
+                      "type": "ordered_list",
+                    },
+                  ],
+                  "type": "list_item",
+                },
+              ],
+              "type": "ordered_list",
+            },
+            Object {
+              "attrs": Object {
+                "paragraphStyle": "",
+              },
+              "content": Array [
+                Object {
+                  "attrs": Object {
+                    "placeholder": "List item",
+                  },
+                  "content": Array [
+                    Object {
+                      "attrs": Object {
+                        "paragraphStyle": "",
+                        "placeholder": "",
+                      },
+                      "content": Array [
+                        Object {
+                          "text": "A bullet list",
+                          "type": "text",
+                        },
+                      ],
+                      "type": "paragraph",
+                    },
+                    Object {
+                      "attrs": Object {
+                        "paragraphStyle": "",
+                      },
+                      "content": Array [
+                        Object {
+                          "attrs": Object {
+                            "placeholder": "List item",
+                          },
+                          "content": Array [
+                            Object {
+                              "attrs": Object {
+                                "paragraphStyle": "",
+                                "placeholder": "",
+                              },
+                              "content": Array [
+                                Object {
+                                  "text": "With a nested bullet list",
+                                  "type": "text",
+                                },
+                              ],
+                              "type": "paragraph",
+                            },
+                          ],
+                          "type": "list_item",
+                        },
+                        Object {
+                          "attrs": Object {
+                            "placeholder": "List item",
+                          },
+                          "content": Array [
+                            Object {
+                              "attrs": Object {
+                                "paragraphStyle": "",
+                                "placeholder": "",
+                              },
+                              "content": Array [
+                                Object {
+                                  "text": "With two items",
+                                  "type": "text",
+                                },
+                              ],
+                              "type": "paragraph",
+                            },
+                          ],
+                          "type": "list_item",
+                        },
+                      ],
+                      "type": "bullet_list",
+                    },
+                  ],
+                  "type": "list_item",
+                },
+              ],
+              "type": "bullet_list",
+            },
+            Object {
+              "attrs": Object {
+                "paragraphStyle": "",
+              },
+              "content": Array [
+                Object {
+                  "attrs": Object {
+                    "placeholder": "List item",
+                  },
+                  "content": Array [
+                    Object {
+                      "attrs": Object {
+                        "paragraphStyle": "",
+                        "placeholder": "",
+                      },
+                      "content": Array [
+                        Object {
+                          "text": "A bullet list",
+                          "type": "text",
+                        },
+                      ],
+                      "type": "paragraph",
+                    },
+                    Object {
+                      "attrs": Object {
+                        "paragraphStyle": "",
+                      },
+                      "content": Array [
+                        Object {
+                          "attrs": Object {
+                            "placeholder": "List item",
+                          },
+                          "content": Array [
+                            Object {
+                              "attrs": Object {
+                                "paragraphStyle": "",
+                                "placeholder": "",
+                              },
+                              "content": Array [
+                                Object {
+                                  "text": "With a nested ordered list",
+                                  "type": "text",
+                                },
+                              ],
+                              "type": "paragraph",
+                            },
+                          ],
+                          "type": "list_item",
+                        },
+                        Object {
+                          "attrs": Object {
+                            "placeholder": "List item",
+                          },
+                          "content": Array [
+                            Object {
+                              "attrs": Object {
+                                "paragraphStyle": "",
+                                "placeholder": "",
+                              },
+                              "content": Array [
+                                Object {
+                                  "text": "With two items",
+                                  "type": "text",
+                                },
+                              ],
+                              "type": "paragraph",
+                            },
+                          ],
+                          "type": "list_item",
+                        },
+                      ],
+                      "type": "ordered_list",
+                    },
+                  ],
+                  "type": "list_item",
+                },
+              ],
+              "type": "bullet_list",
+            },
+          ],
+          "type": "section",
+        },
+        Object {
+          "attrs": Object {
+            "category": "",
+            "titleSuppressed": false,
+          },
+          "content": Array [
+            Object {
+              "content": Array [
+                Object {
+                  "text": "Figures",
+                  "type": "text",
+                },
+              ],
+              "type": "section_title",
+            },
+            Object {
+              "attrs": Object {
+                "figureLayout": "",
+                "figureStyle": "",
+                "label": "",
+                "suppressCaption": false,
+              },
+              "content": Array [
+                Object {
+                  "attrs": Object {
+                    "contentType": "image/jpeg",
+                    "label": "",
+                    "listingAttachment": undefined,
+                    "src": "",
+                  },
+                  "content": Array [
+                    Object {
+                      "content": Array [
+                        Object {
+                          "text": "Test",
+                          "type": "text",
+                        },
+                      ],
+                      "type": "figcaption",
+                    },
+                  ],
+                  "type": "figure",
+                },
+                Object {
+                  "type": "figcaption",
+                },
+                Object {
+                  "attrs": Object {
+                    "contents": "",
+                    "isExecuting": false,
+                    "isExpanded": false,
+                    "language": "",
+                    "languageKey": "null",
+                  },
+                  "type": "listing",
+                },
+              ],
+              "type": "figure_element",
+            },
+          ],
+          "type": "section",
+        },
+        Object {
+          "attrs": Object {
+            "category": "",
+            "titleSuppressed": false,
+          },
+          "content": Array [
+            Object {
+              "content": Array [
+                Object {
+                  "text": "Tables",
+                  "type": "text",
+                },
+              ],
+              "type": "section_title",
+            },
+            Object {
+              "attrs": Object {
+                "expandListing": false,
+                "label": "",
+                "paragraphStyle": "",
+                "suppressCaption": false,
+                "suppressFooter": false,
+                "suppressHeader": false,
+                "tableStyle": "",
+              },
+              "content": Array [
+                Object {
+                  "content": Array [
+                    Object {
+                      "attrs": Object {
+                        "placeholder": "",
+                      },
+                      "content": Array [
+                        Object {
+                          "attrs": Object {
+                            "background": null,
+                            "colspan": 1,
+                            "colwidth": null,
+                            "placeholder": "Data",
+                            "rowspan": 1,
+                          },
+                          "content": Array [
+                            Object {
+                              "text": "Test",
+                              "type": "text",
+                            },
+                          ],
+                          "type": "table_cell",
+                        },
+                        Object {
+                          "attrs": Object {
+                            "background": null,
+                            "colspan": 1,
+                            "colwidth": null,
+                            "placeholder": "Data",
+                            "rowspan": 1,
+                          },
+                          "content": Array [
+                            Object {
+                              "text": "Test",
+                              "type": "text",
+                            },
+                          ],
+                          "type": "table_cell",
+                        },
+                      ],
+                      "type": "table_row",
+                    },
+                    Object {
+                      "attrs": Object {
+                        "placeholder": "",
+                      },
+                      "content": Array [
+                        Object {
+                          "attrs": Object {
+                            "background": null,
+                            "colspan": 1,
+                            "colwidth": null,
+                            "placeholder": "Data",
+                            "rowspan": 1,
+                          },
+                          "content": Array [
+                            Object {
+                              "text": "Test",
+                              "type": "text",
+                            },
+                          ],
+                          "type": "table_cell",
+                        },
+                        Object {
+                          "attrs": Object {
+                            "background": null,
+                            "colspan": 1,
+                            "colwidth": null,
+                            "placeholder": "Data",
+                            "rowspan": 1,
+                          },
+                          "type": "table_cell",
+                        },
+                      ],
+                      "type": "table_row",
+                    },
+                    Object {
+                      "attrs": Object {
+                        "placeholder": "",
+                      },
+                      "content": Array [
+                        Object {
+                          "attrs": Object {
+                            "background": null,
+                            "colspan": 1,
+                            "colwidth": null,
+                            "placeholder": "Data",
+                            "rowspan": 1,
+                          },
+                          "content": Array [
+                            Object {
+                              "text": "Test",
+                              "type": "text",
+                            },
+                          ],
+                          "type": "table_cell",
+                        },
+                        Object {
+                          "attrs": Object {
+                            "background": null,
+                            "colspan": 1,
+                            "colwidth": null,
+                            "placeholder": "Data",
+                            "rowspan": 1,
+                          },
+                          "type": "table_cell",
+                        },
+                      ],
+                      "type": "table_row",
+                    },
+                    Object {
+                      "attrs": Object {
+                        "placeholder": "",
+                      },
+                      "content": Array [
+                        Object {
+                          "attrs": Object {
+                            "background": null,
+                            "colspan": 1,
+                            "colwidth": null,
+                            "placeholder": "Data",
+                            "rowspan": 1,
+                          },
+                          "type": "table_cell",
+                        },
+                        Object {
+                          "attrs": Object {
+                            "background": null,
+                            "colspan": 1,
+                            "colwidth": null,
+                            "placeholder": "Data",
+                            "rowspan": 1,
+                          },
+                          "content": Array [
+                            Object {
+                              "text": "Test",
+                              "type": "text",
+                            },
+                          ],
+                          "type": "table_cell",
+                        },
+                      ],
+                      "type": "table_row",
+                    },
+                  ],
+                  "type": "table",
+                },
+                Object {
+                  "content": Array [
+                    Object {
+                      "text": "Test",
+                      "type": "text",
+                    },
+                  ],
+                  "type": "figcaption",
+                },
+                Object {
+                  "attrs": Object {
+                    "contents": "",
+                    "isExecuting": false,
+                    "isExpanded": false,
+                    "language": "",
+                    "languageKey": "null",
+                  },
+                  "type": "listing",
+                },
+              ],
+              "type": "table_element",
+            },
+          ],
+          "type": "section",
+        },
+        Object {
+          "attrs": Object {
+            "category": "",
+            "titleSuppressed": false,
+          },
+          "content": Array [
+            Object {
+              "content": Array [
+                Object {
+                  "text": "Equations",
+                  "type": "text",
+                },
+              ],
+              "type": "section_title",
+            },
+            Object {
+              "attrs": Object {
+                "paragraphStyle": "",
+                "placeholder": "",
+              },
+              "content": Array [
+                Object {
+                  "text": "This paragraph contains an inline equation:",
+                  "type": "text",
+                },
+                Object {
+                  "attrs": Object {
+                    "SVGRepresentation": "",
+                    "TeXRepresentation": "2+3=5",
+                  },
+                  "type": "inline_equation",
+                },
+              ],
+              "type": "paragraph",
+            },
+            Object {
+              "attrs": Object {
+                "suppressCaption": true,
+              },
+              "content": Array [
+                Object {
+                  "attrs": Object {
+                    "SVGStringRepresentation": "",
+                    "TeXRepresentation": "E=mc^2",
+                  },
+                  "type": "equation",
+                },
+                Object {
+                  "type": "figcaption",
+                },
+              ],
+              "type": "equation_element",
+            },
+          ],
+          "type": "section",
+        },
+        Object {
+          "attrs": Object {
+            "category": "",
+            "titleSuppressed": false,
+          },
+          "content": Array [
+            Object {
+              "content": Array [
+                Object {
+                  "text": "Listings",
+                  "type": "text",
+                },
+              ],
+              "type": "section_title",
+            },
+            Object {
+              "attrs": Object {
+                "suppressCaption": true,
+              },
+              "content": Array [
+                Object {
+                  "attrs": Object {
+                    "contents": "",
+                    "isExecuting": false,
+                    "isExpanded": false,
+                    "language": "",
+                    "languageKey": "null",
+                  },
+                  "type": "listing",
+                },
+                Object {
+                  "type": "figcaption",
+                },
+              ],
+              "type": "listing_element",
+            },
+          ],
+          "type": "section",
+        },
+        Object {
+          "attrs": Object {
+            "category": "",
+            "titleSuppressed": false,
+          },
+          "content": Array [
+            Object {
+              "content": Array [
+                Object {
+                  "text": "Inline",
+                  "type": "text",
+                },
+              ],
+              "type": "section_title",
+            },
+            Object {
+              "attrs": Object {
+                "paragraphStyle": "",
+                "placeholder": "",
+              },
+              "content": Array [
+                Object {
+                  "text": "This paragraph contains ",
+                  "type": "text",
+                },
+                Object {
+                  "marks": Array [
+                    Object {
+                      "type": "bold",
+                    },
+                  ],
+                  "text": "bold",
+                  "type": "text",
+                },
+                Object {
+                  "text": ", ",
+                  "type": "text",
+                },
+                Object {
+                  "marks": Array [
+                    Object {
+                      "type": "italic",
+                    },
+                  ],
+                  "text": "italic",
+                  "type": "text",
+                },
+                Object {
+                  "text": ", ",
+                  "type": "text",
+                },
+                Object {
+                  "marks": Array [
+                    Object {
+                      "type": "underline",
+                    },
+                  ],
+                  "text": "underlined",
+                  "type": "text",
+                },
+                Object {
+                  "text": ", ",
+                  "type": "text",
+                },
+                Object {
+                  "marks": Array [
+                    Object {
+                      "type": "superscript",
+                    },
+                  ],
+                  "text": "superscript",
+                  "type": "text",
+                },
+                Object {
+                  "text": " and ",
+                  "type": "text",
+                },
+                Object {
+                  "marks": Array [
+                    Object {
+                      "type": "subscript",
+                    },
+                  ],
+                  "text": "subscript",
+                  "type": "text",
+                },
+                Object {
+                  "text": " text.",
+                  "type": "text",
+                },
+              ],
+              "type": "paragraph",
+            },
+            Object {
+              "attrs": Object {
+                "paragraphStyle": "",
+                "placeholder": "",
+              },
+              "content": Array [
+                Object {
+                  "text": "This paragraph contains ",
+                  "type": "text",
+                },
+                Object {
+                  "attrs": Object {
+                    "href": "",
+                    "title": "",
+                  },
+                  "content": Array [
+                    Object {
+                      "text": "a link",
+                      "type": "text",
+                    },
+                  ],
+                  "type": "link",
+                },
+                Object {
+                  "text": ".",
+                  "type": "text",
+                },
+              ],
+              "type": "paragraph",
+            },
+          ],
+          "type": "section",
+        },
+        Object {
+          "attrs": Object {
+            "category": "",
+            "titleSuppressed": false,
+          },
+          "content": Array [
+            Object {
+              "content": Array [
+                Object {
+                  "text": "Quotes",
+                  "type": "text",
+                },
+              ],
+              "type": "section_title",
+            },
+            Object {
+              "attrs": Object {
+                "paragraphStyle": "",
+                "placeholder": "",
+              },
+              "content": Array [
+                Object {
+                  "attrs": Object {
+                    "paragraphStyle": "",
+                    "placeholder": "",
+                  },
+                  "content": Array [
+                    Object {
+                      "text": "This is a block quote.",
+                      "type": "text",
+                    },
+                  ],
+                  "type": "paragraph",
+                },
+                Object {
+                  "content": Array [
+                    Object {
+                      "text": "It came from here.",
+                      "type": "text",
+                    },
+                  ],
+                  "type": "attribution",
+                },
+              ],
+              "type": "blockquote_element",
+            },
+          ],
+          "type": "section",
+        },
+        Object {
+          "attrs": Object {
+            "category": "",
+            "titleSuppressed": false,
+          },
+          "content": Array [
+            Object {
+              "content": Array [
+                Object {
+                  "text": "Citations",
+                  "type": "text",
+                },
+              ],
+              "type": "section_title",
+            },
+            Object {
+              "attrs": Object {
+                "paragraphStyle": "",
+                "placeholder": "",
+              },
+              "content": Array [
+                Object {
+                  "text": "This paragraph ends with a citation.",
+                  "type": "text",
+                },
+                Object {
+                  "attrs": Object {
+                    "label": "1",
+                  },
+                  "type": "cross_reference",
+                },
+              ],
+              "type": "paragraph",
+            },
+            Object {
+              "attrs": Object {
+                "paragraphStyle": "",
+                "placeholder": "",
+              },
+              "content": Array [
+                Object {
+                  "text": "This paragraph ends with two citations.",
+                  "type": "text",
+                },
+                Object {
+                  "attrs": Object {
+                    "label": "2,3",
+                  },
+                  "type": "cross_reference",
+                },
+              ],
+              "type": "paragraph",
+            },
+            Object {
+              "attrs": Object {
+                "paragraphStyle": "",
+                "placeholder": "",
+              },
+              "content": Array [
+                Object {
+                  "text": "This paragraph ends with all three citations.",
+                  "type": "text",
+                },
+                Object {
+                  "attrs": Object {
+                    "label": "1–3",
+                  },
+                  "type": "cross_reference",
+                },
+              ],
+              "type": "paragraph",
+            },
+          ],
+          "type": "section",
+        },
+      ],
+      "type": "manuscript",
+    },
+  ],
+  "type": "doc",
+}
+`;

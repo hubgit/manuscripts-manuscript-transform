@@ -17,7 +17,7 @@
 import { ObjectTypes } from '@manuscripts/manuscripts-json-schema'
 import { ManuscriptNode, ManuscriptNodeType, Nodes, schema } from '../schema'
 
-export const nodeTypesMap: Map<ManuscriptNodeType, string> = new Map([
+export const nodeTypesMap: Map<ManuscriptNodeType, ObjectTypes> = new Map([
   [schema.nodes.bibliography_element, ObjectTypes.BibliographyElement],
   [schema.nodes.bibliography_section, ObjectTypes.Section],
   [schema.nodes.blockquote_element, ObjectTypes.QuoteElement],
