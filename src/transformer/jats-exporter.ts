@@ -20,6 +20,7 @@ import {
   BibliographyItem,
   Citation,
   Contributor,
+  ContributorRole,
   Footnote,
   Keyword,
   Model,
@@ -78,6 +79,28 @@ const findChildNodeOfType = (
     if (child.type === nodeType) {
       return child
     }
+  }
+}
+
+const isContributor = hasObjectType<Contributor>(ObjectTypes.Contributor)
+
+const CREDIT_VOCAB_IDENTIFIER =
+  'https://dictionary.casrai.org/Contributor_Roles'
+
+const chooseRoleVocabAttributes = (
+  role: ContributorRole
+): { [key: string]: string } => {
+  if (role.uri && role.uri.startsWith(CREDIT_VOCAB_IDENTIFIER)) {
+    return {
+      vocab: 'credit',
+      'vocab-identifier': CREDIT_VOCAB_IDENTIFIER,
+      'vocab-term': role.name,
+      'vocab-term-identifier': role.uri,
+    }
+  }
+
+  return {
+    vocab: 'uncontrolled',
   }
 }
 
@@ -882,18 +905,21 @@ export class JATSExporter {
   }
 
   private buildContributors = (articleMeta: Node) => {
-    const contributors = this.models.filter(
-      hasObjectType<Contributor>(ObjectTypes.Contributor)
-    )
+    const contributors = this.models.filter(isContributor)
 
-    if (contributors && contributors.length) {
+    const sortContributors = (a: Contributor, b: Contributor) =>
+      Number(a.priority) - Number(b.priority)
+
+    const authorContributors = contributors
+      .filter(contributor => contributor.role === 'author')
+      .sort(sortContributors)
+
+    if (authorContributors.length) {
       const contribGroup = this.document.createElement('contrib-group')
       contribGroup.setAttribute('content-type', 'authors')
       articleMeta.appendChild(contribGroup)
 
-      contributors.sort((a, b) => Number(a.priority) - Number(b.priority))
-
-      contributors.forEach(contributor => {
+      authorContributors.forEach(contributor => {
         try {
           this.validateContributor(contributor)
         } catch (error) {
@@ -909,25 +935,35 @@ export class JATSExporter {
           contrib.setAttribute('corresp', 'yes')
         }
 
-        const name = this.document.createElement('name')
+        const name = this.buildContributorName(contributor)
         contrib.appendChild(name)
-
-        if (contributor.bibliographicName.family) {
-          const surname = this.document.createElement('surname')
-          surname.textContent = contributor.bibliographicName.family
-          name.appendChild(surname)
-        }
-
-        if (contributor.bibliographicName.given) {
-          const givenNames = this.document.createElement('given-names')
-          givenNames.textContent = contributor.bibliographicName.given
-          name.appendChild(givenNames)
-        }
 
         if (contributor.email) {
           const email = this.document.createElement('email')
           email.textContent = contributor.email
           contrib.appendChild(email)
+        }
+
+        if (contributor.roles) {
+          contributor.roles.forEach(rid => {
+            const contributorRole = this.modelMap.get(rid) as
+              | ContributorRole
+              | undefined
+
+            if (contributorRole) {
+              const role = this.document.createElement('role')
+
+              const attributes = chooseRoleVocabAttributes(contributorRole)
+
+              for (const [key, value] of Object.entries(attributes)) {
+                role.setAttribute(key, value)
+              }
+
+              role.textContent = contributorRole.name
+
+              contrib.appendChild(role)
+            }
+          })
         }
 
         if (contributor.affiliations) {
@@ -942,9 +978,75 @@ export class JATSExporter {
         contribGroup.appendChild(contrib)
       })
 
+      const otherContributors = contributors
+        .filter(contributor => contributor.role !== 'author')
+        .sort(sortContributors)
+
+      if (otherContributors.length) {
+        const contribGroup = this.document.createElement('contrib-group')
+        articleMeta.appendChild(contribGroup)
+
+        otherContributors.forEach(contributor => {
+          try {
+            this.validateContributor(contributor)
+          } catch (error) {
+            warn(error.message)
+            return
+          }
+
+          const contrib = this.document.createElement('contrib')
+          // contrib.setAttribute('contrib-type', 'other')
+          contrib.setAttribute('id', normalizeID(contributor._id))
+
+          const name = this.buildContributorName(contributor)
+          contrib.appendChild(name)
+
+          if (contributor.email) {
+            const email = this.document.createElement('email')
+            email.textContent = contributor.email
+            contrib.appendChild(email)
+          }
+
+          if (contributor.roles) {
+            contributor.roles.forEach(rid => {
+              const contributorRole = this.modelMap.get(rid) as
+                | ContributorRole
+                | undefined
+
+              if (contributorRole) {
+                const role = this.document.createElement('role')
+
+                const attributes = chooseRoleVocabAttributes(contributorRole)
+
+                for (const [key, value] of Object.entries(attributes)) {
+                  role.setAttribute(key, value)
+                }
+
+                role.textContent = contributorRole.name
+
+                contrib.appendChild(role)
+              }
+            })
+          }
+
+          if (contributor.affiliations) {
+            contributor.affiliations.forEach(rid => {
+              const xref = this.document.createElement('xref')
+              xref.setAttribute('ref-type', 'aff')
+              xref.setAttribute('rid', normalizeID(rid))
+              contrib.appendChild(xref)
+            })
+          }
+
+          contribGroup.appendChild(contrib)
+        })
+      }
+
       const affiliationRIDs: string[] = []
 
-      contributors.forEach(contributor => {
+      const sortedContributors = [...authorContributors, ...otherContributors]
+
+      sortedContributors.forEach(contributor => {
         if (contributor.affiliations) {
           affiliationRIDs.push(...contributor.affiliations)
         }
@@ -1206,5 +1308,23 @@ export class JATSExporter {
         insertAbstractNode(articleMeta, abstractNode)
       }
     }
+  }
+
+  private buildContributorName = (contributor: Contributor) => {
+    const name = this.document.createElement('name')
+
+    if (contributor.bibliographicName.family) {
+      const surname = this.document.createElement('surname')
+      surname.textContent = contributor.bibliographicName.family
+      name.appendChild(surname)
+    }
+
+    if (contributor.bibliographicName.given) {
+      const givenNames = this.document.createElement('given-names')
+      givenNames.textContent = contributor.bibliographicName.given
+      name.appendChild(givenNames)
+    }
+
+    return name
   }
 }

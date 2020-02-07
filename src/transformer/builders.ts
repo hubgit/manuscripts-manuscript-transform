@@ -26,6 +26,7 @@ import {
   CommentAnnotation,
   Contribution,
   Contributor,
+  ContributorRole,
   EmbeddedModel,
   Figure,
   Footnote,
@@ -82,11 +83,11 @@ export const buildManuscript = (title: string = ''): Build<Manuscript> => ({
   title,
 })
 
-export type ContributorRole = 'author'
+export type ContributorRoleType = 'author'
 
 export const buildContributor = (
   bibliographicName: BibliographicName,
-  role: ContributorRole = 'author',
+  role: ContributorRoleType = 'author',
   priority: number = 0,
   userID?: string,
   invitationID?: string
@@ -291,4 +292,10 @@ export const buildContribution = (profileID: string): Contribution => ({
   objectType: ObjectTypes.Contribution,
   profileID,
   timestamp: timestamp(),
+})
+
+export const buildContributorRole = (name: string): Build<ContributorRole> => ({
+  _id: generateID(ObjectTypes.ContributorRole),
+  objectType: ObjectTypes.ContributorRole,
+  name,
 })
