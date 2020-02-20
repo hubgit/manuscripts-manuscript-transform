@@ -143,6 +143,7 @@ Object {
                                     "figureLayout": "",
                                     "figureStyle": "",
                                     "label": "",
+                                    "sizeFraction": 0,
                                     "suppressCaption": false,
                                   },
                                   "content": Array [
@@ -1042,6 +1043,7 @@ Object {
                 "figureLayout": "",
                 "figureStyle": "",
                 "label": "",
+                "sizeFraction": 0,
                 "suppressCaption": false,
               },
               "content": Array [

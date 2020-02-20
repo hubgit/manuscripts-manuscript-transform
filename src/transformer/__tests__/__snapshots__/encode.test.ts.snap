@@ -225,6 +225,7 @@ Map {
     "figureStyle": "MPFigureStyle:12916784-C8A2-414E-919D-490172E82B25",
     "listingID": undefined,
     "objectType": "MPFigureElement",
+    "sizeFraction": undefined,
     "suppressCaption": undefined,
   },
   "MPFigure:D673DF08-D75E-4061-8EC1-9611EAB302F0" => Object {
@@ -245,6 +246,7 @@ Map {
     "figureStyle": "MPFigureStyle:12916784-C8A2-414E-919D-490172E82B25",
     "listingID": undefined,
     "objectType": "MPFigureElement",
+    "sizeFraction": undefined,
     "suppressCaption": true,
   },
   "MPFigure:AD65D628-A904-4DC4-A026-F8F4C08F6557" => Object {
@@ -534,6 +536,7 @@ Map {
     ],
     "listingID": undefined,
     "objectType": "MPFigureElement",
+    "sizeFraction": undefined,
     "suppressCaption": undefined,
   },
   "MPFigure:1" => Object {

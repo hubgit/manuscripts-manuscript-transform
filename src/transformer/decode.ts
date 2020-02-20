@@ -298,6 +298,7 @@ export class Decoder {
           id: model._id,
           figureLayout: model.figureLayout,
           figureStyle: model.figureStyle,
+          sizeFraction: model.sizeFraction,
           suppressCaption: Boolean(model.suppressCaption),
         },
         content

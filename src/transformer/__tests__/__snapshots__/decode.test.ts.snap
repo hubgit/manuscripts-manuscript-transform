@@ -424,6 +424,7 @@ Object {
             "figureStyle": "MPFigureStyle:12916784-C8A2-414E-919D-490172E82B25",
             "id": "MPFigureElement:A5D68C57-B5BB-4D10-E0C3-ECED717A2AA7",
             "label": "",
+            "sizeFraction": 0,
             "suppressCaption": false,
           },
           "content": Array [
@@ -471,6 +472,7 @@ Object {
             "figureStyle": "MPFigureStyle:12916784-C8A2-414E-919D-490172E82B25",
             "id": "MPFigureElement:B32BDEC8-E816-4946-C0BB-0404AF2F0C29",
             "label": "",
+            "sizeFraction": 0,
             "suppressCaption": true,
           },
           "content": Array [
@@ -1791,6 +1793,7 @@ Object {
             "figureStyle": "MPFigureStyle:12916784-C8A2-414E-919D-490172E82B25",
             "id": "MPFigureElement:B32BDEC8-E816-4946-C0BB-0404AF2F0C29",
             "label": "",
+            "sizeFraction": 0,
             "suppressCaption": true,
           },
           "content": Array [
@@ -3026,6 +3029,7 @@ Object {
             "figureStyle": "MPFigureStyle:12916784-C8A2-414E-919D-490172E82B25",
             "id": "MPFigureElement:A5D68C57-B5BB-4D10-E0C3-ECED717A2AA7",
             "label": "",
+            "sizeFraction": 0,
             "suppressCaption": false,
           },
           "content": Array [
@@ -3073,6 +3077,7 @@ Object {
             "figureStyle": "MPFigureStyle:12916784-C8A2-414E-919D-490172E82B25",
             "id": "MPFigureElement:B32BDEC8-E816-4946-C0BB-0404AF2F0C29",
             "label": "",
+            "sizeFraction": 0,
             "suppressCaption": true,
           },
           "content": Array [
@@ -4170,6 +4175,7 @@ Object {
             "figureStyle": "MPFigureStyle:1",
             "id": "MPFigureElement:1",
             "label": "",
+            "sizeFraction": 0,
             "suppressCaption": false,
           },
           "content": Array [

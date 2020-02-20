@@ -24,6 +24,7 @@ interface Attrs {
   id: string
   label: string
   rows: number
+  sizeFraction: number
   suppressCaption: boolean
   expandListing: boolean
 }
@@ -39,6 +40,7 @@ export const figureElement: NodeSpec = {
     figureStyle: { default: '' },
     id: { default: '' },
     label: { default: '' },
+    sizeFraction: { default: 0 },
     suppressCaption: { default: false },
   },
   selectable: false,
@@ -53,6 +55,7 @@ export const figureElement: NodeSpec = {
           id: dom.getAttribute('id'),
           figureStyle: dom.getAttribute('data-figure-style'),
           figureLayout: dom.getAttribute('data-figure-layout'),
+          sizeFraction: Number(dom.getAttribute('data-size-fraction')) || 0,
         }
       },
     },
@@ -60,16 +63,31 @@ export const figureElement: NodeSpec = {
   toDOM: node => {
     const figureElementNode = node as FigureElementNode
 
-    return [
-      'figure',
-      {
-        class: 'figure-group',
-        id: figureElementNode.attrs.id,
-        'data-figure-style': figureElementNode.attrs.figureStyle,
-        'data-figure-layout': figureElementNode.attrs.figureLayout,
-      },
-      0,
-    ]
+    const {
+      id,
+      figureStyle,
+      figureLayout,
+      sizeFraction,
+    } = figureElementNode.attrs
+
+    const attrs: { [key: string]: string } = {
+      class: 'figure-group',
+      id,
+    }
+
+    if (figureStyle) {
+      attrs['data-figure-style'] = figureStyle
+    }
+
+    if (figureLayout) {
+      attrs['data-figure-layout'] = figureLayout
+    }
+
+    if (sizeFraction) {
+      attrs['data-size-fraction'] = String(sizeFraction)
+    }
+
+    return ['figure', attrs, 0]
   },
 }
 

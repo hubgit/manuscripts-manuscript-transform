@@ -481,6 +481,7 @@ Object {
                   "figureStyle": "",
                   "id": "MPFigureElement:3AAE3519-F4A7-4C18-B374-B4F95974C16A",
                   "label": "",
+                  "sizeFraction": 0,
                   "suppressCaption": false,
                 },
                 "content": Array [
@@ -1448,6 +1449,7 @@ Object {
                   "figureStyle": "",
                   "id": "MPFigureElement:3AAE3519-F4A7-4C18-B374-B4F95974C16A",
                   "label": "",
+                  "sizeFraction": 0,
                   "suppressCaption": false,
                 },
                 "content": Array [

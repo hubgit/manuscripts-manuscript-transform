@@ -320,6 +320,7 @@ const encoders: NodeEncoderMap = {
     caption: inlineContentsOfNodeType(node, node.type.schema.nodes.figcaption),
     elementType: 'figure',
     listingID: attributeOfNodeType(node, 'listing', 'id') || undefined,
+    sizeFraction: node.attrs.sizeFraction || undefined,
     suppressCaption: Boolean(node.attrs.suppressCaption) || undefined,
     figureStyle: node.attrs.figureStyle || undefined,
     figureLayout: node.attrs.figureLayout || undefined,
