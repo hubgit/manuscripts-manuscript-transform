@@ -464,6 +464,7 @@ export const encode = (node: ManuscriptNode): Map<string, Model> => {
 
   const placeholders = ['placeholder', 'placeholder_element']
 
+  // TODO: parents array, to get closest parent with an id for containingObject
   const addModel = (path: string[], parent: ManuscriptNode) => (
     child: ManuscriptNode
   ) => {

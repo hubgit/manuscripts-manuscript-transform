@@ -56,6 +56,13 @@ const marks: MarkRule[] = [
     mark: 'strikethrough',
   },
   {
+    tag: 'styled-content',
+    mark: 'styled',
+    getAttrs: node => ({
+      style: (node as Element).getAttribute('style'),
+    }),
+  },
+  {
     tag: 'sub',
     mark: 'subscript',
   },

@@ -20,11 +20,13 @@ import {
   Citation,
   Contributor,
   Figure,
+  InlineStyle,
   Model,
   ObjectTypes,
 } from '@manuscripts/manuscripts-json-schema'
 import { DOMOutputSpec, DOMSerializer } from 'prosemirror-model'
 import serializeToXML from 'w3c-xmlserializer'
+import { buildStyledContentClass } from '../lib/styled-content'
 import {
   CitationNode,
   CrossReferenceNode,
@@ -306,6 +308,16 @@ export class HTMLTransformer {
       if (mark.spec.toDOM) {
         marks[name as Marks] = mark.spec.toDOM
       }
+    }
+
+    marks.styled = mark => {
+      const inlineStyle = getModel<InlineStyle>(mark.attrs.rid)
+
+      const attrs = {
+        class: buildStyledContentClass(mark.attrs, inlineStyle),
+      }
+
+      return ['span', attrs]
     }
 
     const serializer = new DOMSerializer(nodes, marks)

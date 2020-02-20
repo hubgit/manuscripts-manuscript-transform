@@ -38,6 +38,7 @@ export type Marks =
   | 'italic'
   | 'smallcaps'
   | 'strikethrough'
+  | 'styled'
   | 'subscript'
   | 'superscript'
   | 'underline'

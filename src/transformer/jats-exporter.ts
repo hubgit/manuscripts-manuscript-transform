@@ -22,6 +22,7 @@ import {
   Contributor,
   ContributorRole,
   Footnote,
+  InlineStyle,
   Keyword,
   Model,
   ObjectTypes,
@@ -30,6 +31,7 @@ import debug from 'debug'
 import { DOMOutputSpec, DOMParser, DOMSerializer } from 'prosemirror-model'
 import serializeToXML from 'w3c-xmlserializer'
 import { nodeFromHTML, textFromHTML } from '../lib/html'
+import { normalizeStyleName } from '../lib/styled-content'
 import { iterateChildren } from '../lib/utils'
 import {
   FigureElementNode,
@@ -777,6 +779,17 @@ export class JATSExporter {
       italic: () => ['italic'],
       smallcaps: () => ['sc'],
       strikethrough: () => ['strike'],
+      styled: mark => {
+        const inlineStyle = getModel<InlineStyle>(mark.attrs.rid)
+
+        const attrs: { [key: string]: string } = {}
+
+        if (inlineStyle && inlineStyle.title) {
+          attrs.style = normalizeStyleName(inlineStyle.title)
+        }
+
+        return ['styled-content', attrs]
+      },
       superscript: () => ['sup'],
       subscript: () => ['sub'],
       underline: () => ['underline'],

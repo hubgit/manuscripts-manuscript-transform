@@ -32,6 +32,7 @@ import {
   Footnote,
   Highlight,
   InlineMathFragment,
+  InlineStyle,
   Keyword,
   LibraryCollection,
   Manuscript,
@@ -297,5 +298,15 @@ export const buildContribution = (profileID: string): Contribution => ({
 export const buildContributorRole = (name: string): Build<ContributorRole> => ({
   _id: generateID(ObjectTypes.ContributorRole),
   objectType: ObjectTypes.ContributorRole,
+  name,
+})
+
+export const buildInlineStyle = (
+  priority: number,
+  name?: string
+): Build<InlineStyle> => ({
+  _id: generateID(ObjectTypes.InlineStyle),
+  objectType: ObjectTypes.InlineStyle,
+  priority,
   name,
 })

@@ -68,6 +68,30 @@ export const strikethrough: MarkSpec = {
   toDOM: () => ['s'],
 }
 
+export const styled: MarkSpec = {
+  attrs: {
+    rid: { default: '' },
+  },
+  spanning: false,
+  parseDOM: [
+    {
+      tag: 'span.styled-content',
+      getAttrs: dom => {
+        const element = dom as HTMLSpanElement
+        return {
+          rid: element.getAttribute('data-inline-style'),
+        }
+      },
+    },
+  ],
+  toDOM: mark => {
+    return [
+      'span',
+      { class: 'styled-content', 'data-inline-style': mark.attrs.rid },
+    ]
+  },
+}
+
 export const subscript: MarkSpec = {
   excludes: 'superscript',
   group: 'position',
