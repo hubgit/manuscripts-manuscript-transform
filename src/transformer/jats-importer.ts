@@ -30,6 +30,8 @@ import { nodeTypesMap } from './node-types'
 
 // https://jats.nlm.nih.gov/articleauthoring/tag-library/1.2/
 
+const XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink'
+
 export type MarkRule = ParseRule & { mark: Marks | null }
 
 const marks: MarkRule[] = [
@@ -172,8 +174,8 @@ const nodes: NodeRule[] = [
       const element = node as HTMLElement
 
       return {
-        href: element.getAttribute('href') || '',
-        title: element.getAttribute('title') || '',
+        href: element.getAttributeNS(XLINK_NAMESPACE, 'href') || '',
+        title: element.getAttributeNS(XLINK_NAMESPACE, 'title') || '',
       }
     },
   },
@@ -465,7 +467,7 @@ export const rewriteIDs = (output: ManuscriptNode) => {
 
       if (previousID) {
         if (replacements.has(previousID)) {
-          throw new Error('This id exists twice!')
+          throw new Error(`ID ${previousID} exists twice!`)
           // TODO: warn and ignore instead?
         }
 

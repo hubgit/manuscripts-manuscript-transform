@@ -46,7 +46,7 @@ describe('JATS importer', () => {
   })
 
   test('parses full JATS body to a ProseMirror doc', async () => {
-    const article = await loadFixture('jats-example.xml')
+    const article = await loadFixture('jats-example-full.xml')
 
     const doc = parseJATSBody(article)
 
