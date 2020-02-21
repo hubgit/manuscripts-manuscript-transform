@@ -633,30 +633,46 @@ export class JATSExporter {
           }
         })
 
-        const graphic = this.document.createElement('graphic')
-        const filename = generateAttachmentFilename(
-          node.attrs.id,
-          node.attrs.contentType
-        )
-        graphic.setAttributeNS(
-          XLINK_NAMESPACE,
-          'xlink:href',
-          `graphic/${filename}`
-        )
+        if (node.attrs.embedURL) {
+          const media = this.document.createElement('media')
 
-        if (node.attrs.contentType) {
-          const [mimeType, mimeSubType] = node.attrs.contentType.split('/')
+          media.setAttributeNS(
+            XLINK_NAMESPACE,
+            'xlink:href',
+            node.attrs.embedURL
+          )
 
-          if (mimeType) {
-            graphic.setAttribute('mimetype', mimeType)
+          media.setAttributeNS(XLINK_NAMESPACE, 'xlink:show', 'embed')
 
-            if (mimeSubType) {
-              graphic.setAttribute('mime-subtype', mimeSubType)
+          media.setAttribute('content-type', 'embed')
+
+          fig.appendChild(media)
+        } else {
+          const graphic = this.document.createElement('graphic')
+          const filename = generateAttachmentFilename(
+            node.attrs.id,
+            node.attrs.contentType
+          )
+          graphic.setAttributeNS(
+            XLINK_NAMESPACE,
+            'xlink:href',
+            `graphic/${filename}`
+          )
+
+          if (node.attrs.contentType) {
+            const [mimeType, mimeSubType] = node.attrs.contentType.split('/')
+
+            if (mimeType) {
+              graphic.setAttribute('mimetype', mimeType)
+
+              if (mimeSubType) {
+                graphic.setAttribute('mime-subtype', mimeSubType)
+              }
             }
           }
-        }
 
-        fig.appendChild(graphic)
+          fig.appendChild(graphic)
+        }
 
         return fig
       },

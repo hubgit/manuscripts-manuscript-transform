@@ -16,6 +16,7 @@
 
 import {
   Affiliation,
+  Attribution,
   AuxiliaryObjectReference,
   BibliographicDate,
   BibliographicName,
@@ -303,10 +304,15 @@ export const buildContributorRole = (name: string): Build<ContributorRole> => ({
 
 export const buildInlineStyle = (
   priority: number,
-  name?: string
+  title?: string
 ): Build<InlineStyle> => ({
   _id: generateID(ObjectTypes.InlineStyle),
   objectType: ObjectTypes.InlineStyle,
   priority,
-  name,
+  title,
+})
+
+export const buildAttribution = (): Build<Attribution> => ({
+  _id: generateID(ObjectTypes.Attribution),
+  objectType: ObjectTypes.Attribution,
 })

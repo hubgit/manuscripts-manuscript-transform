@@ -216,6 +216,7 @@ const nodes: NodeRule[] = [
 
       const labelNode = element.querySelector('label')
       const graphicNode = element.querySelector('graphic')
+      const mediaNode = element.querySelector('media')
 
       return {
         id: element.getAttribute('id'),
@@ -227,6 +228,9 @@ const nodes: NodeRule[] = [
             ].join('/')
           : '',
         // TODO: src from attachment
+        embedURL: mediaNode
+          ? mediaNode.getAttributeNS(XLINK_NAMESPACE, 'href')
+          : undefined,
       }
     },
   },

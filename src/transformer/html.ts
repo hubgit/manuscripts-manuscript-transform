@@ -339,14 +339,30 @@ export class HTMLTransformer {
     const figure = this.document.getElementById(node.attrs.id)
 
     if (figure) {
-      const filename = generateAttachmentFilename(
-        node.attrs.id,
-        node.attrs.contentType
-      )
+      if (node.attrs.embedURL) {
+        const container = document.createElement('div')
+        container.classList.add('figure-embed')
 
-      const img = this.document.createElement('img')
-      img.setAttribute('src', attachmentUrlPrefix + filename)
-      figure.insertBefore(img, figure.firstChild)
+        const object = document.createElement('iframe')
+        object.classList.add('figure-embed-object')
+        object.setAttribute('src', node.attrs.embedURL)
+        object.setAttribute('height', '100%')
+        object.setAttribute('width', '100%')
+        object.setAttribute('allowfullscreen', 'true')
+        object.setAttribute('sandbox', 'allow-scripts allow-same-origin') // TODO: how to secure this?
+        container.appendChild(object)
+
+        figure.insertBefore(container, figure.firstChild)
+      } else {
+        const filename = generateAttachmentFilename(
+          node.attrs.id,
+          node.attrs.contentType
+        )
+
+        const img = this.document.createElement('img')
+        img.setAttribute('src', attachmentUrlPrefix + filename)
+        figure.insertBefore(img, figure.firstChild)
+      }
     }
   }
 

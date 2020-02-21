@@ -150,6 +150,7 @@ Object {
                                     Object {
                                       "attrs": Object {
                                         "contentType": "/",
+                                        "embedURL": undefined,
                                         "label": "Figure 1",
                                         "listingAttachment": undefined,
                                         "src": "",
@@ -1050,6 +1051,7 @@ Object {
                 Object {
                   "attrs": Object {
                     "contentType": "image/jpeg",
+                    "embedURL": undefined,
                     "label": "",
                     "listingAttachment": undefined,
                     "src": "",

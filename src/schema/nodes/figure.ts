@@ -25,6 +25,7 @@ export interface FigureNode extends ManuscriptNode {
     src: string
     contentType: string
     listingAttachment?: ListingAttachmentReference
+    embedURL?: string
   }
 }
 
@@ -36,6 +37,7 @@ export const figure: NodeSpec = {
     src: { default: '' },
     contentType: { default: '' },
     listingAttachment: { default: undefined },
+    embedURL: { default: undefined },
   },
   selectable: false,
   group: 'block',
@@ -43,15 +45,18 @@ export const figure: NodeSpec = {
     {
       tag: 'figure',
       context: 'figure_element/', // TODO: match any figure?
-      getAttrs: p => {
-        const dom = p as HTMLElement
-        // const img = dom.querySelector('img')
+      getAttrs: dom => {
+        const element = dom as HTMLElement
+        // const img = element.querySelector('img')
 
         // TODO: parse contentType?
 
+        const iframe = element.querySelector('iframe')
+
         return {
-          id: dom.getAttribute('id'),
+          id: element.getAttribute('id'),
           // src: img ? img.getAttribute('src') : '',
+          embedURL: iframe ? iframe.getAttribute('src') : undefined,
         }
       },
     },

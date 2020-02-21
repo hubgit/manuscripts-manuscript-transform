@@ -264,6 +264,7 @@ export class Decoder {
                 contentType: figureModel.contentType,
                 src: figureModel.src,
                 listingAttachment: figureModel.listingAttachment,
+                embedURL: figureModel.embedURL,
               },
               [figcaption]
             ) as FigureNode

@@ -313,6 +313,7 @@ const encoders: NodeEncoderMap = {
       inlineContentsOfNodeType(node, node.type.schema.nodes.figcaption) ||
       undefined,
     contentType: node.attrs.contentType || undefined,
+    embedURL: node.attrs.embedURL || undefined,
     listingAttachment: node.attrs.listingAttachment || undefined,
   }),
   figure_element: (node): Partial<FigureElement> => ({
