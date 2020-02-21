@@ -973,10 +973,10 @@
   resolved "https://registry.npmjs.org/@manuscripts/examples/-/examples-0.0.6.tgz#0fad862ca3ecfaf513428474fe07aa45bae7fd19"
   integrity sha512-XlOsQozWXXz61BPwiNGIMR3SrMi811c1oxpIP+CmsY9LZjf6JyXTnlCR4FOvcHjQcmWe9Ktb77mWZDR0uXuHpg==
 
-"@manuscripts/manuscripts-json-schema@^1.26.0":
-  version "1.26.0"
-  resolved "https://registry.npmjs.org/@manuscripts/manuscripts-json-schema/-/manuscripts-json-schema-1.26.0.tgz#cbf2b62c8cdc5535ca7cfe139a1b4ca3dd517a2c"
-  integrity sha512-1VHWaBK9JzMWZsYOHuU9qqD/FsHlIec5r2pK17Q8AfkmVEZoC6hzttn6tSfgLXDjaEMXFUumrmK7GBMI5SOp6g==
+"@manuscripts/manuscripts-json-schema@^1.28.0":
+  version "1.28.0"
+  resolved "https://registry.npmjs.org/@manuscripts/manuscripts-json-schema/-/manuscripts-json-schema-1.28.0.tgz#c2278954f4d7dcb29236d7df8fafbb309012fb43"
+  integrity sha512-eLogAEYeP7PLduRRh/cnUCCcKmCeybSVMXGXy/61rNUb/gf04+u6jN5aSaQgIolr5FL4obQZJ2CVlf5VQYxMDw==
   dependencies:
     ajv "^6.10.0"
     deepmerge "^3.2.0"
@@ -1075,18 +1075,6 @@
   integrity sha512-Fb38HkXSVA4L8fGKEZ6le5bB8r6MRWlOCZbVuWZcmOMSCd2wCYOwN1ibj8daIoV9naq7aaOZjrLCoCMptKU/4Q==
   dependencies:
     jest-diff "^24.3.0"
-
-"@types/lodash.isequal@^4.5.5":
-  version "4.5.5"
-  resolved "https://registry.npmjs.org/@types/lodash.isequal/-/lodash.isequal-4.5.5.tgz#4fed1b1b00bef79e305de0352d797e9bb816c8ff"
-  integrity sha512-4IKbinG7MGP131wRfceK6W4E/Qt3qssEFLF30LnJbjYiSfHGGRU/Io8YxXrZX109ir+iDETC8hw8QsDijukUVg==
-  dependencies:
-    "@types/lodash" "*"
-
-"@types/lodash@*":
-  version "4.14.136"
-  resolved "https://registry.npmjs.org/@types/lodash/-/lodash-4.14.136.tgz#413e85089046b865d960c9ff1d400e04c31ab60f"
-  integrity sha512-0GJhzBdvsW2RUccNHOBkabI8HZVdOXmXbXhuKlDEd5Vv12P7oAVGfomGp3Ne21o5D/qu1WmthlNKFaoZJJeErA==
 
 "@types/node@*":
   version "11.9.0"
