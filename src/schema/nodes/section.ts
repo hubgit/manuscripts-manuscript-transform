@@ -21,10 +21,35 @@ interface Attrs {
   id: string
   category?: string
   titleSuppressed: boolean
+  pageBreakStyle?: number
 }
 
 export interface SectionNode extends ManuscriptNode {
   attrs: Attrs
+}
+
+export const PAGE_BREAK_NONE = 0
+export const PAGE_BREAK_BEFORE = 1
+export const PAGE_BREAK_AFTER = 2
+export const PAGE_BREAK_BEFORE_AND_AFTER = 4
+
+const choosePageBreakStyle = (element: HTMLElement): number => {
+  const pageBreakAfter = element.classList.contains('page-break-after')
+  const pageBreakBefore = element.classList.contains('page-break-before')
+
+  if (pageBreakBefore && pageBreakAfter) {
+    return PAGE_BREAK_BEFORE_AND_AFTER
+  }
+
+  if (pageBreakBefore) {
+    return PAGE_BREAK_BEFORE
+  }
+
+  if (pageBreakAfter) {
+    return PAGE_BREAK_AFTER
+  }
+
+  return PAGE_BREAK_NONE
 }
 
 export const section: NodeSpec = {
@@ -34,25 +59,49 @@ export const section: NodeSpec = {
     id: { default: '' },
     category: { default: '' },
     titleSuppressed: { default: false },
+    pageBreakStyle: { default: undefined },
   },
   group: 'block sections',
   selectable: false,
   parseDOM: [
     {
       tag: 'section',
+      getAttrs: dom => {
+        const element = dom as HTMLElement
+
+        return {
+          titleSuppressed: element.classList.contains('title-suppressed'),
+          pageBreakStyle: choosePageBreakStyle(element) || undefined,
+        }
+      },
     },
   ],
   toDOM: node => {
     const sectionNode = node as SectionNode
 
-    return [
-      'section',
-      {
-        id: sectionNode.attrs.id,
-        class: sectionNode.attrs.titleSuppressed ? 'title-suppressed' : '',
-      },
-      0,
-    ]
+    const { id, titleSuppressed, pageBreakStyle } = sectionNode.attrs
+
+    const classnames: string[] = []
+
+    if (titleSuppressed) {
+      classnames.push('title-suppressed')
+    }
+
+    if (
+      pageBreakStyle === PAGE_BREAK_BEFORE ||
+      pageBreakStyle === PAGE_BREAK_BEFORE_AND_AFTER
+    ) {
+      classnames.push('page-break-before')
+    }
+
+    if (
+      pageBreakStyle === PAGE_BREAK_AFTER ||
+      pageBreakStyle === PAGE_BREAK_BEFORE_AND_AFTER
+    ) {
+      classnames.push('page-break-after')
+    }
+
+    return ['section', { id, class: classnames.join(' ') }, 0]
   },
 }
 

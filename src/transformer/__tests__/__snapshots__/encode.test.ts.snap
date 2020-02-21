@@ -114,6 +114,7 @@ Map {
       "MPParagraphElement:05A0ED43-8928-4C69-A17C-0A98795001CD",
     ],
     "objectType": "MPSection",
+    "pageBreakStyle": undefined,
     "path": Array [
       "MPSection:77786D47-6060-4FBC-BC13-5FA754968D6A",
     ],
@@ -178,6 +179,7 @@ Map {
       "MPFootnotesElement:4CD7CE08-0880-46BD-FF83-52E32AEFAC3E",
     ],
     "objectType": "MPSection",
+    "pageBreakStyle": undefined,
     "path": Array [
       "MPSection:F8EE617B-484B-4CF2-F1CA-014F5307D5CF",
     ],
@@ -476,6 +478,7 @@ Map {
       },
     ],
     "objectType": "MPSection",
+    "pageBreakStyle": undefined,
     "path": Array [
       "MPSection:1",
     ],

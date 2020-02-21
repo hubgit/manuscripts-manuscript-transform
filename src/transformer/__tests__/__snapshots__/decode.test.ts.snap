@@ -117,6 +117,7 @@ Object {
       "attrs": Object {
         "category": "",
         "id": "MPSection:77786D47-6060-4FBC-BC13-5FA754968D6A",
+        "pageBreakStyle": undefined,
         "titleSuppressed": false,
       },
       "content": Array [
@@ -268,6 +269,7 @@ Object {
       "attrs": Object {
         "category": "",
         "id": "MPSection:F8EE617B-484B-4CF2-F1CA-014F5307D5CF",
+        "pageBreakStyle": undefined,
         "titleSuppressed": true,
       },
       "content": Array [
@@ -1516,6 +1518,7 @@ Object {
       "attrs": Object {
         "category": "",
         "id": "MPSection:77786D47-6060-4FBC-BC13-5FA754968D6A",
+        "pageBreakStyle": undefined,
         "titleSuppressed": false,
       },
       "content": Array [
@@ -1633,6 +1636,7 @@ Object {
       "attrs": Object {
         "category": "",
         "id": "MPSection:F8EE617B-484B-4CF2-F1CA-014F5307D5CF",
+        "pageBreakStyle": undefined,
         "titleSuppressed": true,
       },
       "content": Array [
@@ -2725,6 +2729,7 @@ Object {
       "attrs": Object {
         "category": "",
         "id": "MPSection:77786D47-6060-4FBC-BC13-5FA754968D6A",
+        "pageBreakStyle": undefined,
         "titleSuppressed": false,
       },
       "content": Array [
@@ -2876,6 +2881,7 @@ Object {
       "attrs": Object {
         "category": "",
         "id": "MPSection:F8EE617B-484B-4CF2-F1CA-014F5307D5CF",
+        "pageBreakStyle": undefined,
         "titleSuppressed": true,
       },
       "content": Array [
@@ -4017,6 +4023,7 @@ Object {
       "attrs": Object {
         "category": "",
         "id": "MPSection:1",
+        "pageBreakStyle": undefined,
         "titleSuppressed": false,
       },
       "content": Array [
@@ -4104,6 +4111,7 @@ Object {
       "attrs": Object {
         "category": "",
         "id": "MPSection:1",
+        "pageBreakStyle": undefined,
         "titleSuppressed": false,
       },
       "content": Array [

@@ -555,6 +555,7 @@ export class Decoder {
           id: model._id,
           category: sectionCategory,
           titleSuppressed: model.titleSuppressed,
+          pageBreakStyle: model.pageBreakStyle,
         },
         [sectionTitleNode].concat(elementNodes).concat(nestedSections)
       )

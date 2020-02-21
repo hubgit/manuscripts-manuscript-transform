@@ -384,6 +384,7 @@ const encoders: NodeEncoderMap = {
       .map(childNode => childNode.attrs.id)
       .filter(id => id),
     titleSuppressed: node.attrs.titleSuppressed || undefined,
+    pageBreakStyle: node.attrs.pageBreakStyle || undefined,
   }),
   table: (node, parent): Partial<Table> => ({
     contents: tableContents(node, parent as TableElementNode),
