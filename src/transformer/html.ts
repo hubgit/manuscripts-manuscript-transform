@@ -149,17 +149,24 @@ export class HTMLTransformer {
         name.classList.add('contrib-name')
         contrib.appendChild(name)
 
-        if (contributor.bibliographicName.given) {
+        const { given, family } = contributor.bibliographicName
+
+        if (given) {
           const givenNames = this.document.createElement('span')
           givenNames.classList.add('contrib-given-names')
-          givenNames.textContent = contributor.bibliographicName.given
+          givenNames.textContent = given
           name.appendChild(givenNames)
         }
 
-        if (contributor.bibliographicName.family) {
+        if (family) {
+          if (given) {
+            const separator = document.createTextNode(' ')
+            name.appendChild(separator)
+          }
+
           const surname = this.document.createElement('span')
           surname.classList.add('contrib-surname')
-          surname.textContent = contributor.bibliographicName.family
+          surname.textContent = family
           name.appendChild(surname)
         }
 
