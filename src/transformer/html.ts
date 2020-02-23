@@ -64,7 +64,7 @@ export class HTMLTransformer {
     const article = this.document.createElement('article')
     this.document.documentElement.appendChild(article)
 
-    article.appendChild(this.buildFront(modelMap, attachmentUrlPrefix))
+    article.appendChild(this.buildFront(attachmentUrlPrefix))
     article.appendChild(this.buildBody(fragment))
     // article.appendChild(this.buildBack())
 
@@ -73,10 +73,7 @@ export class HTMLTransformer {
     return serializeToXML(this.document)
   }
 
-  private buildFront = (
-    modelMap: Map<string, Model>,
-    attachmentUrlPrefix: string
-  ) => {
+  private buildFront = (attachmentUrlPrefix: string) => {
     // at this point we assume that there is only one manuscript - resources
     // associated with others should have been stripped out via parseProjectBundle
     const manuscript = findManuscript(this.modelMap)
@@ -88,7 +85,9 @@ export class HTMLTransformer {
     const front = this.document.createElement('header')
 
     if (manuscript.headerFigure) {
-      const figure = modelMap.get(manuscript.headerFigure) as Figure | undefined
+      const figure = this.modelMap.get(manuscript.headerFigure) as
+        | Figure
+        | undefined
 
       if (figure) {
         const headerFigure = document.createElement('figure')
@@ -361,9 +360,28 @@ export class HTMLTransformer {
 
         const img = this.document.createElement('img')
         img.setAttribute('src', attachmentUrlPrefix + filename)
+
+        if (this.figureHasLicense(node.attrs.id)) {
+          img.setAttribute('data-licensed', 'true')
+        }
+
         figure.insertBefore(img, figure.firstChild)
       }
     }
+  }
+
+  private figureHasLicense = (id: string): boolean | undefined => {
+    const figureModel = this.modelMap.get(id) as Figure | undefined
+
+    if (!figureModel) {
+      return undefined
+    }
+
+    if (!figureModel.attribution) {
+      return false
+    }
+
+    return figureModel.attribution.licenseID !== undefined
   }
 
   private fixBody = (
