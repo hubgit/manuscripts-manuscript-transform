@@ -146,6 +146,7 @@ Object {
                                 },
                                 Object {
                                   "attrs": Object {
+                                    "alignment": undefined,
                                     "figureLayout": "",
                                     "figureStyle": "",
                                     "label": "",
@@ -1058,6 +1059,7 @@ Object {
             },
             Object {
               "attrs": Object {
+                "alignment": undefined,
                 "figureLayout": "",
                 "figureStyle": "",
                 "label": "",

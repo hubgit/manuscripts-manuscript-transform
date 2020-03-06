@@ -218,6 +218,7 @@ Map {
   },
   "MPFigureElement:A5D68C57-B5BB-4D10-E0C3-ECED717A2AA7" => Object {
     "_id": "MPFigureElement:A5D68C57-B5BB-4D10-E0C3-ECED717A2AA7",
+    "alignment": undefined,
     "caption": "A figure with a caption",
     "containedObjectIDs": Array [
       "MPFigure:D673DF08-D75E-4061-8EC1-9611EAB302F0",
@@ -240,6 +241,7 @@ Map {
   },
   "MPFigureElement:B32BDEC8-E816-4946-C0BB-0404AF2F0C29" => Object {
     "_id": "MPFigureElement:B32BDEC8-E816-4946-C0BB-0404AF2F0C29",
+    "alignment": undefined,
     "caption": "A figure with hidden caption",
     "containedObjectIDs": Array [
       "MPFigure:AD65D628-A904-4DC4-A026-F8F4C08F6557",
@@ -514,6 +516,7 @@ Map {
   },
   "MPFigureElement:1" => Object {
     "_id": "MPFigureElement:1",
+    "alignment": undefined,
     "caption": "A figure with a caption",
     "containedObjectIDs": Array [
       "MPFigure:1",

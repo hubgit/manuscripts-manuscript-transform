@@ -479,6 +479,7 @@ Object {
               },
               Object {
                 "attrs": Object {
+                  "alignment": undefined,
                   "figureLayout": "",
                   "figureStyle": "",
                   "id": "MPFigureElement:3AAE3519-F4A7-4C18-B374-B4F95974C16A",
@@ -1457,6 +1458,7 @@ Object {
               },
               Object {
                 "attrs": Object {
+                  "alignment": undefined,
                   "figureLayout": "",
                   "figureStyle": "",
                   "id": "MPFigureElement:3AAE3519-F4A7-4C18-B374-B4F95974C16A",
