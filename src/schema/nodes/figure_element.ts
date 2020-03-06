@@ -74,7 +74,7 @@ export const figureElement: NodeSpec = {
       sizeFraction,
     } = figureElementNode.attrs
 
-    const attrs: { [key: string]: string } = { id }
+    const attrs: { [key: string]: string } = {}
 
     const classes: string[] = ['figure-group']
 
@@ -83,6 +83,8 @@ export const figureElement: NodeSpec = {
     }
 
     attrs.class = classes.join(' ')
+
+    attrs.id = id
 
     if (figureStyle) {
       attrs['data-figure-style'] = figureStyle
