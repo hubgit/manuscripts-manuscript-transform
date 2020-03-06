@@ -175,7 +175,7 @@ const tableContents = (
   output.appendChild(buildTableSection('tbody', rows, parent))
   output.appendChild(buildTableSection('tfoot', tfoot, parent))
 
-  return output.outerHTML
+  return serializeToXML(output)
 }
 
 const elementContents = (node: ManuscriptNode): string => {
@@ -191,7 +191,7 @@ const elementContents = (node: ManuscriptNode): string => {
     input.setAttribute('id', node.attrs.id)
   }
 
-  return input.outerHTML
+  return serializeToXML(input)
 }
 
 const childElements = (node: ManuscriptNode): ManuscriptNode[] => {

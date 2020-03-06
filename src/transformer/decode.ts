@@ -348,7 +348,9 @@ export class Decoder {
 
       return schema.nodes.footnotes_element.create({
         id: model._id,
-        contents: model.contents,
+        contents: model.contents
+          ? model.contents.replace(/\s+xmlns=".+?"/, '')
+          : '',
       }) as FootnotesElementNode
     },
     [ObjectTypes.KeywordsElement]: data => {
@@ -356,7 +358,9 @@ export class Decoder {
 
       return schema.nodes.keywords_element.create({
         id: model._id,
-        contents: model.contents,
+        contents: model.contents
+          ? model.contents.replace(/\s+xmlns=".+?"/, '')
+          : '',
         paragraphStyle: model.paragraphStyle,
       }) as TOCElementNode
     },
@@ -644,7 +648,9 @@ export class Decoder {
 
       return schema.nodes.toc_element.create({
         id: model._id,
-        contents: model.contents,
+        contents: model.contents
+          ? model.contents.replace(/\s+xmlns=".+?"/, '')
+          : '',
         paragraphStyle: model.paragraphStyle,
       }) as TOCElementNode
     },

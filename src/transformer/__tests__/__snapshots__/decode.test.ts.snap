@@ -1363,7 +1363,7 @@ const x = 'y'",
         },
         Object {
           "attrs": Object {
-            "contents": "<div xmlns=\\"http://www.w3.org/1999/xhtml\\" xmlns=\\"http://www.w3.org/1999/xhtml\\" id=\\"MPFootnotesElement:4CD7CE08-0880-46BD-FF83-52E32AEFAC3E\\" class=\\"footnotes\\"></div>",
+            "contents": "<div id=\\"MPFootnotesElement:4CD7CE08-0880-46BD-FF83-52E32AEFAC3E\\" class=\\"footnotes\\"></div>",
             "id": "MPFootnotesElement:4CD7CE08-0880-46BD-FF83-52E32AEFAC3E",
           },
           "type": "footnotes_element",
@@ -2574,7 +2574,7 @@ const x = 'y'",
         },
         Object {
           "attrs": Object {
-            "contents": "<div xmlns=\\"http://www.w3.org/1999/xhtml\\" xmlns=\\"http://www.w3.org/1999/xhtml\\" id=\\"MPFootnotesElement:4CD7CE08-0880-46BD-FF83-52E32AEFAC3E\\" class=\\"footnotes\\"></div>",
+            "contents": "<div id=\\"MPFootnotesElement:4CD7CE08-0880-46BD-FF83-52E32AEFAC3E\\" class=\\"footnotes\\"></div>",
             "id": "MPFootnotesElement:4CD7CE08-0880-46BD-FF83-52E32AEFAC3E",
           },
           "type": "footnotes_element",
@@ -3975,7 +3975,7 @@ const x = 'y'",
         },
         Object {
           "attrs": Object {
-            "contents": "<div xmlns=\\"http://www.w3.org/1999/xhtml\\" xmlns=\\"http://www.w3.org/1999/xhtml\\" id=\\"MPFootnotesElement:4CD7CE08-0880-46BD-FF83-52E32AEFAC3E\\" class=\\"footnotes\\"></div>",
+            "contents": "<div id=\\"MPFootnotesElement:4CD7CE08-0880-46BD-FF83-52E32AEFAC3E\\" class=\\"footnotes\\"></div>",
             "id": "MPFootnotesElement:4CD7CE08-0880-46BD-FF83-52E32AEFAC3E",
           },
           "type": "footnotes_element",

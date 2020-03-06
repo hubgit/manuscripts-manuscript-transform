@@ -286,7 +286,7 @@ export const createTestModelMapWithKeywords = () => {
     sessionID: 'test',
     paragraphStyle: 'MPParagraphStyle:1',
     elementType: 'div',
-    contents: `<p id="MPKeywordsElement:1" class="keywords MPElement MPParagraphStyle_1">test</p>`,
+    contents: `<p xmlns="http://www.w3.org/1999/xhtml" id="MPKeywordsElement:1" class="keywords MPElement MPParagraphStyle_1">test</p>`,
   }
 
   modelMap.set(keywordsElement._id, keywordsElement)

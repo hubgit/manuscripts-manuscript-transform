@@ -968,10 +968,10 @@
     "@types/yargs" "^15.0.0"
     chalk "^3.0.0"
 
-"@manuscripts/examples@^0.0.6":
-  version "0.0.6"
-  resolved "https://registry.npmjs.org/@manuscripts/examples/-/examples-0.0.6.tgz#0fad862ca3ecfaf513428474fe07aa45bae7fd19"
-  integrity sha512-XlOsQozWXXz61BPwiNGIMR3SrMi811c1oxpIP+CmsY9LZjf6JyXTnlCR4FOvcHjQcmWe9Ktb77mWZDR0uXuHpg==
+"@manuscripts/examples@^0.0.7":
+  version "0.0.7"
+  resolved "https://registry.npmjs.org/@manuscripts/examples/-/examples-0.0.7.tgz#f7f0cef173fb2c83fbf283a2c2962b5d6ea32874"
+  integrity sha512-7a1y6H/wnvn4hTh7S+TEyC8R5tLHHNiWYJnbeS43JCMYS/6qhMCzJTS0PwQynoep7PWwi2LdgaSZ3qALxzgg0g==
 
 "@manuscripts/manuscripts-json-schema@^1.28.0":
   version "1.28.0"
