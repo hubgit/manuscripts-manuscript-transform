@@ -21,6 +21,7 @@ import { ManuscriptNode } from '../types'
 interface Attrs {
   id: string
   contents: string
+  paragraphStyle: string
 }
 
 export interface BibliographyElementNode extends ManuscriptNode {
@@ -40,6 +41,7 @@ export const bibliographyElement: NodeSpec = {
   attrs: {
     id: { default: '' },
     contents: { default: '' },
+    paragraphStyle: { default: '' },
     placeholder: {
       default:
         'Citations inserted to the manuscript will be formatted here as a bibliography.',

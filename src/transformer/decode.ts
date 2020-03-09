@@ -200,6 +200,7 @@ export class Decoder {
         contents: model.contents
           ? model.contents.replace(/\s+xmlns=".+?"/, '')
           : '',
+        paragraphStyle: model.paragraphStyle,
       }) as BibliographyElementNode
     },
     [ExtraObjectTypes.PlaceholderElement]: data => {
@@ -352,6 +353,7 @@ export class Decoder {
         contents: model.contents
           ? model.contents.replace(/\s+xmlns=".+?"/, '')
           : '',
+        paragraphStyle: model.paragraphStyle,
       }) as FootnotesElementNode
     },
     [ObjectTypes.KeywordsElement]: data => {

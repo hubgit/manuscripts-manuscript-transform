@@ -21,6 +21,7 @@ import { ManuscriptNode } from '../types'
 interface Attrs {
   id: string
   contents: string
+  paragraphStyle: string
 }
 
 export interface FootnotesElementNode extends ManuscriptNode {
@@ -41,6 +42,7 @@ export const footnotesElement: NodeSpec = {
     id: { default: '' },
     // collateByKind: { default: 'footnote' },
     contents: { default: '' },
+    paragraphStyle: { default: '' },
   },
   group: 'block element',
   selectable: false,

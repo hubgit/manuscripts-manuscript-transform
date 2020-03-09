@@ -264,6 +264,7 @@ const encoders: NodeEncoderMap = {
   bibliography_element: (node): Partial<BibliographyElement> => ({
     elementType: 'div',
     contents: contents(node),
+    paragraphStyle: node.attrs.paragraphStyle || undefined,
   }),
   bibliography_section: (node, parent, path, priority): Partial<Section> => ({
     category: buildSectionCategory(node),
@@ -334,6 +335,7 @@ const encoders: NodeEncoderMap = {
   footnotes_element: (node): Partial<FootnotesElement> => ({
     contents: contents(node),
     // elementType: 'div', // TODO: https://gitlab.com/mpapp-private/manuscripts-json-schema/issues/47
+    paragraphStyle: node.attrs.paragraphStyle || undefined,
   }),
   inline_equation: (node, parent): Partial<InlineMathFragment> => ({
     containingObject: parent.attrs.id,
