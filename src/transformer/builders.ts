@@ -37,6 +37,7 @@ import {
   Keyword,
   LibraryCollection,
   Manuscript,
+  ManuscriptKeyword,
   ObjectTypes,
   ParagraphElement,
   Project,
@@ -157,9 +158,18 @@ export const buildCitation = (
   embeddedCitationItems: embeddedCitationItems.map(buildEmbeddedCitationItem),
 })
 
+// TODO: remove this and treat Keyword as abstract
 export const buildKeyword = (name: string): Build<Keyword> => ({
   _id: generateID(ObjectTypes.Keyword),
   objectType: ObjectTypes.Keyword,
+  name,
+})
+
+export const buildManuscriptKeyword = (
+  name: string
+): Build<ManuscriptKeyword> => ({
+  _id: generateID(ObjectTypes.ManuscriptKeyword),
+  objectType: ObjectTypes.ManuscriptKeyword,
   name,
 })
 
