@@ -65,6 +65,7 @@ import { tocElement } from './nodes/toc_element'
 import { tocSection } from './nodes/toc_section'
 import { Marks, Nodes } from './types'
 
+export * from './groups'
 export * from './types'
 export * from './nodes/attribution'
 export * from './nodes/bibliography_element'

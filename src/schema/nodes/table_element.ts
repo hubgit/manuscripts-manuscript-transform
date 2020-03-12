@@ -45,7 +45,7 @@ export const tableElement: NodeSpec = {
     expandListing: { default: false },
   },
   selectable: false,
-  group: 'block element',
+  group: 'block element executable',
   parseDOM: [
     {
       tag: 'figure.table',

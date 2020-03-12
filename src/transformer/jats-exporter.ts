@@ -47,7 +47,7 @@ import {
 } from '../schema'
 import { generateAttachmentFilename } from './filename'
 import { selectVersionIds, Version } from './jats-versions'
-import { isExecutableNode, isNodeType } from './node-types'
+import { isExecutableNodeType, isNodeType } from './node-types'
 import { hasObjectType } from './object-types'
 import {
   findLatestManuscriptSubmission,
@@ -845,7 +845,7 @@ export class JATSExporter {
         }
       })
 
-      if (isExecutableNode(node)) {
+      if (isExecutableNodeType(node.type)) {
         const listingNode = findChildNodeOfType(
           node,
           node.type.schema.nodes.listing

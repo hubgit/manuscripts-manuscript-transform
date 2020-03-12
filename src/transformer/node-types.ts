@@ -15,7 +15,16 @@
  */
 
 import { ObjectTypes } from '@manuscripts/manuscripts-json-schema'
-import { ManuscriptNode, ManuscriptNodeType, Nodes, schema } from '../schema'
+import {
+  GROUP_ELEMENT,
+  GROUP_EXECUTABLE,
+  GROUP_SECTION,
+  hasGroup,
+  ManuscriptNode,
+  ManuscriptNodeType,
+  Nodes,
+  schema,
+} from '../schema'
 
 export const nodeTypesMap: Map<ManuscriptNodeType, ObjectTypes> = new Map([
   [schema.nodes.bibliography_element, ObjectTypes.BibliographyElement],
@@ -46,28 +55,14 @@ export const nodeTypesMap: Map<ManuscriptNodeType, ObjectTypes> = new Map([
   [schema.nodes.toc_section, ObjectTypes.Section],
 ])
 
-const elementNodeTypes: ManuscriptNodeType[] = [
-  schema.nodes.blockquote_element,
-  schema.nodes.pullquote_element,
-  schema.nodes.listing_element,
-  schema.nodes.equation_element,
-  schema.nodes.figure_element,
-  schema.nodes.bullet_list,
-  schema.nodes.ordered_list,
-  schema.nodes.paragraph,
-  schema.nodes.table_element,
-]
+export const isExecutableNodeType = (type: ManuscriptNodeType) =>
+  hasGroup(type, GROUP_EXECUTABLE)
 
-const executableNodeTypes: ManuscriptNodeType[] = [
-  schema.nodes.figure_element,
-  schema.nodes.table_element,
-]
+export const isElementNodeType = (type: ManuscriptNodeType) =>
+  hasGroup(type, GROUP_ELEMENT)
 
-export const isElementNode = (node: ManuscriptNode) =>
-  elementNodeTypes.includes(node.type)
-
-export const isExecutableNode = (node: ManuscriptNode) =>
-  executableNodeTypes.includes(node.type)
+export const isSectionNodeType = (type: ManuscriptNodeType) =>
+  hasGroup(type, GROUP_SECTION)
 
 export const isNodeType = <T extends ManuscriptNode>(
   node: ManuscriptNode,

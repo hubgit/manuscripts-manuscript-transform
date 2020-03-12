@@ -46,7 +46,7 @@ export const figureElement: NodeSpec = {
     suppressCaption: { default: false },
   },
   selectable: false,
-  group: 'block element',
+  group: 'block element executable',
   parseDOM: [
     {
       tag: 'figure.figure-group',

@@ -45,7 +45,7 @@ export const tocElement: NodeSpec = {
     contents: { default: '' },
     paragraphStyle: { default: '' },
   },
-  group: 'block',
+  group: 'block element',
   selectable: false,
   parseDOM: [
     {

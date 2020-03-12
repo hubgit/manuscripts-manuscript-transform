@@ -48,7 +48,7 @@ export const bibliographyElement: NodeSpec = {
     },
   },
   selectable: false,
-  group: 'block',
+  group: 'block element',
   parseDOM: [
     {
       tag: 'div.csl-bib-body',
