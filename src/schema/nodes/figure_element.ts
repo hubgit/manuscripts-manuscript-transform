@@ -35,7 +35,7 @@ export interface FigureElementNode extends ManuscriptNode {
 }
 
 export const figureElement: NodeSpec = {
-  content: '(figure | placeholder)+ figcaption listing',
+  content: '(figure | placeholder)+ figcaption (listing | placeholder)',
   attrs: {
     figureLayout: { default: '' },
     figureStyle: { default: '' },
