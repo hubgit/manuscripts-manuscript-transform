@@ -27,8 +27,13 @@ const sectionNodeTypes: ManuscriptNodeType[] = [
 export const isAnySectionNode = (node: ManuscriptNode): boolean =>
   sectionNodeTypes.includes(node.type)
 
+export type SectionCategory =
+  | 'MPSectionCategory:bibliography'
+  | 'MPSectionCategory:keywords'
+  | 'MPSectionCategory:toc'
+
 export const chooseSectionNodeType = (
-  category?: string
+  category?: SectionCategory
 ): ManuscriptNodeType => {
   switch (category) {
     case 'MPSectionCategory:bibliography':
@@ -48,7 +53,7 @@ export const chooseSectionNodeType = (
 // deprecated, every custom section should have a category
 export const guessSectionCategory = (
   elements: Element[]
-): string | undefined => {
+): SectionCategory | undefined => {
   if (!elements.length) return undefined
 
   switch (elements[0].objectType) {
@@ -66,7 +71,9 @@ export const guessSectionCategory = (
   }
 }
 
-export const buildSectionCategory = (node: ManuscriptNode) => {
+export const buildSectionCategory = (
+  node: ManuscriptNode
+): SectionCategory | undefined => {
   switch (node.type) {
     case schema.nodes.bibliography_section:
       return 'MPSectionCategory:bibliography'
@@ -82,5 +89,5 @@ export const buildSectionCategory = (node: ManuscriptNode) => {
   }
 }
 
-export const sectionCategorySuffix = (category: string) =>
+export const sectionCategorySuffix = (category: SectionCategory) =>
   category.replace(/^MPSectionCategory:/, '')

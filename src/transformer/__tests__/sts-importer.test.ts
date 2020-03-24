@@ -56,6 +56,6 @@ describe('STS importer', () => {
     const modelMap = parseSTSStandard(standard)
     const models = [...modelMap.values()]
 
-    expect(models).toHaveLength(1575)
+    expect(models).toHaveLength(2077)
   })
 })

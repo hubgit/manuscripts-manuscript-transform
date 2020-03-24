@@ -74,7 +74,11 @@ import {
   isManuscript,
   isUserProfile,
 } from './object-types'
-import { chooseSectionNodeType, guessSectionCategory } from './section-category'
+import {
+  chooseSectionNodeType,
+  guessSectionCategory,
+  SectionCategory,
+} from './section-category'
 import { timestamp } from './timestamp'
 
 const warn = debug('manuscripts-transform')
@@ -555,7 +559,9 @@ export class Decoder {
 
       const sectionCategory = model.category || guessSectionCategory(elements)
 
-      const sectionNodeType = chooseSectionNodeType(sectionCategory)
+      const sectionNodeType = chooseSectionNodeType(
+        sectionCategory as SectionCategory | undefined
+      )
 
       const sectionNode = sectionNodeType.createAndFill(
         {

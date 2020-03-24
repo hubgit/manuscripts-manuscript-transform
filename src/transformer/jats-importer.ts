@@ -14,17 +14,27 @@
  * limitations under the License.
  */
 
-import { Model, ObjectTypes } from '@manuscripts/manuscripts-json-schema'
+import {
+  BibliographicName,
+  Model,
+  ObjectTypes,
+} from '@manuscripts/manuscripts-json-schema'
 import { DOMParser, ParseRule } from 'prosemirror-model'
 import { ManuscriptNode, Marks, Nodes, schema } from '../schema'
 import {
+  buildAffiliation,
+  buildAuxiliaryObjectReference,
+  buildBibliographicDate,
   buildBibliographicName,
+  buildBibliographyItem,
+  buildCitation,
   buildContributor,
   buildManuscript,
 } from './builders'
 import { encode } from './encode'
 import { generateID } from './id'
 import { nodeTypesMap } from './node-types'
+import { SectionCategory } from './section-category'
 
 // TODO: remove element.getAttribute('id') and rewrite cross-references?
 
@@ -88,6 +98,18 @@ const nodes: NodeRule[] = [
       return {
         id: element.getAttribute('id'),
         category: 'MPSectionCategory:abstract',
+      }
+    },
+  },
+  {
+    tag: 'ack',
+    node: 'section',
+    getAttrs: node => {
+      const element = node as HTMLElement
+
+      return {
+        id: element.getAttribute('id'),
+        category: 'MPSectionCategory:acknowledgements',
       }
     },
   },
@@ -313,7 +335,6 @@ const nodes: NodeRule[] = [
     tag: 'p',
     node: 'paragraph',
     context: 'section/',
-    priority: 100,
     getAttrs: node => {
       const element = node as HTMLElement
 
@@ -325,7 +346,6 @@ const nodes: NodeRule[] = [
   {
     tag: 'p',
     node: 'paragraph',
-    priority: 90,
   },
   {
     tag: 'sec',
@@ -335,9 +355,14 @@ const nodes: NodeRule[] = [
 
       return {
         id: element.getAttribute('id'),
-        // category: TODO: guess category from section title
+        category: chooseSectionCategory(element),
       }
     },
+  },
+  {
+    tag: 'label',
+    context: 'section/',
+    ignore: true, // TODO
   },
   {
     tag: 'table',
@@ -392,22 +417,8 @@ const nodes: NodeRule[] = [
     node: 'table_cell',
   },
   {
-    tag: 'xref',
-    node: 'cross_reference',
-    priority: 90,
-    getAttrs: node => {
-      const element = node as HTMLElement
-
-      return {
-        rid: element.getAttribute('rid'),
-        label: element.textContent,
-      }
-    },
-  },
-  {
     tag: 'xref[ref-type="bibr"]',
     node: 'citation',
-    priority: 100,
     getAttrs: node => {
       const element = node as HTMLElement
 
@@ -417,7 +428,50 @@ const nodes: NodeRule[] = [
       }
     },
   },
+  {
+    tag: 'xref',
+    node: 'cross_reference',
+    getAttrs: node => {
+      const element = node as HTMLElement
+
+      return {
+        rid: element.getAttribute('rid'),
+        label: element.textContent,
+      }
+    },
+  },
 ]
+
+const chooseSectionCategory = (
+  section: Element
+): SectionCategory | undefined => {
+  const secType = section.getAttribute('sec-type')
+
+  switch (secType) {
+    case 'bibliography':
+      return 'MPSectionCategory:bibliography'
+
+    case 'keywords':
+      return 'MPSectionCategory:keywords'
+
+    case 'toc':
+      return 'MPSectionCategory:toc'
+
+    default:
+      // TODO: guess from the section title
+      const titleNode = section.firstChild
+
+      if (titleNode && titleNode.nodeName === 'title') {
+        switch (titleNode.textContent) {
+          case 'Bibliography':
+          case 'References':
+            return 'MPSectionCategory:bibliography'
+        }
+      }
+
+      return undefined
+  }
+}
 
 // metadata
 // address, addr-line, aff, article-title, city,
@@ -497,13 +551,54 @@ export const rewriteIDs = (output: ManuscriptNode) => {
       const previousRID = node.attrs.rid
 
       if (previousRID) {
-        node.attrs.rid = replacements.get(previousRID) // TODO: warn if undefined?
+        if (replacements.has(previousRID)) {
+          node.attrs.rid = replacements.get(previousRID)
+        } else {
+          // tslint:disable-next-line:no-console
+          console.warn(`Missing replacement for ${previousRID}`)
+        }
       }
     }
   })
 }
 
-export const parseJATSBody = (doc: Document) => {
+const moveSectionsToBody = (doc: Document) => {
+  const body = doc.querySelector('body')
+
+  if (body) {
+    const abstract = doc.querySelector('front > abstract')
+
+    if (abstract) {
+      body.insertBefore(abstract, body.firstChild)
+    }
+
+    const ack = doc.querySelector('back > ack')
+
+    if (ack) {
+      body.appendChild(ack)
+    }
+
+    const refList = doc.querySelector('back > ref-list')
+
+    if (refList) {
+      const bibliography = doc.createElement('sec')
+
+      const titleNode = refList.querySelector('title')
+
+      if (titleNode) {
+        bibliography.appendChild(titleNode)
+      } else {
+        const title = doc.createElement('title')
+        title.textContent = 'Bibliography'
+        bibliography.appendChild(title)
+      }
+
+      body.appendChild(bibliography)
+    }
+  }
+}
+
+export const parseJATSBody = (doc: Document): ManuscriptNode => {
   const body = doc.querySelector('body')
 
   if (!body) {
@@ -511,6 +606,7 @@ export const parseJATSBody = (doc: Document) => {
   }
 
   // fix up the document
+  moveSectionsToBody(doc)
   wrapFigures(body)
   moveCaptionsToEnd(body)
 
@@ -521,19 +617,13 @@ export const parseJATSBody = (doc: Document) => {
   return output
 }
 
-export const parseJATSFront = (doc: Document) => {
+type AddModel = <T extends Model>(data: Partial<T>) => void
+
+export const parseJATSFront = (doc: Document, addModel: AddModel): void => {
   const front = doc.querySelector('front')
 
   if (!front) {
     throw new Error('No front element found!')
-  }
-
-  const modelMap = new Map<string, Model>()
-
-  const addModel = <T extends Model>(data: Partial<T>) => {
-    data._id = generateID(data.objectType as ObjectTypes)
-
-    modelMap.set(data._id, data as T)
   }
 
   // manuscript
@@ -543,6 +633,27 @@ export const parseJATSFront = (doc: Document) => {
   )
 
   addModel(buildManuscript(titleNode?.innerHTML))
+
+  // affiliations
+  const affiliationIDs = new Map<string, string>()
+
+  const affiliationNodes = front.querySelectorAll(
+    'article-meta > contrib-group > aff'
+  )
+
+  affiliationNodes.forEach((affiliationNode, priority) => {
+    const institution = affiliationNode.textContent // TODO: read structured affiliation
+
+    const affiliation = buildAffiliation(institution || '', priority)
+
+    const id = affiliationNode.getAttribute('id')
+
+    if (id) {
+      affiliationIDs.set(id, affiliation._id)
+    }
+
+    addModel(affiliation)
+  })
 
   // contributors
 
@@ -565,17 +676,196 @@ export const parseJATSFront = (doc: Document) => {
       name.family = surnameNode.textContent
     }
 
-    addModel(buildContributor(name, 'author', priority))
+    const contributor = buildContributor(name, 'author', priority)
+
+    const xrefNode = authorNode.querySelector('xref[ref-type="aff"]')
+
+    if (xrefNode) {
+      const rid = xrefNode.getAttribute('rid')
+
+      if (rid) {
+        const rids = rid
+          .split(/\S+/)
+          .filter(id => affiliationIDs.has(id))
+          .map(id => affiliationIDs.get(id)) as string[]
+
+        if (rids.length) {
+          contributor.affiliations = rids
+        }
+      }
+    }
+
+    addModel(contributor)
+  })
+}
+
+const chooseBibliographyItemType = (publicationType: string | null) => {
+  switch (publicationType) {
+    case 'book':
+    case 'thesis':
+      return publicationType
+
+    case 'journal':
+    default:
+      return 'article-journal'
+  }
+}
+
+export const parseJATSBack = (doc: Document, addModel: AddModel): void => {
+  const back = doc.querySelector('back')
+
+  if (!back) {
+    return
+  }
+
+  // references
+
+  const referenceIDs = new Map<string, string>()
+
+  const referenceNodes = doc.querySelectorAll('ref-list > ref')
+
+  // tslint:disable-next-line:cyclomatic-complexity
+  referenceNodes.forEach(referenceNode => {
+    const publicationType = referenceNode.getAttribute('publication-type')
+
+    const bibliographyItem = buildBibliographyItem({
+      type: chooseBibliographyItemType(publicationType),
+    })
+
+    const title = referenceNode.querySelector('article-title')?.textContent
+
+    if (title) {
+      bibliographyItem.title = title
+    }
+
+    const source = referenceNode.querySelector('source')?.textContent
+
+    if (source) {
+      bibliographyItem['container-title'] = source
+    }
+
+    const volume = referenceNode.querySelector('volume')?.textContent
+
+    if (volume) {
+      bibliographyItem.volume = volume
+    }
+
+    const fpage = referenceNode.querySelector('fpage')?.textContent
+    const lpage = referenceNode.querySelector('lpage')?.textContent
+
+    if (fpage) {
+      bibliographyItem.page = lpage ? `${fpage}-${lpage}` : fpage
+    }
+
+    const year = referenceNode.querySelector('year')?.textContent
+
+    if (year) {
+      bibliographyItem.issued = buildBibliographicDate({
+        'date-parts': [[year]],
+      })
+    }
+
+    const authorNodes = referenceNode.querySelectorAll(
+      'person-group[person-group-type="author"]'
+    )
+
+    const authors: BibliographicName[] = []
+
+    authorNodes.forEach((authorNode, priority) => {
+      const name = buildBibliographicName({})
+
+      const given = authorNode.querySelector('given-names')?.textContent
+
+      if (given) {
+        name.given = given
+      }
+
+      const family = authorNode.querySelector('surname')?.textContent
+
+      if (family) {
+        name.family = family
+      }
+
+      authors.push(name)
+    })
+
+    if (authors.length) {
+      bibliographyItem.author = authors
+    }
+
+    addModel(bibliographyItem)
+
+    const id = referenceNode.getAttribute('id')
+
+    if (id) {
+      referenceIDs.set(id, bibliographyItem._id)
+    }
   })
 
-  return modelMap
+  const crossReferenceNodes = doc.querySelectorAll('body xref')
+
+  crossReferenceNodes.forEach(crossReferenceNode => {
+    const rid = crossReferenceNode.getAttribute('rid')
+
+    if (rid) {
+      const refType = crossReferenceNode.getAttribute('ref-type')
+
+      switch (refType) {
+        case 'bibr':
+          {
+            const rids = rid
+              .split(/\s+/)
+              .filter(id => referenceIDs.has(id))
+              .map(id => referenceIDs.get(id)) as string[]
+
+            if (rids.length) {
+              const citation = buildCitation('', rids) // TODO: closest id
+
+              addModel(citation)
+
+              crossReferenceNode.setAttribute('rid', citation._id)
+            } else {
+              crossReferenceNode.removeAttribute('rid')
+            }
+          }
+          break
+
+        default:
+          {
+            const auxiliaryObjectReference = buildAuxiliaryObjectReference(
+              '', // TODO: closest id
+              rid // TODO: new figure id
+            )
+
+            addModel(auxiliaryObjectReference)
+
+            crossReferenceNode.setAttribute('rid', auxiliaryObjectReference._id)
+          }
+          break
+      }
+    }
+  })
+}
+
+export const addModelToMap = (modelMap: Map<string, Model>): AddModel => <
+  T extends Model
+>(
+  data: Partial<T>
+) => {
+  data._id = generateID(data.objectType as ObjectTypes)
+
+  modelMap.set(data._id, data as T)
 }
 
 export const parseJATSArticle = (doc: Document): Model[] => {
-  const front = parseJATSFront(doc)
+  const modelMap = new Map<string, Model>()
+  const addModel = addModelToMap(modelMap)
+
+  parseJATSFront(doc, addModel)
+  parseJATSBack(doc, addModel)
 
   const node = parseJATSBody(doc)
-  const body = encode(node.firstChild!)
+  const bodyMap = encode(node.firstChild!)
 
-  return [...front.values(), ...body.values()]
+  return [...modelMap.values(), ...bodyMap.values()]
 }

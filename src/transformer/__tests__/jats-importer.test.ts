@@ -16,10 +16,12 @@
 
 import fs from 'fs'
 import {
+  addModelToMap,
   parseJATSArticle,
   parseJATSBody,
   parseJATSFront,
 } from '../jats-importer'
+import { Model } from '@manuscripts/manuscripts-json-schema'
 
 const loadFixture = async (filename: string) => {
   const xml = await fs.promises.readFile(
@@ -59,21 +61,31 @@ describe('JATS importer', () => {
     expect(doc).toMatchSnapshot()
   })
 
+  test('parses full JATS example to Manuscripts models', async () => {
+    const article = await loadFixture('jats-example-doc.xml')
+
+    const models = parseJATSArticle(article)
+
+    expect(models).toHaveLength(188)
+  })
+
   test('parses JATS front to Manuscripts models', async () => {
     const article = await loadFixture('jats-example.xml')
 
-    const modelMap = parseJATSFront(article)
-    const models = [...modelMap.values()]
+    const modelMap = new Map<string, Model>()
+    const addModel = addModelToMap(modelMap)
 
+    parseJATSFront(article, addModel)
+
+    const models = [...modelMap.values()]
     expect(models).toHaveLength(2)
   })
 
   test('parses JATS article to Manuscripts models', async () => {
     const article = await loadFixture('jats-example.xml')
 
-    const modelMap = parseJATSArticle(article)
-    const models = [...modelMap.values()]
+    const models = parseJATSArticle(article)
 
-    expect(models).toHaveLength(29)
+    expect(models).toHaveLength(36)
   })
 })
