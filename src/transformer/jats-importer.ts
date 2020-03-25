@@ -90,30 +90,6 @@ export type NodeRule = ParseRule & { node?: Nodes | null }
 
 const nodes: NodeRule[] = [
   {
-    tag: 'abstract',
-    node: 'section',
-    getAttrs: node => {
-      const element = node as HTMLElement
-
-      return {
-        id: element.getAttribute('id'),
-        category: 'MPSectionCategory:abstract',
-      }
-    },
-  },
-  {
-    tag: 'ack',
-    node: 'section',
-    getAttrs: node => {
-      const element = node as HTMLElement
-
-      return {
-        id: element.getAttribute('id'),
-        category: 'MPSectionCategory:acknowledgements',
-      }
-    },
-  },
-  {
     tag: 'attrib',
     node: 'attribution',
   },
@@ -209,7 +185,7 @@ const nodes: NodeRule[] = [
     },
   },
   {
-    tag: 'fig[id^=MPEquationElement_]',
+    tag: 'fig[fig-type=equation]',
     node: 'equation_element',
     getAttrs: node => {
       const element = node as HTMLElement
@@ -220,7 +196,7 @@ const nodes: NodeRule[] = [
     },
   },
   {
-    tag: 'fig[id^=MPListingElement_]',
+    tag: 'fig[fig-type=listing]',
     node: 'listing_element',
     getAttrs: node => {
       const element = node as HTMLElement
@@ -233,6 +209,7 @@ const nodes: NodeRule[] = [
   {
     tag: 'fig',
     node: 'figure',
+    context: 'figure_element/',
     getAttrs: node => {
       const element = node as HTMLElement
 
@@ -243,13 +220,10 @@ const nodes: NodeRule[] = [
       return {
         id: element.getAttribute('id'),
         label: labelNode?.textContent?.trim() ?? '',
-        contentType: graphicNode
-          ? [
-              graphicNode.getAttribute('mimetype'),
-              graphicNode.getAttribute('mime-subtype'),
-            ].join('/')
+        contentType: chooseContentType(graphicNode || undefined) || '',
+        originalURL: graphicNode
+          ? graphicNode.getAttributeNS(XLINK_NAMESPACE, 'href')
           : '',
-        // TODO: src from attachment
         embedURL: mediaNode
           ? mediaNode.getAttributeNS(XLINK_NAMESPACE, 'href')
           : undefined,
@@ -257,7 +231,7 @@ const nodes: NodeRule[] = [
     },
   },
   {
-    tag: 'figure-group',
+    tag: 'fig-group',
     node: 'figure_element',
     getAttrs: node => {
       const element = node as HTMLElement
@@ -442,12 +416,32 @@ const nodes: NodeRule[] = [
   },
 ]
 
+const chooseSectionCategoryFromTitle = (title: string | null) => {
+  switch (title) {
+    case 'Abstract':
+      return 'MPSectionCategory:abstract'
+
+    case 'Acknowledgements':
+      return 'MPSectionCategory:acknowledgment'
+
+    case 'Bibliography':
+    case 'References':
+      return 'MPSectionCategory:bibliography'
+  }
+}
+
 const chooseSectionCategory = (
   section: Element
 ): SectionCategory | undefined => {
   const secType = section.getAttribute('sec-type')
 
   switch (secType) {
+    case 'abstract':
+      return 'MPSectionCategory:abstract'
+
+    case 'acknowledgments':
+      return 'MPSectionCategory:acknowledgment'
+
     case 'bibliography':
       return 'MPSectionCategory:bibliography'
 
@@ -458,15 +452,10 @@ const chooseSectionCategory = (
       return 'MPSectionCategory:toc'
 
     default:
-      // TODO: guess from the section title
       const titleNode = section.firstChild
 
       if (titleNode && titleNode.nodeName === 'title') {
-        switch (titleNode.textContent) {
-          case 'Bibliography':
-          case 'References':
-            return 'MPSectionCategory:bibliography'
-        }
+        return chooseSectionCategoryFromTitle(titleNode.textContent)
       }
 
       return undefined
@@ -482,22 +471,44 @@ export const jatsRules = [...marks, ...nodes]
 export const wrapFigures = (body: Element) => {
   const doc = body.ownerDocument as Document
 
-  const figures = body.querySelectorAll('section > fig')
+  const figures = body.querySelectorAll('sec > fig')
 
   for (const figure of figures) {
+    const figType = figure.getAttribute('fig-type')
+
+    // only wrap actual figures
+    if (figType && figType !== 'figure') {
+      continue
+    }
+
     const section = figure.parentNode as Element
 
     const figGroup = doc.createElement('fig-group')
     section.insertBefore(figGroup, figure)
+    // TODO: move id from figure?
 
     // move caption into fig-group
-    const figCaption = figure.querySelector('figcaption')
+    const figCaption = figure.querySelector('caption')
     if (figCaption) {
       figGroup.appendChild(figCaption)
     }
 
-    // move figure into fig-group
-    figGroup.appendChild(figure)
+    const graphics = figure.querySelectorAll('graphic')
+
+    if (graphics.length > 1) {
+      // TODO: copy attributes?
+      section.removeChild(figure)
+
+      // split multiple graphics into separate sub-figures
+      for (const graphic of graphics) {
+        const figure = doc.createElement('figure')
+        figure.appendChild(graphic)
+        figGroup.appendChild(figure)
+      }
+    } else {
+      // move single- or no-graphic figure into fig-group
+      figGroup.appendChild(figure)
+    }
   }
 }
 
@@ -509,6 +520,28 @@ export const moveCaptionsToEnd = (body: Element) => {
     if (caption.parentNode) {
       caption.parentNode.appendChild(caption)
     }
+  }
+}
+
+// unwrap paragraphs in captions
+export const unwrapParagraphsInCaptions = (body: Element) => {
+  const captions = body.querySelectorAll('caption')
+
+  for (const caption of captions) {
+    const paragraphNodes = caption.querySelectorAll('p')
+
+    paragraphNodes.forEach(paragraphNode => {
+      if (paragraphNode.parentNode) {
+        while (paragraphNode.firstChild) {
+          paragraphNode.parentNode.insertBefore(
+            paragraphNode.firstChild,
+            paragraphNode
+          )
+        }
+
+        paragraphNode.parentNode.removeChild(paragraphNode)
+      }
+    })
   }
 }
 
@@ -555,45 +588,83 @@ export const rewriteIDs = (output: ManuscriptNode) => {
           node.attrs.rid = replacements.get(previousRID)
         } else {
           // tslint:disable-next-line:no-console
-          console.warn(`Missing replacement for ${previousRID}`)
+          // console.warn(`Missing replacement for ${previousRID}`)
         }
       }
     }
   })
 }
 
+// tslint:disable-next-line:cyclomatic-complexity
 const moveSectionsToBody = (doc: Document) => {
   const body = doc.querySelector('body')
 
   if (body) {
-    const abstract = doc.querySelector('front > abstract')
+    const abstractNode = doc.querySelector('front > article-meta > abstract')
 
-    if (abstract) {
-      body.insertBefore(abstract, body.firstChild)
+    if (abstractNode) {
+      const section = doc.createElement('sec')
+      section.setAttribute('sec-type', 'abstract')
+
+      const title = doc.createElement('title')
+      title.textContent = 'Abstract'
+      section.appendChild(title)
+
+      while (abstractNode.firstChild) {
+        section.appendChild(abstractNode.firstChild)
+      }
+
+      if (abstractNode.parentNode) {
+        abstractNode.parentNode.removeChild(abstractNode)
+      }
+
+      body.insertBefore(section, body.firstChild)
     }
 
     const ack = doc.querySelector('back > ack')
 
     if (ack) {
-      body.appendChild(ack)
+      const section = doc.createElement('sec')
+      section.setAttribute('sec-type', 'acknowledgements')
+
+      const titleNode = ack.querySelector('title')
+
+      if (titleNode) {
+        section.appendChild(titleNode)
+      } else {
+        const title = doc.createElement('title')
+        title.textContent = 'Acknowledgements'
+        section.appendChild(title)
+      }
+
+      while (ack.firstChild) {
+        section.appendChild(ack.firstChild)
+      }
+
+      if (ack.parentNode) {
+        ack.parentNode.removeChild(ack)
+      }
+
+      body.appendChild(section)
     }
 
     const refList = doc.querySelector('back > ref-list')
 
     if (refList) {
-      const bibliography = doc.createElement('sec')
+      const section = doc.createElement('sec')
+      section.setAttribute('sec-type', 'bibliography')
 
       const titleNode = refList.querySelector('title')
 
       if (titleNode) {
-        bibliography.appendChild(titleNode)
+        section.appendChild(titleNode)
       } else {
         const title = doc.createElement('title')
         title.textContent = 'Bibliography'
-        bibliography.appendChild(title)
+        section.appendChild(title)
       }
 
-      body.appendChild(bibliography)
+      body.appendChild(section)
     }
   }
 }
@@ -609,8 +680,10 @@ export const parseJATSBody = (doc: Document): ManuscriptNode => {
   moveSectionsToBody(doc)
   wrapFigures(body)
   moveCaptionsToEnd(body)
+  unwrapParagraphsInCaptions(body)
 
-  const output = new DOMParser(schema, jatsRules).parse(body)
+  const parser = new DOMParser(schema, jatsRules)
+  const output = parser.parse(body)
 
   rewriteIDs(output)
 
@@ -697,6 +770,17 @@ export const parseJATSFront = (doc: Document, addModel: AddModel): void => {
 
     addModel(contributor)
   })
+}
+
+const chooseContentType = (graphicNode?: Element): string | undefined => {
+  if (graphicNode) {
+    const mimetype = graphicNode.getAttribute('mimetype')
+    const subtype = graphicNode.getAttribute('mime-subtype')
+
+    if (mimetype && subtype) {
+      return [mimetype, subtype].join('/')
+    }
+  }
 }
 
 const chooseBibliographyItemType = (publicationType: string | null) => {

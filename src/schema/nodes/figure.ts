@@ -26,6 +26,7 @@ export interface FigureNode extends ManuscriptNode {
     contentType: string
     listingAttachment?: ListingAttachmentReference
     embedURL?: string
+    originalURL?: string
   }
 }
 
@@ -38,6 +39,7 @@ export const figure: NodeSpec = {
     contentType: { default: '' },
     listingAttachment: { default: undefined },
     embedURL: { default: undefined },
+    originalURL: { default: undefined },
   },
   selectable: false,
   group: 'block',

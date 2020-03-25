@@ -28,6 +28,8 @@ export const isAnySectionNode = (node: ManuscriptNode): boolean =>
   sectionNodeTypes.includes(node.type)
 
 export type SectionCategory =
+  | 'MPSectionCategory:abstract'
+  | 'MPSectionCategory:acknowledgment'
   | 'MPSectionCategory:bibliography'
   | 'MPSectionCategory:keywords'
   | 'MPSectionCategory:toc'

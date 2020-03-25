@@ -495,6 +495,7 @@ Object {
                       "id": "MPFigure:F3D684D3-1C53-44FE-9E66-B927340D571F",
                       "label": "",
                       "listingAttachment": undefined,
+                      "originalURL": undefined,
                       "src": "",
                     },
                     "content": Array [
@@ -1474,6 +1475,7 @@ Object {
                       "id": "MPFigure:F3D684D3-1C53-44FE-9E66-B927340D571F",
                       "label": "",
                       "listingAttachment": undefined,
+                      "originalURL": undefined,
                       "src": "",
                     },
                     "content": Array [

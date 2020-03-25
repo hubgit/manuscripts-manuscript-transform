@@ -584,7 +584,7 @@ export class JATSExporter {
         }
 
         const xref = this.document.createElement('xref')
-        xref.setAttribute('ref-type', 'fig')
+        xref.setAttribute('ref-type', 'fig') // TODO
 
         xref.setAttribute(
           'rid',
@@ -607,7 +607,12 @@ export class JATSExporter {
         return formula
       },
       equation_element: node =>
-        createFigureElement(node, 'fig', node.type.schema.nodes.equation),
+        createFigureElement(
+          node,
+          'fig',
+          node.type.schema.nodes.equation,
+          'equation'
+        ),
       figcaption: node => {
         if (!node.textContent) {
           return ''
@@ -740,7 +745,12 @@ export class JATSExporter {
         return code
       },
       listing_element: node =>
-        createFigureElement(node, 'fig', node.type.schema.nodes.listing),
+        createFigureElement(
+          node,
+          'fig',
+          node.type.schema.nodes.listing,
+          'listing'
+        ),
       manuscript: node => ['article', { id: normalizeID(node.attrs.id) }, 0],
       ordered_list: () => ['list', { 'list-type': 'order' }, 0],
       paragraph: node => {
@@ -817,10 +827,15 @@ export class JATSExporter {
     const createFigureElement = (
       node: ManuscriptNode,
       nodeName: string,
-      contentNodeType: ManuscriptNodeType
+      contentNodeType: ManuscriptNodeType,
+      figType?: string
     ) => {
       const element = this.document.createElement(nodeName)
       element.setAttribute('id', normalizeID(node.attrs.id))
+
+      if (figType) {
+        element.setAttribute('fig-type', figType)
+      }
 
       if (node.attrs.label) {
         const label = this.document.createElement('label')

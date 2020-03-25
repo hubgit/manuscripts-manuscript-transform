@@ -115,7 +115,7 @@
     <sec id="MPSection_61643B99-F34D-46E2-8772-563BC4A7DDB6">
       <title>Equations</title>
       <p id="MPParagraphElement_A868D3F9-3F1A-4DA3-BE74-AEF9998A952F">This paragraph contains an inline equation:<inline-formula><tex-math>2+3=5</tex-math></inline-formula></p>
-      <fig id="MPEquationElement_0F637C49-DE6C-4702-974D-5016EC132A1A">
+      <fig id="MPEquationElement_0F637C49-DE6C-4702-974D-5016EC132A1A" fig-type="equation">
         <disp-formula id="MPEquation_ED92F6D4-52EF-4C70-8C11-4F233B96D126">
           <tex-math>E=mc^2</tex-math>
         </disp-formula>
@@ -123,7 +123,7 @@
     </sec>
     <sec id="MPSection_27394269-1EB9-47B0-B3F2-11657319C5E1">
       <title>Listings</title>
-      <fig id="MPListingElement_6FC7712B-85CE-45D9-A6E7-EB2C48CD0F37">
+      <fig id="MPListingElement_6FC7712B-85CE-45D9-A6E7-EB2C48CD0F37" fig-type="listing">
         <code id="MPListing_80FBEC35-C062-4351-A7E6-0515E9D3837D" language="javascript">2+3=5</code>
       </fig>
     </sec>

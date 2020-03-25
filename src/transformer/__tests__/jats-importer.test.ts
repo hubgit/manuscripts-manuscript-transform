@@ -66,7 +66,7 @@ describe('JATS importer', () => {
 
     const models = parseJATSArticle(article)
 
-    expect(models).toHaveLength(188)
+    expect(models).toHaveLength(205)
   })
 
   test('parses JATS front to Manuscripts models', async () => {
@@ -86,6 +86,6 @@ describe('JATS importer', () => {
 
     const models = parseJATSArticle(article)
 
-    expect(models).toHaveLength(36)
+    expect(models).toHaveLength(38)
   })
 })

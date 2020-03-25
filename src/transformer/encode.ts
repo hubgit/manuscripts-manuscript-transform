@@ -315,6 +315,7 @@ const encoders: NodeEncoderMap = {
       undefined,
     contentType: node.attrs.contentType || undefined,
     embedURL: node.attrs.embedURL || undefined,
+    originalURL: node.attrs.originalURL || undefined,
     listingAttachment: node.attrs.listingAttachment || undefined,
   }),
   figure_element: (node): Partial<FigureElement> => ({

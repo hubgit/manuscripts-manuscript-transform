@@ -237,6 +237,7 @@ Map {
     "embedURL": undefined,
     "listingAttachment": undefined,
     "objectType": "MPFigure",
+    "originalURL": undefined,
     "title": undefined,
   },
   "MPFigureElement:B32BDEC8-E816-4946-C0BB-0404AF2F0C29" => Object {
@@ -260,6 +261,7 @@ Map {
     "embedURL": undefined,
     "listingAttachment": undefined,
     "objectType": "MPFigure",
+    "originalURL": undefined,
     "title": undefined,
   },
   "MPTableElement:82BD8BAF-D136-4536-AD9C-92C30B9D7315" => Object {
@@ -573,6 +575,7 @@ Map {
     ],
     "listingAttachment": undefined,
     "objectType": "MPFigure",
+    "originalURL": undefined,
     "title": "A figure",
   },
 }

@@ -42,6 +42,18 @@ test('transformer', async () => {
       continue
     }
 
-    expect(item).toEqual(input.get(id))
+    for (const [key, value] of Object.entries(item)) {
+      if (value === undefined) {
+        // @ts-ignore
+        delete item[key]
+      }
+    }
+
+    const original = input.get(id)
+
+    // @ts-ignore
+    delete original.originalURL
+
+    expect(item).toEqual(original)
   }
 })
