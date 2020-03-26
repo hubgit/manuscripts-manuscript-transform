@@ -224,6 +224,29 @@ describe('JATS exporter', () => {
     expect(errors).toHaveLength(0)
   })
 
+  test('DTD validation: with pdf link', () => {
+    const projectBundle = cloneProjectBundle(inputWithCitations)
+
+    const { doc, modelMap } = parseProjectBundle(projectBundle)
+
+    const transformer = new JATSExporter()
+    const xml = transformer.serializeToJATS(
+      doc.content,
+      modelMap,
+      '1.2',
+      undefined,
+      undefined,
+      undefined,
+      { self: { pdf: '123.pdf' } }
+    )
+
+    const { errors } = parseXMLWithDTD(xml)
+
+    expect(errors).toHaveLength(0)
+
+    expect(xml).toMatch(/<self-uri content-type="pdf" xlink:href="123.pdf"\/>/)
+  })
+
   test('Export link', () => {
     const projectBundle = cloneProjectBundle(input)
 

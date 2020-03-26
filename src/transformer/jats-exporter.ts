@@ -59,6 +59,12 @@ interface Attrs {
   [key: string]: string
 }
 
+interface Links {
+  self?: {
+    [key: string]: string
+  }
+}
+
 type NodeSpecs = { [key in Nodes]: (node: ManuscriptNode) => DOMOutputSpec }
 
 type MarkSpecs = {
@@ -141,7 +147,8 @@ export class JATSExporter {
     version: Version = '1.2',
     doi?: string,
     id?: string,
-    frontMatterOnly: boolean = false
+    frontMatterOnly: boolean = false,
+    links?: Links
   ): string => {
     this.modelMap = modelMap
     this.models = Array.from(this.modelMap.values())
@@ -168,7 +175,7 @@ export class JATSExporter {
       XLINK_NAMESPACE
     )
 
-    const front = this.buildFront(doi, id)
+    const front = this.buildFront(doi, id, links)
     article.appendChild(front)
 
     if (!frontMatterOnly) {
@@ -185,7 +192,7 @@ export class JATSExporter {
   }
 
   // tslint:disable-next-line:cyclomatic-complexity
-  protected buildFront = (doi?: string, id?: string) => {
+  protected buildFront = (doi?: string, id?: string, links?: Links) => {
     const manuscript = findManuscript(this.modelMap)
 
     const submission = findLatestManuscriptSubmission(this.modelMap, manuscript)
@@ -262,6 +269,15 @@ export class JATSExporter {
     }
 
     this.buildContributors(articleMeta)
+
+    if (links && links.self) {
+      for (const [key, value] of Object.entries(links.self)) {
+        const link = this.document.createElement('self-uri')
+        link.setAttribute('content-type', key)
+        link.setAttributeNS(XLINK_NAMESPACE, 'href', value)
+        articleMeta.appendChild(link)
+      }
+    }
 
     if (manuscript.keywordIDs) {
       this.buildKeywords(articleMeta, manuscript.keywordIDs)
