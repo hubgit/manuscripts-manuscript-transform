@@ -42,6 +42,7 @@ import {
   ParagraphElement,
   Project,
   Section,
+  Submission,
   UserProfileAffiliation,
 } from '@manuscripts/manuscripts-json-schema'
 import serializeToXML from 'w3c-xmlserializer'
@@ -325,4 +326,9 @@ export const buildInlineStyle = (
 export const buildAttribution = (): Build<Attribution> => ({
   _id: generateID(ObjectTypes.Attribution),
   objectType: ObjectTypes.Attribution,
+})
+
+export const buildSubmission = (): Build<Submission> => ({
+  _id: generateID(ObjectTypes.Submission),
+  objectType: ObjectTypes.Submission,
 })
