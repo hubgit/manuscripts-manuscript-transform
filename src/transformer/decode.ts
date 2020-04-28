@@ -681,7 +681,7 @@ export class Decoder {
   public getModel = <T extends Model>(id: string): T | undefined =>
     this.modelMap.get(id) as T | undefined
 
-  public createArticleNode = () => {
+  public createArticleNode = (manuscriptID?: string) => {
     const rootSections = getSections(this.modelMap).filter(
       section => !section.path || section.path.length <= 1
     )
@@ -700,7 +700,7 @@ export class Decoder {
 
     return schema.nodes.manuscript.create(
       {
-        id: this.getManuscriptID(),
+        id: manuscriptID || this.getManuscriptID(),
       },
       rootSectionNodes
     )
