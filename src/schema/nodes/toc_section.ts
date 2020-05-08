@@ -26,7 +26,7 @@ export interface TOCSectionNode extends ManuscriptNode {
 }
 
 export const tocSection: NodeSpec = {
-  content: 'section_title toc_element',
+  content: 'section_title (toc_element | placeholder_element)',
   attrs: {
     id: { default: '' },
   },

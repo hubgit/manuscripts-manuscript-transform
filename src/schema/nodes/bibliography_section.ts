@@ -26,7 +26,7 @@ export interface BibliographySectionNode extends ManuscriptNode {
 }
 
 export const bibliographySection: NodeSpec = {
-  content: 'section_title bibliography_element',
+  content: 'section_title (bibliography_element | placeholder_element)',
   attrs: {
     id: { default: '' },
   },
