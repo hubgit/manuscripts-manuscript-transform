@@ -669,6 +669,20 @@ const moveSectionsToBody = (doc: Document) => {
   }
 }
 
+const ensureSection = (body: Element) => {
+  const doc = body.ownerDocument as Document
+
+  if (!body.querySelector('sec')) {
+    const section = doc.createElement('sec')
+
+    while (body.firstChild) {
+      section.appendChild(body.firstChild)
+    }
+
+    body.appendChild(section)
+  }
+}
+
 export const parseJATSBody = (doc: Document): ManuscriptNode => {
   const body = doc.querySelector('body')
 
@@ -677,6 +691,7 @@ export const parseJATSBody = (doc: Document): ManuscriptNode => {
   }
 
   // fix up the document
+  ensureSection(body)
   moveSectionsToBody(doc)
   wrapFigures(body)
   moveCaptionsToEnd(body)
