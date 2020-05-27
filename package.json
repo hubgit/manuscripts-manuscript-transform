@@ -28,6 +28,7 @@
     "version": "yarn build"
   },
   "dependencies": {
+    "@manuscripts/manuscripts-json-schema": "^1.29.2",
     "debug": "^4.1.1",
     "prosemirror-model": "^1.7.2",
     "uuid": "^3.3.2",
@@ -44,7 +45,6 @@
     "@babel/preset-typescript": "^7.7.4",
     "@jats4r/dtds": "^0.0.5",
     "@manuscripts/examples": "^0.0.7",
-    "@manuscripts/manuscripts-json-schema": "^1.29.2",
     "@manuscripts/publish": "^0.2.2",
     "@manuscripts/tslint-config": "^0.1.4",
     "@types/debug": "^4.1.4",
