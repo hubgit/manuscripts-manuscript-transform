@@ -135,6 +135,14 @@ const insertAbstractNode = (articleMeta: Element, abstractNode: Element) => {
   articleMeta.appendChild(abstractNode)
 }
 
+export interface JATSExporterOptions {
+  version?: Version
+  doi?: string
+  id?: string
+  frontMatterOnly?: boolean
+  links?: Links
+}
+
 export class JATSExporter {
   protected document: Document
   protected modelMap: Map<string, Model>
@@ -144,12 +152,10 @@ export class JATSExporter {
   public serializeToJATS = (
     fragment: ManuscriptFragment,
     modelMap: Map<string, Model>,
-    version: Version = '1.2',
-    doi?: string,
-    id?: string,
-    frontMatterOnly: boolean = false,
-    links?: Links
+    options: JATSExporterOptions = {}
   ): string => {
+    const { version = '1.2', doi, id, frontMatterOnly = false, links } = options
+
     this.modelMap = modelMap
     this.models = Array.from(this.modelMap.values())
 
