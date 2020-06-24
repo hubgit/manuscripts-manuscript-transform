@@ -43,14 +43,12 @@ const iterateSnapshot = function*<T extends Node>(
   }
 }
 
-const namespaceResolverDoc = new DOMParser().parseFromString(
-  `<TEI xmlns="http://www.tei-c.org/ns/1.0"/>`,
-  'application/xml'
-)
+const namespaces = new Map<string | null, string>([
+  [null, 'http://www.tei-c.org/ns/1.0'],
+])
 
-const namespaceResolver = namespaceResolverDoc.createNSResolver(
-  namespaceResolverDoc
-)
+const namespaceResolver = (prefix: string | null) =>
+  namespaces.get(prefix) || null
 
 export const parseFront = (doc: Document, addModel: AddModel): void => {
   const headerNode = doc.evaluate(
