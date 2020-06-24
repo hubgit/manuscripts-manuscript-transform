@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
+import { Model } from '@manuscripts/manuscripts-json-schema'
 import fs from 'fs'
 import {
-  addModelToMap,
   parseJATSArticle,
   parseJATSBody,
   parseJATSFront,
 } from '../jats-importer'
-import { Model } from '@manuscripts/manuscripts-json-schema'
+import { addModelToMap } from '../model-map'
 
 const loadFixture = async (filename: string) => {
   const xml = await fs.promises.readFile(

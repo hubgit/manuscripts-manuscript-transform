@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  BibliographicName,
-  Model,
-  ObjectTypes,
-} from '@manuscripts/manuscripts-json-schema'
+import { BibliographicName, Model } from '@manuscripts/manuscripts-json-schema'
 import { DOMParser, ParseRule } from 'prosemirror-model'
 import { ManuscriptNode, Marks, Nodes, schema } from '../schema'
 import {
@@ -33,6 +29,7 @@ import {
 } from './builders'
 import { encode } from './encode'
 import { generateID } from './id'
+import { AddModel, addModelToMap } from './model-map'
 import { nodeTypesMap } from './node-types'
 import { SectionCategory } from './section-category'
 
@@ -705,8 +702,6 @@ export const parseJATSBody = (doc: Document): ManuscriptNode => {
   return output
 }
 
-type AddModel = <T extends Model>(data: Partial<T>) => void
-
 export const parseJATSFront = (doc: Document, addModel: AddModel): void => {
   const front = doc.querySelector('front')
 
@@ -944,16 +939,6 @@ export const parseJATSBack = (doc: Document, addModel: AddModel): void => {
       }
     }
   })
-}
-
-export const addModelToMap = (modelMap: Map<string, Model>): AddModel => <
-  T extends Model
->(
-  data: Partial<T>
-) => {
-  data._id = generateID(data.objectType as ObjectTypes)
-
-  modelMap.set(data._id, data as T)
 }
 
 export const parseJATSArticle = (doc: Document): Model[] => {
