@@ -16,6 +16,7 @@
 
 import { ObjectTypes } from '@manuscripts/manuscripts-json-schema'
 import { NodeSpec } from 'prosemirror-model'
+
 import { buildElementClass } from '../../lib/attributes'
 import { ManuscriptNode } from '../types'
 
@@ -36,7 +37,7 @@ export const bulletList: NodeSpec = {
   parseDOM: [
     {
       tag: 'ul',
-      getAttrs: p => {
+      getAttrs: (p) => {
         const dom = p as HTMLUListElement
 
         return {
@@ -45,7 +46,7 @@ export const bulletList: NodeSpec = {
       },
     },
   ],
-  toDOM: node => {
+  toDOM: (node) => {
     const bulletListNode = node as BulletListNode
 
     return bulletListNode.attrs.id
@@ -80,7 +81,7 @@ export const orderedList: NodeSpec = {
   parseDOM: [
     {
       tag: 'ol',
-      getAttrs: p => {
+      getAttrs: (p) => {
         const dom = p as HTMLOListElement
 
         return {
@@ -90,7 +91,7 @@ export const orderedList: NodeSpec = {
       },
     },
   ],
-  toDOM: node => {
+  toDOM: (node) => {
     const orderedListNode = node as OrderedListNode
 
     return orderedListNode.attrs.id
@@ -126,7 +127,7 @@ export const listItem: NodeSpec = {
   parseDOM: [
     {
       tag: 'li',
-      getAttrs: p => {
+      getAttrs: (p) => {
         const dom = p as HTMLLIElement
 
         return {
@@ -135,7 +136,7 @@ export const listItem: NodeSpec = {
       },
     },
   ],
-  toDOM: node => {
+  toDOM: (node) => {
     const listItemNode = node as ListItemNode
 
     const attrs: { [key: string]: string } = {}

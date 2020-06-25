@@ -15,6 +15,7 @@
  */
 
 import { ObjectTypes } from '@manuscripts/manuscripts-json-schema'
+
 import { Decoder } from '../decode'
 import { encode } from '../encode'
 import { createTestModelMap } from './__helpers__/doc'

@@ -15,6 +15,7 @@
  */
 
 import { NodeSpec } from 'prosemirror-model'
+
 import { nodeFromHTML } from '../../lib/html'
 import { ManuscriptNode } from '../types'
 
@@ -52,7 +53,7 @@ export const bibliographyElement: NodeSpec = {
   parseDOM: [
     {
       tag: 'div.csl-bib-body',
-      getAttrs: p => {
+      getAttrs: (p) => {
         const dom = p as HTMLDivElement
 
         return {
@@ -61,7 +62,7 @@ export const bibliographyElement: NodeSpec = {
       },
     },
   ],
-  toDOM: node => {
+  toDOM: (node) => {
     const bibliographyElementNode = node as BibliographyElementNode
 
     return (

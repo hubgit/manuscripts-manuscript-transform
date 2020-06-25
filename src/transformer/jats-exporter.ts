@@ -30,6 +30,7 @@ import {
 import debug from 'debug'
 import { DOMOutputSpec, DOMParser, DOMSerializer } from 'prosemirror-model'
 import serializeToXML from 'w3c-xmlserializer'
+
 import { nodeFromHTML, textFromHTML } from '../lib/html'
 import { normalizeStyleName } from '../lib/styled-content'
 import { iterateChildren } from '../lib/utils'
@@ -197,7 +198,6 @@ export class JATSExporter {
     return serializeToXML(this.document)
   }
 
-  // tslint:disable-next-line:cyclomatic-complexity
   protected buildFront = (doi?: string, id?: string, links?: Links) => {
     const manuscript = findManuscript(this.modelMap)
 
@@ -303,7 +303,6 @@ export class JATSExporter {
     return body
   }
 
-  // tslint:disable:cyclomatic-complexity
   protected buildBack = () => {
     const back = this.document.createElement('back')
 
@@ -334,7 +333,7 @@ export class JATSExporter {
 
       for (const footnoteID of footnoteIDsSet) {
         const footnote = footnotes.find(
-          footnote => normalizeID(footnote._id) === footnoteID
+          (footnote) => normalizeID(footnote._id) === footnoteID
         )
 
         if (footnote) {
@@ -391,7 +390,7 @@ export class JATSExporter {
 
     for (const bibliographyItemID of bibliographyItemIDsSet) {
       const bibliographyItem = bibliographyItems.find(
-        bibliographyItem =>
+        (bibliographyItem) =>
           normalizeID(bibliographyItem._id) === bibliographyItemID
       )
 
@@ -419,7 +418,7 @@ export class JATSExporter {
         }
 
         if (bibliographyItem.author) {
-          bibliographyItem.author.forEach(author => {
+          bibliographyItem.author.forEach((author) => {
             const name = this.document.createElement('name')
 
             if (author.family) {
@@ -532,7 +531,7 @@ export class JATSExporter {
     const nodes: NodeSpecs = {
       attribution: () => ['attrib', 0],
       bibliography_element: () => '',
-      bibliography_section: node => [
+      bibliography_section: (node) => [
         'ref-list',
         { id: normalizeID(node.attrs.id) },
         0,
@@ -540,7 +539,7 @@ export class JATSExporter {
       blockquote_element: () => ['disp-quote', { 'content-type': 'quote' }, 0],
       bullet_list: () => ['list', { 'list-type': 'bullet' }, 0],
       caption: () => ['caption', ['p', 0]],
-      citation: node => {
+      citation: (node) => {
         if (!node.attrs.rid) {
           warn(`${node.attrs.id} has no rid`)
           return node.attrs.label
@@ -553,7 +552,7 @@ export class JATSExporter {
           return ''
         }
 
-        const rids = citation.embeddedCitationItems.filter(item => {
+        const rids = citation.embeddedCitationItems.filter((item) => {
           if (!this.modelMap.has(item.bibliographyItem)) {
             warn(
               `Missing ${item.bibliographyItem} referenced by ${citation._id}`
@@ -575,7 +574,7 @@ export class JATSExporter {
         // NOTE: https://www.ncbi.nlm.nih.gov/pmc/pmcdoc/tagging-guidelines/article/tags.html#el-xref
         xref.setAttribute(
           'rid',
-          rids.map(item => normalizeID(item.bibliographyItem)).join(' ')
+          rids.map((item) => normalizeID(item.bibliographyItem)).join(' ')
         )
 
         if (node.attrs.contents) {
@@ -590,7 +589,7 @@ export class JATSExporter {
 
         return xref
       },
-      cross_reference: node => {
+      cross_reference: (node) => {
         if (!node.attrs.rid) {
           warn(`${node.attrs.id} has no rid`)
           return node.attrs.label
@@ -618,7 +617,7 @@ export class JATSExporter {
         return xref
       },
       doc: () => '',
-      equation: node => {
+      equation: (node) => {
         const formula = this.document.createElement('disp-formula')
         formula.setAttribute('id', normalizeID(node.attrs.id))
 
@@ -628,21 +627,21 @@ export class JATSExporter {
 
         return formula
       },
-      equation_element: node =>
+      equation_element: (node) =>
         createFigureElement(
           node,
           'fig',
           node.type.schema.nodes.equation,
           'equation'
         ),
-      figcaption: node => {
+      figcaption: (node) => {
         if (!node.textContent) {
           return ''
         }
 
         return ['caption', ['p', 0]]
       },
-      figure: node => {
+      figure: (node) => {
         const fig = this.document.createElement('fig')
         fig.setAttribute('id', normalizeID(node.attrs.id))
 
@@ -654,7 +653,7 @@ export class JATSExporter {
 
         const figcaptionNodeType = node.type.schema.nodes.figcaption
 
-        node.forEach(childNode => {
+        node.forEach((childNode) => {
           if (childNode.type === figcaptionNodeType) {
             fig.appendChild(this.serializeNode(childNode))
           }
@@ -703,16 +702,16 @@ export class JATSExporter {
 
         return fig
       },
-      figure_element: node =>
+      figure_element: (node) =>
         createFigureElement(node, 'fig-group', node.type.schema.nodes.figure),
-      footnote: node => ['fn', { id: normalizeID(node.attrs.id) }, 0],
-      footnotes_element: node => [
+      footnote: (node) => ['fn', { id: normalizeID(node.attrs.id) }, 0],
+      footnotes_element: (node) => [
         'fn-group',
         { id: normalizeID(node.attrs.id) },
       ],
       hard_break: () => ['break'],
       highlight_marker: () => '',
-      inline_equation: node => {
+      inline_equation: (node) => {
         const formula = this.document.createElement('inline-formula')
 
         const math = this.document.createElement('tex-math')
@@ -721,7 +720,7 @@ export class JATSExporter {
 
         return formula
       },
-      inline_footnote: node => {
+      inline_footnote: (node) => {
         const xref = this.document.createElement('xref')
         xref.setAttribute('ref-type', 'fn')
         xref.setAttribute('rid', normalizeID(node.attrs.rid))
@@ -731,7 +730,7 @@ export class JATSExporter {
       },
       keywords_element: () => '',
       keywords_section: () => '',
-      link: node => {
+      link: (node) => {
         const text = node.textContent
 
         if (!text) {
@@ -758,7 +757,7 @@ export class JATSExporter {
         return linkNode
       },
       list_item: () => ['list-item', 0],
-      listing: node => {
+      listing: (node) => {
         const code = this.document.createElement('code')
         code.setAttribute('id', normalizeID(node.attrs.id))
         code.setAttribute('language', node.attrs.languageKey)
@@ -766,16 +765,16 @@ export class JATSExporter {
 
         return code
       },
-      listing_element: node =>
+      listing_element: (node) =>
         createFigureElement(
           node,
           'fig',
           node.type.schema.nodes.listing,
           'listing'
         ),
-      manuscript: node => ['article', { id: normalizeID(node.attrs.id) }, 0],
+      manuscript: (node) => ['article', { id: normalizeID(node.attrs.id) }, 0],
       ordered_list: () => ['list', { 'list-type': 'order' }, 0],
-      paragraph: node => {
+      paragraph: (node) => {
         if (!node.childCount) {
           return ''
         }
@@ -799,7 +798,7 @@ export class JATSExporter {
         { 'content-type': 'pullquote' },
         0,
       ],
-      section: node => {
+      section: (node) => {
         const attrs: { [key: string]: string } = {
           id: normalizeID(node.attrs.id),
         }
@@ -811,12 +810,12 @@ export class JATSExporter {
         return ['sec', attrs, 0]
       },
       section_title: () => ['title', 0],
-      table: node => ['table', { id: normalizeID(node.attrs.id) }, 0],
-      table_element: node =>
+      table: (node) => ['table', { id: normalizeID(node.attrs.id) }, 0],
+      table_element: (node) =>
         createFigureElement(node, 'table-wrap', node.type.schema.nodes.table),
       table_cell: () => ['td', 0],
       table_row: () => ['tr', 0],
-      text: node => node.text!,
+      text: (node) => node.text as string,
       toc_element: () => '',
       toc_section: () => '',
     }
@@ -827,7 +826,7 @@ export class JATSExporter {
       italic: () => ['italic'],
       smallcaps: () => ['sc'],
       strikethrough: () => ['strike'],
-      styled: mark => {
+      styled: (mark) => {
         const inlineStyle = getModel<InlineStyle>(mark.attrs.rid)
 
         const attrs: { [key: string]: string } = {}
@@ -845,7 +844,6 @@ export class JATSExporter {
 
     this.serializer = new DOMSerializer<ManuscriptSchema>(nodes, marks)
 
-    // tslint:disable-next-line:cyclomatic-complexity
     const createFigureElement = (
       node: ManuscriptNode,
       nodeName: string,
@@ -874,7 +872,7 @@ export class JATSExporter {
         element.appendChild(this.serializeNode(figcaptionNode))
       }
 
-      node.forEach(childNode => {
+      node.forEach((childNode) => {
         if (childNode.type === contentNodeType) {
           if (childNode.attrs.id) {
             element.appendChild(this.serializeNode(childNode))
@@ -977,7 +975,7 @@ export class JATSExporter {
       Number(a.priority) - Number(b.priority)
 
     const authorContributors = contributors
-      .filter(contributor => contributor.role === 'author')
+      .filter((contributor) => contributor.role === 'author')
       .sort(sortContributors)
 
     if (authorContributors.length) {
@@ -985,7 +983,7 @@ export class JATSExporter {
       contribGroup.setAttribute('content-type', 'authors')
       articleMeta.appendChild(contribGroup)
 
-      authorContributors.forEach(contributor => {
+      authorContributors.forEach((contributor) => {
         try {
           this.validateContributor(contributor)
         } catch (error) {
@@ -1011,7 +1009,7 @@ export class JATSExporter {
         }
 
         if (contributor.roles) {
-          contributor.roles.forEach(rid => {
+          contributor.roles.forEach((rid) => {
             const contributorRole = this.modelMap.get(rid) as
               | ContributorRole
               | undefined
@@ -1033,7 +1031,7 @@ export class JATSExporter {
         }
 
         if (contributor.affiliations) {
-          contributor.affiliations.forEach(rid => {
+          contributor.affiliations.forEach((rid) => {
             const xref = this.document.createElement('xref')
             xref.setAttribute('ref-type', 'aff')
             xref.setAttribute('rid', normalizeID(rid))
@@ -1045,14 +1043,14 @@ export class JATSExporter {
       })
 
       const otherContributors = contributors
-        .filter(contributor => contributor.role !== 'author')
+        .filter((contributor) => contributor.role !== 'author')
         .sort(sortContributors)
 
       if (otherContributors.length) {
         const contribGroup = this.document.createElement('contrib-group')
         articleMeta.appendChild(contribGroup)
 
-        otherContributors.forEach(contributor => {
+        otherContributors.forEach((contributor) => {
           try {
             this.validateContributor(contributor)
           } catch (error) {
@@ -1074,7 +1072,7 @@ export class JATSExporter {
           }
 
           if (contributor.roles) {
-            contributor.roles.forEach(rid => {
+            contributor.roles.forEach((rid) => {
               const contributorRole = this.modelMap.get(rid) as
                 | ContributorRole
                 | undefined
@@ -1096,7 +1094,7 @@ export class JATSExporter {
           }
 
           if (contributor.affiliations) {
-            contributor.affiliations.forEach(rid => {
+            contributor.affiliations.forEach((rid) => {
               const xref = this.document.createElement('xref')
               xref.setAttribute('ref-type', 'aff')
               xref.setAttribute('rid', normalizeID(rid))
@@ -1112,7 +1110,7 @@ export class JATSExporter {
 
       const sortedContributors = [...authorContributors, ...otherContributors]
 
-      sortedContributors.forEach(contributor => {
+      sortedContributors.forEach((contributor) => {
         if (contributor.affiliations) {
           affiliationRIDs.push(...contributor.affiliations)
         }
@@ -1124,7 +1122,7 @@ export class JATSExporter {
 
       if (affiliations) {
         const usedAffiliations = affiliations.filter(
-          affiliation => affiliationRIDs.indexOf(affiliation._id) !== -1
+          (affiliation) => affiliationRIDs.indexOf(affiliation._id) !== -1
         )
 
         usedAffiliations.sort(
@@ -1132,7 +1130,7 @@ export class JATSExporter {
             affiliationRIDs.indexOf(a._id) - affiliationRIDs.indexOf(b._id)
         )
 
-        usedAffiliations.forEach(affiliation => {
+        usedAffiliations.forEach((affiliation) => {
           const aff = this.document.createElement('aff')
           aff.setAttribute('id', normalizeID(affiliation._id))
 
@@ -1180,8 +1178,8 @@ export class JATSExporter {
 
   private buildKeywords(articleMeta: Node, keywordIDs: string[]) {
     const keywords = keywordIDs
-      .map(id => this.modelMap.get(id) as Keyword | undefined)
-      .filter(model => model && model.name) as Keyword[]
+      .map((id) => this.modelMap.get(id) as Keyword | undefined)
+      .filter((model) => model && model.name) as Keyword[]
 
     if (keywords.length) {
       const kwdGroup = this.document.createElement('kwd-group')
@@ -1197,7 +1195,7 @@ export class JATSExporter {
   }
 
   private fixBody = (body: Element, fragment: ManuscriptFragment) => {
-    fragment.descendants(node => {
+    fragment.descendants((node) => {
       if (node.attrs.id) {
         // remove suppressed titles
         if (node.attrs.titleSuppressed) {
@@ -1344,7 +1342,7 @@ export class JATSExporter {
   private moveAbstract = (front: HTMLElement, body: HTMLElement) => {
     const sections = body.querySelectorAll(':scope > sec')
 
-    const abstractSection = Array.from(sections).find(section => {
+    const abstractSection = Array.from(sections).find((section) => {
       if (section.getAttribute('sec-type') === 'abstract') {
         return true
       }

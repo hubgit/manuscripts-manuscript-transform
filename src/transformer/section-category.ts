@@ -15,6 +15,7 @@
  */
 
 import { Element, ObjectTypes } from '@manuscripts/manuscripts-json-schema'
+
 import { ManuscriptNode, ManuscriptNodeType, schema } from '../schema'
 
 const sectionNodeTypes: ManuscriptNodeType[] = [
@@ -56,7 +57,9 @@ export const chooseSectionNodeType = (
 export const guessSectionCategory = (
   elements: Element[]
 ): SectionCategory | undefined => {
-  if (!elements.length) return undefined
+  if (!elements.length) {
+    return undefined
+  }
 
   switch (elements[0].objectType) {
     case ObjectTypes.BibliographyElement:

@@ -15,6 +15,7 @@
  */
 
 import { NodeSpec } from 'prosemirror-model'
+
 import { ManuscriptNode } from '../types'
 
 interface Attrs {
@@ -39,7 +40,7 @@ export const citation: NodeSpec = {
   parseDOM: [
     {
       tag: 'span.citation[data-reference-id]',
-      getAttrs: p => {
+      getAttrs: (p) => {
         const dom = p as HTMLSpanElement
 
         return {
@@ -49,7 +50,7 @@ export const citation: NodeSpec = {
       },
     },
   ],
-  toDOM: node => {
+  toDOM: (node) => {
     const citationNode = node as CitationNode
 
     const dom = document.createElement('span')

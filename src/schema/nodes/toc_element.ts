@@ -15,6 +15,7 @@
  */
 
 import { NodeSpec } from 'prosemirror-model'
+
 // import { buildElementClass } from '../../lib/attributes'
 import { nodeFromHTML } from '../../lib/html'
 import { ManuscriptNode } from '../types'
@@ -50,7 +51,7 @@ export const tocElement: NodeSpec = {
   parseDOM: [
     {
       tag: 'div.manuscript-toc',
-      getAttrs: p => {
+      getAttrs: (p) => {
         const dom = p as HTMLDivElement
 
         return {
@@ -59,7 +60,7 @@ export const tocElement: NodeSpec = {
       },
     },
   ],
-  toDOM: node => {
+  toDOM: (node) => {
     const tocElementNode = node as TOCElementNode
 
     return (

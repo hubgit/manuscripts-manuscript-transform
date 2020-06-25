@@ -16,6 +16,7 @@
 
 import { Model } from '@manuscripts/manuscripts-json-schema'
 import fs from 'fs'
+
 import {
   parseJATSArticle,
   parseJATSBody,
@@ -38,7 +39,7 @@ describe('JATS importer', () => {
 
     const doc = parseJATSBody(article)
 
-    doc.descendants(node => {
+    doc.descendants((node) => {
       // TODO: validate ids before deleting them
       delete node.attrs.id
       delete node.attrs.rid
@@ -52,7 +53,7 @@ describe('JATS importer', () => {
 
     const doc = parseJATSBody(article)
 
-    doc.descendants(node => {
+    doc.descendants((node) => {
       // TODO: validate ids before deleting them
       delete node.attrs.id
       delete node.attrs.rid

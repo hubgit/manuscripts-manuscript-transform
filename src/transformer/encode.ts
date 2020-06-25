@@ -28,6 +28,7 @@ import {
   Listing,
   ListingElement,
   Model,
+  ObjectTypes,
   ParagraphElement,
   QuoteElement,
   Section,
@@ -37,6 +38,7 @@ import {
 } from '@manuscripts/manuscripts-json-schema'
 import { DOMSerializer } from 'prosemirror-model'
 import serializeToXML from 'w3c-xmlserializer'
+
 import { iterateChildren } from '../lib/utils'
 import {
   isHighlightMarkerNode,
@@ -78,8 +80,8 @@ const listContents = (node: ManuscriptNode): string => {
   for (const p of output.querySelectorAll('li > p')) {
     const parent = p.parentNode as HTMLLIElement
 
-    while (p.hasChildNodes()) {
-      parent.insertBefore(p.firstChild!, p)
+    while (p.firstChild) {
+      parent.insertBefore(p.firstChild, p)
     }
 
     parent.removeChild(p)
@@ -197,7 +199,7 @@ const elementContents = (node: ManuscriptNode): string => {
 const childElements = (node: ManuscriptNode): ManuscriptNode[] => {
   const nodes: ManuscriptNode[] = []
 
-  node.forEach(childNode => {
+  node.forEach((childNode) => {
     if (!isSectionNode(childNode)) {
       nodes.push(childNode)
     }
@@ -272,8 +274,8 @@ const encoders: NodeEncoderMap = {
     title: inlineContentsOfNodeType(node, node.type.schema.nodes.section_title),
     path: path.concat([node.attrs.id]),
     elementIDs: childElements(node)
-      .map(childNode => childNode.attrs.id)
-      .filter(id => id),
+      .map((childNode) => childNode.attrs.id)
+      .filter((id) => id),
   }),
   blockquote_element: (node): Partial<QuoteElement> => ({
     contents: contents(node),
@@ -355,8 +357,8 @@ const encoders: NodeEncoderMap = {
     title: inlineContentsOfNodeType(node, node.type.schema.nodes.section_title),
     path: path.concat([node.attrs.id]),
     elementIDs: childElements(node)
-      .map(childNode => childNode.attrs.id)
-      .filter(id => id),
+      .map((childNode) => childNode.attrs.id)
+      .filter((id) => id),
   }),
   ordered_list: (node): Partial<ListElement> => ({
     elementType: 'ol',
@@ -385,8 +387,8 @@ const encoders: NodeEncoderMap = {
     title: inlineContentsOfNodeType(node, node.type.schema.nodes.section_title),
     path: path.concat([node.attrs.id]),
     elementIDs: childElements(node)
-      .map(childNode => childNode.attrs.id)
-      .filter(id => id),
+      .map((childNode) => childNode.attrs.id)
+      .filter((id) => id),
     titleSuppressed: node.attrs.titleSuppressed || undefined,
     pageBreakStyle: node.attrs.pageBreakStyle || undefined,
   }),
@@ -416,8 +418,8 @@ const encoders: NodeEncoderMap = {
     title: inlineContentsOfNodeType(node, node.type.schema.nodes.section_title),
     path: path.concat([node.attrs.id]),
     elementIDs: childElements(node)
-      .map(childNode => childNode.attrs.id)
-      .filter(id => id),
+      .map((childNode) => childNode.attrs.id)
+      .filter((id) => id),
   }),
 }
 
@@ -429,7 +431,9 @@ const modelData = (
 ): Partial<Model> => {
   const encoder = encoders[node.type.name as Nodes]
 
-  if (!encoder) throw new Error(`Unhandled model: ${node.type.name}`)
+  if (!encoder) {
+    throw new Error(`Unhandled model: ${node.type.name}`)
+  }
 
   return encoder(node, parent, path, priority)
 }
@@ -445,7 +449,7 @@ export const modelFromNode = (
   const data = {
     ...modelData(node, parent, path, priority),
     _id: node.attrs.id,
-    objectType: nodeTypesMap.get(node.type)!,
+    objectType: nodeTypesMap.get(node.type) as ObjectTypes,
   }
 
   const model = data as Model
@@ -474,9 +478,15 @@ export const encode = (node: ManuscriptNode): Map<string, Model> => {
   const addModel = (path: string[], parent: ManuscriptNode) => (
     child: ManuscriptNode
   ) => {
-    if (!child.attrs.id) return
-    if (isHighlightMarkerNode(child)) return
-    if (placeholders.includes(child.type.name)) return
+    if (!child.attrs.id) {
+      return
+    }
+    if (isHighlightMarkerNode(child)) {
+      return
+    }
+    if (placeholders.includes(child.type.name)) {
+      return
+    }
 
     const model = modelFromNode(child, parent, path, priority)
     models.set(model._id, model)

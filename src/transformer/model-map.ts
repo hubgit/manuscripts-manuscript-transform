@@ -15,9 +15,11 @@
  */
 
 import { Model, ObjectTypes } from '@manuscripts/manuscripts-json-schema'
+
+import { Build } from './builders'
 import { generateID } from './id'
 
-export type AddModel = <T extends Model>(data: Partial<T>) => void
+export type AddModel = <T extends Model>(data: Partial<T> | Build<T>) => void
 
 export const addModelToMap = (modelMap: Map<string, Model>): AddModel => <
   T extends Model

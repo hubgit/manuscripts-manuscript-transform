@@ -16,6 +16,7 @@
 
 import { ObjectTypes } from '@manuscripts/manuscripts-json-schema'
 import { NodeSpec } from 'prosemirror-model'
+
 import { buildElementClass } from '../../lib/attributes'
 import { ManuscriptNode } from '../types'
 
@@ -41,7 +42,7 @@ export const pullquoteElement: NodeSpec = {
   parseDOM: [
     {
       tag: 'aside.pullquote',
-      getAttrs: aside => {
+      getAttrs: (aside) => {
         const dom = aside as HTMLElement
 
         const attrs: Partial<Attrs> = {
@@ -58,7 +59,7 @@ export const pullquoteElement: NodeSpec = {
       },
     },
   ],
-  toDOM: node => {
+  toDOM: (node) => {
     const pullquoteElementNode = node as PullquoteElementNode
 
     const attrs: { [key: string]: string } = {}

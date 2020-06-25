@@ -1,5 +1,5 @@
 /*!
- * © 2019 Atypon Systems LLC
+ * © 2020 Atypon Systems LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
-import '@babel/polyfill'
-
-import uuid from 'uuid/v4'
-
-const supportedCommands: string[] = []
-
-Object.defineProperty(document, 'queryCommandSupported', {
-  value: (cmd: string) => supportedCommands.includes(cmd),
-})
-
-Object.defineProperty(document, 'execCommand', {
-  value: (cmd: string) => supportedCommands.includes(cmd),
-})
-
-if (!window.URL.createObjectURL) {
-  Object.defineProperty(window.URL, 'createObjectURL', {
-    value: jest.fn(() => 'blob:https://localhost/' + uuid()),
-  })
+module.exports = {
+  extends: '@manuscripts/eslint-config',
+  rules: {
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
+  },
+  overrides: [
+    {
+      files: '**/*.test.ts',
+      rules: {
+        '@typescript-eslint/no-non-null-assertion': 'off',
+      },
+    },
+  ],
 }

@@ -16,6 +16,7 @@
 
 import { ObjectTypes } from '@manuscripts/manuscripts-json-schema'
 import { NodeSpec } from 'prosemirror-model'
+
 import { ManuscriptNode } from '../types'
 
 interface Attrs {
@@ -42,7 +43,7 @@ export const inlineEquation: NodeSpec = {
   parseDOM: [
     {
       tag: `span.${ObjectTypes.InlineMathFragment}`,
-      getAttrs: p => {
+      getAttrs: (p) => {
         const dom = p as HTMLSpanElement
 
         return {
@@ -54,7 +55,7 @@ export const inlineEquation: NodeSpec = {
     },
     // TODO: convert MathML from pasted math elements?
   ],
-  toDOM: node => {
+  toDOM: (node) => {
     const inlineEquationNode = node as InlineEquationNode
 
     const dom = document.createElement('span')

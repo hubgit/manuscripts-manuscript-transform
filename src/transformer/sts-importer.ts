@@ -15,6 +15,7 @@
  */
 
 import { Model, ObjectTypes } from '@manuscripts/manuscripts-json-schema'
+
 import { buildManuscript } from './builders'
 import { encode } from './encode'
 import { generateID } from './id'
@@ -58,7 +59,12 @@ export const parseSTSStandard = (doc: Document): Model[] => {
   const front = parseSTSFront(doc)
 
   const node = parseSTSBody(doc)
-  const body = encode(node.firstChild!)
+
+  if (!node.firstChild) {
+    throw new Error('No content was parsed from the article body')
+  }
+
+  const body = encode(node.firstChild)
 
   return [...front.values(), ...body.values()]
 }

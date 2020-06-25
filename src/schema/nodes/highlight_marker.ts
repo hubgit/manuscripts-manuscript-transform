@@ -15,6 +15,7 @@
  */
 
 import { NodeSpec } from 'prosemirror-model'
+
 import { ManuscriptNode } from '../types'
 
 interface Attrs {
@@ -41,7 +42,7 @@ export const highlightMarker: NodeSpec = {
   parseDOM: [
     {
       tag: 'span.highlight-marker',
-      getAttrs: p => {
+      getAttrs: (p) => {
         const dom = p as HTMLSpanElement
 
         return {
@@ -52,7 +53,7 @@ export const highlightMarker: NodeSpec = {
       },
     },
   ],
-  toDOM: node => {
+  toDOM: (node) => {
     const highlightMarkerNode = node as HighlightMarkerNode
 
     const dom = document.createElement('span')

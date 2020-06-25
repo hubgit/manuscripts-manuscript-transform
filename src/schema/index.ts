@@ -15,6 +15,7 @@
  */
 
 import { Schema } from 'prosemirror-model'
+
 import {
   bold,
   code,

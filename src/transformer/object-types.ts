@@ -22,6 +22,7 @@ import {
   ObjectTypes,
   Table,
 } from '@manuscripts/manuscripts-json-schema'
+
 import { ManuscriptModel, UserProfileWithAvatar } from './models'
 
 export enum ExtraObjectTypes {

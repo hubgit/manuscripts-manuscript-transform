@@ -68,8 +68,8 @@ export const createTestModelMapWithCitations = () => {
       {
         objectType: ObjectTypes.CitationItem,
         _id: 'MPCitationItem:1',
-        bibliographyItem: bibliographyItem._id
-      }
+        bibliographyItem: bibliographyItem._id,
+      },
     ],
     createdAt: 0,
     updatedAt: 0,

@@ -15,6 +15,7 @@
  */
 
 import { NodeSpec } from 'prosemirror-model'
+
 import { ManuscriptNode } from '../types'
 
 export interface ActualManuscriptNode extends ManuscriptNode {
@@ -32,7 +33,7 @@ export const manuscript: NodeSpec = {
   parseDOM: [
     {
       tag: 'article',
-      getAttrs: p => {
+      getAttrs: (p) => {
         const dom = p as HTMLElement
 
         return {
@@ -41,7 +42,7 @@ export const manuscript: NodeSpec = {
       },
     },
   ],
-  toDOM: node => {
+  toDOM: (node) => {
     const manuscriptNode = node as ActualManuscriptNode
 
     return [

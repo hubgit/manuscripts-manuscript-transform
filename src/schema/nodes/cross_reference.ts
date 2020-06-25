@@ -15,6 +15,7 @@
  */
 
 import { NodeSpec } from 'prosemirror-model'
+
 import { ManuscriptNode } from '../types'
 
 interface Attrs {
@@ -38,7 +39,7 @@ export const crossReference: NodeSpec = {
   parseDOM: [
     {
       tag: 'span.cross-reference',
-      getAttrs: p => {
+      getAttrs: (p) => {
         const dom = p as HTMLSpanElement
 
         return {
@@ -48,7 +49,7 @@ export const crossReference: NodeSpec = {
       },
     },
   ],
-  toDOM: node => {
+  toDOM: (node) => {
     const crossReferenceNode = node as CrossReferenceNode
 
     return [

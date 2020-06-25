@@ -16,6 +16,7 @@
 
 import * as Models from '@manuscripts/manuscripts-json-schema'
 import { RxAttachment, RxAttachmentCreator } from 'rxdb'
+
 import { ManuscriptNode } from '../schema/types'
 
 // export interface Model extends Models.Model {

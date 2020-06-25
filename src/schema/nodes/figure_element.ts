@@ -15,6 +15,7 @@
  */
 
 import { NodeSpec } from 'prosemirror-model'
+
 import { ManuscriptNode } from '../types'
 
 interface Attrs {
@@ -50,7 +51,7 @@ export const figureElement: NodeSpec = {
   parseDOM: [
     {
       tag: 'figure.figure-group',
-      getAttrs: p => {
+      getAttrs: (p) => {
         const dom = p as HTMLElement
 
         return {
@@ -63,7 +64,7 @@ export const figureElement: NodeSpec = {
       },
     },
   ],
-  toDOM: node => {
+  toDOM: (node) => {
     const figureElementNode = node as FigureElementNode
 
     const {

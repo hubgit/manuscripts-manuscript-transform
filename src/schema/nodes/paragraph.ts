@@ -16,6 +16,7 @@
 
 import { ObjectTypes } from '@manuscripts/manuscripts-json-schema'
 import { NodeSpec } from 'prosemirror-model'
+
 import { buildElementClass } from '../../lib/attributes'
 import { ManuscriptNode } from '../types'
 
@@ -42,7 +43,7 @@ export const paragraph: NodeSpec = {
   parseDOM: [
     {
       tag: 'p',
-      getAttrs: p => {
+      getAttrs: (p) => {
         const dom = p as HTMLParagraphElement
 
         const attrs: Partial<Attrs> = {
@@ -62,7 +63,7 @@ export const paragraph: NodeSpec = {
       },
     },
   ],
-  toDOM: node => {
+  toDOM: (node) => {
     const paragraphNode = node as ParagraphNode
 
     const attrs: { [key: string]: string } = {}

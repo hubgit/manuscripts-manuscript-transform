@@ -15,6 +15,7 @@
  */
 
 import { NodeSpec } from 'prosemirror-model'
+
 import { ManuscriptNode } from '../types'
 
 type Kind = 'footnote' | 'endnote'
@@ -46,7 +47,7 @@ export const footnote: NodeSpec = {
   parseDOM: [
     {
       tag: 'div.footnote-contents',
-      getAttrs: p => {
+      getAttrs: (p) => {
         const dom = p as HTMLDivElement
 
         const inner = dom.querySelector('p')
@@ -58,7 +59,7 @@ export const footnote: NodeSpec = {
       },
     },
   ],
-  toDOM: node => {
+  toDOM: (node) => {
     const footnoteNode = node as FootnoteNode
 
     return [

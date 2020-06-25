@@ -18,7 +18,7 @@ import { ManuscriptNode } from '../schema'
 
 export function* iterateChildren(
   node: ManuscriptNode,
-  recurse: boolean = false
+  recurse = false
 ): Iterable<ManuscriptNode> {
   for (let i = 0; i < node.childCount; i++) {
     const child = node.child(i)

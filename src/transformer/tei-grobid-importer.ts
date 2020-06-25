@@ -20,6 +20,7 @@ import {
   Manuscript,
   Model,
 } from '@manuscripts/manuscripts-json-schema'
+
 import {
   Build,
   buildAffiliation,
@@ -35,7 +36,7 @@ import { AddModel, addModelToMap } from './model-map'
 // https://github.com/kermitt2/grobid/blob/master/grobid-home/schemas/dtd/Grobid.dtd
 // https://github.com/kermitt2/grobid/blob/master/grobid-home/schemas/doc/Grobid_doc.html
 
-const iterateSnapshot = function*<T extends Node>(
+const iterateSnapshot = function* <T extends Node>(
   snapshot: XPathResult
 ): Generator<T> {
   for (let i = 0; i < snapshot.snapshotLength; i++) {

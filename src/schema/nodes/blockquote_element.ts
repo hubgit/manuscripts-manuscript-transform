@@ -16,6 +16,7 @@
 
 import { ObjectTypes } from '@manuscripts/manuscripts-json-schema'
 import { NodeSpec } from 'prosemirror-model'
+
 import { buildElementClass } from '../../lib/attributes'
 import { ManuscriptNode } from '../types'
 
@@ -41,7 +42,7 @@ export const blockquoteElement: NodeSpec = {
   parseDOM: [
     {
       tag: 'blockquote',
-      getAttrs: blockquote => {
+      getAttrs: (blockquote) => {
         const dom = blockquote as HTMLQuoteElement
 
         const attrs: Partial<Attrs> = {
@@ -58,7 +59,7 @@ export const blockquoteElement: NodeSpec = {
       },
     },
   ],
-  toDOM: node => {
+  toDOM: (node) => {
     const blockquoteElementNode = node as BlockquoteElementNode
 
     const attrs: { [key: string]: string } = {}

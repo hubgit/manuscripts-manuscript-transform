@@ -16,6 +16,7 @@
 
 import { ListingAttachmentReference } from '@manuscripts/manuscripts-json-schema'
 import { NodeSpec } from 'prosemirror-model'
+
 import { ManuscriptNode } from '../types'
 
 export interface FigureNode extends ManuscriptNode {
@@ -47,7 +48,7 @@ export const figure: NodeSpec = {
     {
       tag: 'figure',
       context: 'figure_element/', // TODO: match any figure?
-      getAttrs: dom => {
+      getAttrs: (dom) => {
         const element = dom as HTMLElement
         // const img = element.querySelector('img')
 
@@ -63,7 +64,7 @@ export const figure: NodeSpec = {
       },
     },
   ],
-  toDOM: node => {
+  toDOM: (node) => {
     const figureNode = node as FigureNode
 
     return [

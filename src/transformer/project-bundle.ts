@@ -20,6 +20,7 @@ import {
   ObjectTypes,
   Submission,
 } from '@manuscripts/manuscripts-json-schema'
+
 import { Decoder } from './decode'
 import { ManuscriptModel } from './models'
 import { hasObjectType } from './object-types'
@@ -35,7 +36,7 @@ export const parseProjectBundle = (
 ) => {
   const manuscriptData = manuscriptID
     ? (projectBundle.data as ManuscriptModel[]).filter(
-        doc => !doc.manuscriptID || doc.manuscriptID === manuscriptID
+        (doc) => !doc.manuscriptID || doc.manuscriptID === manuscriptID
       )
     : projectBundle.data
 

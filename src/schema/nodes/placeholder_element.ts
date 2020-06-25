@@ -15,6 +15,7 @@
  */
 
 import { NodeSpec } from 'prosemirror-model'
+
 import { ManuscriptNode } from '../types'
 
 interface Attrs {
@@ -35,7 +36,7 @@ export const placeholderElement: NodeSpec = {
   parseDOM: [
     {
       tag: 'div.placeholder-element',
-      getAttrs: p => {
+      getAttrs: (p) => {
         const dom = p as HTMLDivElement
 
         return {
@@ -44,7 +45,7 @@ export const placeholderElement: NodeSpec = {
       },
     },
   ],
-  toDOM: node => {
+  toDOM: (node) => {
     const placeholderElementNode = node as PlaceholderElementNode
 
     return [

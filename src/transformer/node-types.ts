@@ -15,6 +15,7 @@
  */
 
 import { ObjectTypes } from '@manuscripts/manuscripts-json-schema'
+
 import {
   GROUP_ELEMENT,
   GROUP_EXECUTABLE,

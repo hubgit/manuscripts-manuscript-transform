@@ -26,6 +26,7 @@ import {
 } from '@manuscripts/manuscripts-json-schema'
 import { DOMOutputSpec, DOMSerializer } from 'prosemirror-model'
 import serializeToXML from 'w3c-xmlserializer'
+
 import { buildStyledContentClass } from '../lib/styled-content'
 import {
   CitationNode,
@@ -51,7 +52,7 @@ export class HTMLTransformer {
   public serializeToHTML = (
     fragment: ManuscriptFragment,
     modelMap: Map<string, Model>,
-    attachmentUrlPrefix: string = 'Data/'
+    attachmentUrlPrefix = 'Data/'
   ) => {
     this.modelMap = modelMap
 
@@ -137,7 +138,7 @@ export class HTMLTransformer {
 
       contributors.sort((a, b) => Number(a.priority) - Number(b.priority))
 
-      contributors.forEach(contributor => {
+      contributors.forEach((contributor) => {
         const contrib = this.document.createElement('span')
         contrib.setAttribute('id', contributor._id)
 
@@ -193,7 +194,7 @@ export class HTMLTransformer {
       affiliationList.classList.add('affiliations-list')
       articleMeta.appendChild(affiliationList)
 
-      affiliations.forEach(affiliation => {
+      affiliations.forEach((affiliation) => {
         const affiliationItem = this.document.createElement('li')
         affiliationItem.classList.add('affiliations-list-item')
         affiliationItem.setAttribute('id', affiliation._id)
@@ -239,7 +240,7 @@ export class HTMLTransformer {
       }
     }
 
-    nodes.citation = node => {
+    nodes.citation = (node) => {
       const citationNode = node as CitationNode
 
       const element = this.document.createElement('span')
@@ -251,7 +252,7 @@ export class HTMLTransformer {
         element.setAttribute(
           'data-reference-ids',
           citation.embeddedCitationItems
-            .map(item => item.bibliographyItem)
+            .map((item) => item.bibliographyItem)
             .join(' ')
         )
       }
@@ -263,7 +264,7 @@ export class HTMLTransformer {
       return element
     }
 
-    nodes.cross_reference = node => {
+    nodes.cross_reference = (node) => {
       const crossReferenceNode = node as CrossReferenceNode
 
       const element = this.document.createElement('a')
@@ -285,7 +286,7 @@ export class HTMLTransformer {
       return element
     }
 
-    nodes.listing = node => {
+    nodes.listing = (node) => {
       const listingNode = node as ListingNode
 
       const pre = this.document.createElement('pre')
@@ -304,7 +305,7 @@ export class HTMLTransformer {
       return pre
     }
 
-    nodes.text = node => node.text!
+    nodes.text = (node) => node.text as string
 
     const marks: {
       [key: string]: (mark: ManuscriptMark, inline: boolean) => DOMOutputSpec
@@ -316,7 +317,7 @@ export class HTMLTransformer {
       }
     }
 
-    marks.styled = mark => {
+    marks.styled = (mark) => {
       const inlineStyle = getModel<InlineStyle>(mark.attrs.rid)
 
       const attrs = {
@@ -395,8 +396,7 @@ export class HTMLTransformer {
     fragment: ManuscriptFragment,
     attachmentUrlPrefix: string
   ) => {
-    // tslint:disable-next-line:cyclomatic-complexity
-    fragment.descendants(node => {
+    fragment.descendants((node) => {
       if (node.attrs.id) {
         if (node.attrs.titleSuppressed) {
           const selector = this.idSelector(node.attrs.id)

@@ -16,6 +16,7 @@
 
 import project3 from '@manuscripts/examples/data/project-dump-3.json'
 import { Manuscript, ObjectTypes } from '@manuscripts/manuscripts-json-schema'
+
 import { hasObjectType } from '../object-types'
 import {
   findLatestManuscriptSubmission,

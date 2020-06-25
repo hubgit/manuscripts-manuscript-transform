@@ -15,6 +15,7 @@
  */
 
 import { NodeSpec } from 'prosemirror-model'
+
 import { ManuscriptNode } from '../types'
 
 interface Attrs {
@@ -37,7 +38,7 @@ export const tocSection: NodeSpec = {
       tag: 'section.toc',
     },
   ],
-  toDOM: node => {
+  toDOM: (node) => {
     const tocSectioNode = node as TOCSectionNode
 
     return [

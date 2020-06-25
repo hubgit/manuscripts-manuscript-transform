@@ -47,7 +47,6 @@ export interface HighlightableModel extends Model {
   highlightMarkers: HighlightMarker[]
 }
 
-// tslint:disable-next-line:cyclomatic-complexity
 export const extractHighlightMarkers = (model: HighlightableModel) => {
   const highlightMarkers: HighlightMarker[] = []
 
@@ -118,7 +117,7 @@ export const insertHighlightMarkers = (
 
   const relevantHighlightMarkers = highlightMarkers
     // only use markers in this field
-    .filter(highlightMarker => highlightMarker.field === field)
+    .filter((highlightMarker) => highlightMarker.field === field)
     // sort highest offset first, for splicing
     .sort((a, b) => b.offset - a.offset)
 

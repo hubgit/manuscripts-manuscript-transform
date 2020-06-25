@@ -16,6 +16,7 @@
 
 import { BibliographicName, Model } from '@manuscripts/manuscripts-json-schema'
 import { DOMParser, ParseRule } from 'prosemirror-model'
+
 import { ManuscriptNode, Marks, Nodes, schema } from '../schema'
 import {
   buildAffiliation,
@@ -65,7 +66,7 @@ const marks: MarkRule[] = [
   {
     tag: 'styled-content',
     mark: 'styled',
-    getAttrs: node => ({
+    getAttrs: (node) => ({
       style: (node as Element).getAttribute('style'),
     }),
   },
@@ -122,7 +123,7 @@ const nodes: NodeRule[] = [
     node: 'listing',
     context: 'listing_element/',
     // preserveWhitespace: 'full',
-    getAttrs: node => {
+    getAttrs: (node) => {
       const element = node as HTMLElement
 
       return {
@@ -135,7 +136,7 @@ const nodes: NodeRule[] = [
   {
     tag: 'disp-formula',
     node: 'equation',
-    getAttrs: node => {
+    getAttrs: (node) => {
       const element = node as HTMLElement
 
       const TeXRepresentation =
@@ -150,7 +151,7 @@ const nodes: NodeRule[] = [
   {
     tag: 'disp-quote[content-type=quote]',
     node: 'blockquote_element',
-    getAttrs: node => {
+    getAttrs: (node) => {
       const element = node as HTMLElement
 
       return {
@@ -161,7 +162,7 @@ const nodes: NodeRule[] = [
   {
     tag: 'disp-quote[content-type=pullquote]',
     node: 'pullquote_element',
-    getAttrs: node => {
+    getAttrs: (node) => {
       const element = node as HTMLElement
 
       return {
@@ -172,7 +173,7 @@ const nodes: NodeRule[] = [
   {
     tag: 'ext-link',
     node: 'link',
-    getAttrs: node => {
+    getAttrs: (node) => {
       const element = node as HTMLElement
 
       return {
@@ -184,7 +185,7 @@ const nodes: NodeRule[] = [
   {
     tag: 'fig[fig-type=equation]',
     node: 'equation_element',
-    getAttrs: node => {
+    getAttrs: (node) => {
       const element = node as HTMLElement
 
       return {
@@ -195,7 +196,7 @@ const nodes: NodeRule[] = [
   {
     tag: 'fig[fig-type=listing]',
     node: 'listing_element',
-    getAttrs: node => {
+    getAttrs: (node) => {
       const element = node as HTMLElement
 
       return {
@@ -207,7 +208,7 @@ const nodes: NodeRule[] = [
     tag: 'fig',
     node: 'figure',
     context: 'figure_element/',
-    getAttrs: node => {
+    getAttrs: (node) => {
       const element = node as HTMLElement
 
       const labelNode = element.querySelector('label')
@@ -230,7 +231,7 @@ const nodes: NodeRule[] = [
   {
     tag: 'fig-group',
     node: 'figure_element',
-    getAttrs: node => {
+    getAttrs: (node) => {
       const element = node as HTMLElement
 
       return {
@@ -241,7 +242,7 @@ const nodes: NodeRule[] = [
   {
     tag: 'fn',
     node: 'footnote',
-    getAttrs: node => {
+    getAttrs: (node) => {
       const element = node as HTMLElement
 
       return {
@@ -257,7 +258,7 @@ const nodes: NodeRule[] = [
   {
     tag: 'inline-formula',
     node: 'inline_equation',
-    getAttrs: node => {
+    getAttrs: (node) => {
       const element = node as HTMLElement
 
       const TeXRepresentation =
@@ -274,7 +275,7 @@ const nodes: NodeRule[] = [
   {
     tag: 'list[list-type=bullet]',
     node: 'bullet_list',
-    getAttrs: node => {
+    getAttrs: (node) => {
       const element = node as HTMLElement
 
       return {
@@ -285,7 +286,7 @@ const nodes: NodeRule[] = [
   {
     tag: 'list[list-type=order]',
     node: 'ordered_list',
-    getAttrs: node => {
+    getAttrs: (node) => {
       const element = node as HTMLElement
 
       return {
@@ -306,7 +307,7 @@ const nodes: NodeRule[] = [
     tag: 'p',
     node: 'paragraph',
     context: 'section/',
-    getAttrs: node => {
+    getAttrs: (node) => {
       const element = node as HTMLElement
 
       return {
@@ -321,7 +322,7 @@ const nodes: NodeRule[] = [
   {
     tag: 'sec',
     node: 'section', // TODO: id
-    getAttrs: node => {
+    getAttrs: (node) => {
       const element = node as HTMLElement
 
       return {
@@ -339,7 +340,7 @@ const nodes: NodeRule[] = [
     tag: 'table',
     node: 'table',
     // TODO: count thead and tfoot rows
-    getAttrs: node => {
+    getAttrs: (node) => {
       const element = node as HTMLElement
 
       return {
@@ -350,7 +351,7 @@ const nodes: NodeRule[] = [
   {
     tag: 'table-wrap',
     node: 'table_element',
-    getAttrs: node => {
+    getAttrs: (node) => {
       const element = node as HTMLElement
 
       return {
@@ -390,7 +391,7 @@ const nodes: NodeRule[] = [
   {
     tag: 'xref[ref-type="bibr"]',
     node: 'citation',
-    getAttrs: node => {
+    getAttrs: (node) => {
       const element = node as HTMLElement
 
       return {
@@ -402,7 +403,7 @@ const nodes: NodeRule[] = [
   {
     tag: 'xref',
     node: 'cross_reference',
-    getAttrs: node => {
+    getAttrs: (node) => {
       const element = node as HTMLElement
 
       return {
@@ -448,7 +449,7 @@ const chooseSectionCategory = (
     case 'toc':
       return 'MPSectionCategory:toc'
 
-    default:
+    default: {
       const titleNode = section.firstChild
 
       if (titleNode && titleNode.nodeName === 'title') {
@@ -456,6 +457,7 @@ const chooseSectionCategory = (
       }
 
       return undefined
+    }
   }
 }
 
@@ -527,7 +529,7 @@ export const unwrapParagraphsInCaptions = (body: Element) => {
   for (const caption of captions) {
     const paragraphNodes = caption.querySelectorAll('p')
 
-    paragraphNodes.forEach(paragraphNode => {
+    paragraphNodes.forEach((paragraphNode) => {
       if (paragraphNode.parentNode) {
         while (paragraphNode.firstChild) {
           paragraphNode.parentNode.insertBefore(
@@ -546,7 +548,7 @@ export const unwrapParagraphsInCaptions = (body: Element) => {
 export const rewriteIDs = (output: ManuscriptNode) => {
   const replacements = new Map<string, string>()
 
-  output.descendants(node => {
+  output.descendants((node) => {
     // nodes that need an id
     if ('id' in node.attrs) {
       const objectType = nodeTypesMap.get(node.type)
@@ -575,7 +577,7 @@ export const rewriteIDs = (output: ManuscriptNode) => {
 
   // replace cross-reference rids
 
-  output.descendants(node => {
+  output.descendants((node) => {
     // nodes that have an rid
     if ('rid' in node.attrs) {
       const previousRID = node.attrs.rid
@@ -584,7 +586,6 @@ export const rewriteIDs = (output: ManuscriptNode) => {
         if (replacements.has(previousRID)) {
           node.attrs.rid = replacements.get(previousRID)
         } else {
-          // tslint:disable-next-line:no-console
           // console.warn(`Missing replacement for ${previousRID}`)
         }
       }
@@ -592,7 +593,6 @@ export const rewriteIDs = (output: ManuscriptNode) => {
   })
 }
 
-// tslint:disable-next-line:cyclomatic-complexity
 const moveSectionsToBody = (doc: Document) => {
   const body = doc.querySelector('body')
 
@@ -769,8 +769,8 @@ export const parseJATSFront = (doc: Document, addModel: AddModel): void => {
       if (rid) {
         const rids = rid
           .split(/\S+/)
-          .filter(id => affiliationIDs.has(id))
-          .map(id => affiliationIDs.get(id)) as string[]
+          .filter((id) => affiliationIDs.has(id))
+          .map((id) => affiliationIDs.get(id)) as string[]
 
         if (rids.length) {
           contributor.affiliations = rids
@@ -818,8 +818,7 @@ export const parseJATSBack = (doc: Document, addModel: AddModel): void => {
 
   const referenceNodes = doc.querySelectorAll('ref-list > ref')
 
-  // tslint:disable-next-line:cyclomatic-complexity
-  referenceNodes.forEach(referenceNode => {
+  referenceNodes.forEach((referenceNode) => {
     const publicationType = referenceNode.getAttribute('publication-type')
 
     const bibliographyItem = buildBibliographyItem({
@@ -865,7 +864,7 @@ export const parseJATSBack = (doc: Document, addModel: AddModel): void => {
 
     const authors: BibliographicName[] = []
 
-    authorNodes.forEach((authorNode, priority) => {
+    authorNodes.forEach((authorNode) => {
       const name = buildBibliographicName({})
 
       const given = authorNode.querySelector('given-names')?.textContent
@@ -898,7 +897,7 @@ export const parseJATSBack = (doc: Document, addModel: AddModel): void => {
 
   const crossReferenceNodes = doc.querySelectorAll('body xref')
 
-  crossReferenceNodes.forEach(crossReferenceNode => {
+  crossReferenceNodes.forEach((crossReferenceNode) => {
     const rid = crossReferenceNode.getAttribute('rid')
 
     if (rid) {
@@ -909,8 +908,8 @@ export const parseJATSBack = (doc: Document, addModel: AddModel): void => {
           {
             const rids = rid
               .split(/\s+/)
-              .filter(id => referenceIDs.has(id))
-              .map(id => referenceIDs.get(id)) as string[]
+              .filter((id) => referenceIDs.has(id))
+              .map((id) => referenceIDs.get(id)) as string[]
 
             if (rids.length) {
               const citation = buildCitation('', rids) // TODO: closest id
@@ -949,7 +948,12 @@ export const parseJATSArticle = (doc: Document): Model[] => {
   parseJATSBack(doc, addModel)
 
   const node = parseJATSBody(doc)
-  const bodyMap = encode(node.firstChild!)
+
+  if (!node.firstChild) {
+    throw new Error('No content was parsed from the article body')
+  }
+
+  const bodyMap = encode(node.firstChild)
 
   return [...modelMap.values(), ...bodyMap.values()]
 }

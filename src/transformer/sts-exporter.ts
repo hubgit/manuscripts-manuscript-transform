@@ -17,6 +17,7 @@
 import { Model } from '@manuscripts/manuscripts-json-schema'
 import { DOMParser } from 'prosemirror-model'
 import serializeToXML from 'w3c-xmlserializer'
+
 import { nodeFromHTML } from '../lib/html'
 import { ManuscriptFragment, schema } from '../schema'
 import { JATSExporter } from './jats-exporter'

@@ -15,6 +15,7 @@
  */
 
 import { NodeSpec } from 'prosemirror-model'
+
 import { ManuscriptNode } from '../types'
 
 interface Attrs {
@@ -37,7 +38,7 @@ export const equationElement: NodeSpec = {
   parseDOM: [
     {
       tag: 'figure.equation',
-      getAttrs: p => {
+      getAttrs: (p) => {
         const dom = p as HTMLElement
 
         return {
@@ -46,7 +47,7 @@ export const equationElement: NodeSpec = {
       },
     },
   ],
-  toDOM: node => {
+  toDOM: (node) => {
     const equationElementNode = node as EquationElementNode
 
     return [

@@ -15,6 +15,7 @@
  */
 
 import { NodeSpec } from 'prosemirror-model'
+
 import { nodeFromHTML } from '../../lib/html'
 import { ManuscriptNode } from '../types'
 
@@ -48,7 +49,7 @@ export const keywordsElement: NodeSpec = {
   parseDOM: [
     {
       tag: 'div.manuscript-keywords',
-      getAttrs: div => {
+      getAttrs: (div) => {
         const dom = div as HTMLDivElement
 
         return {
@@ -57,7 +58,7 @@ export const keywordsElement: NodeSpec = {
       },
     },
   ],
-  toDOM: node => {
+  toDOM: (node) => {
     const keywordsElementNode = node as KeywordsElementNode
 
     return (

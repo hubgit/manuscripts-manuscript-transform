@@ -16,6 +16,7 @@
 
 import { ObjectTypes } from '@manuscripts/manuscripts-json-schema'
 import uuid from 'uuid'
+
 import { ManuscriptNodeType } from '../schema'
 import { nodeTypesMap } from './node-types'
 import { ExtraObjectTypes } from './object-types'

@@ -15,6 +15,7 @@
  */
 
 import { NodeSpec } from 'prosemirror-model'
+
 import { ManuscriptNode } from '../types'
 
 interface Attrs {
@@ -38,7 +39,7 @@ export const inlineFootnote: NodeSpec = {
   parseDOM: [
     {
       tag: 'span.footnote',
-      getAttrs: p => {
+      getAttrs: (p) => {
         const dom = p as HTMLSpanElement
 
         return {
@@ -48,7 +49,7 @@ export const inlineFootnote: NodeSpec = {
       },
     },
   ],
-  toDOM: node => {
+  toDOM: (node) => {
     const inlineFootnodeNode = node as InlineFootnoteNode
 
     const dom = document.createElement('span')

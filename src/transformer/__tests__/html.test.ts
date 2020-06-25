@@ -17,6 +17,7 @@
 import projectDump2 from '@manuscripts/examples/data/project-dump-2.json'
 import projectDump3 from '@manuscripts/examples/data/project-dump-3.json'
 import projectDump from '@manuscripts/examples/data/project-dump.json'
+
 // import { Keyword, Manuscript } from '@manuscripts/manuscripts-json-schema'
 import { HTMLTransformer } from '../html'
 // import { isManuscript } from '../object-types'
@@ -67,52 +68,4 @@ describe('html', () => {
 
     expect(result).toMatchSnapshot('html-export-custom-url')
   })
-
-  // test('handle keywords', () => {
-  //   const { doc, modelMap } = parseProjectBundle(
-  //     (projectDump as unknown) as ProjectBundle
-  //   )
-  //
-  //   const keywords: Keyword[] = [
-  //     {
-  //       _id: 'MPKeyword:1',
-  //       objectType: 'MPKeyword',
-  //       createdAt: 0,
-  //       updatedAt: 0,
-  //       name: 'Foo',
-  //       containerID: 'MPProject:1',
-  //       sessionID: 'foo',
-  //       priority: 0,
-  //     },
-  //     {
-  //       _id: 'MPKeyword:2',
-  //       objectType: 'MPKeyword',
-  //       createdAt: 0,
-  //       updatedAt: 0,
-  //       name: 'Bar',
-  //       containerID: 'MPProject:1',
-  //       sessionID: 'foo',
-  //       priority: 0,
-  //     },
-  //   ]
-  //
-  //   for (const keyword of keywords) {
-  //     modelMap.set(keyword._id, keyword)
-  //   }
-  //
-  //   const manuscript = Array.from(modelMap.values()).find(
-  //     isManuscript
-  //   ) as Manuscript
-  //
-  //   manuscript.keywordIDs = keywords.map(keyword => keyword._id)
-  //
-  //   const transformer = new HTMLTransformer()
-  //   const result = transformer.serializeToHTML(
-  //     doc.content,
-  //     modelMap,
-  //     'http://example.com/'
-  //   )
-  //
-  //   expect(result).toMatchSnapshot('html-export-keywords')
-  // })
 })

@@ -15,10 +15,11 @@
  */
 
 import { NodeSpec } from 'prosemirror-model'
+
 import { ManuscriptNode } from '../types'
 
 export interface FigCaptionNode extends ManuscriptNode {
-  attrs: {}
+  attrs: Record<string, unknown>
 }
 
 export const figcaption: NodeSpec = {

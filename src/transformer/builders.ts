@@ -46,6 +46,7 @@ import {
   UserProfileAffiliation,
 } from '@manuscripts/manuscripts-json-schema'
 import serializeToXML from 'w3c-xmlserializer'
+
 import { CSL } from '../types/csl'
 import { generateID } from './id'
 import { CommentSelector, ManuscriptModel, ModelAttachment } from './models'
@@ -81,7 +82,7 @@ export const buildProject = (owner: string): Build<Project> => ({
   title: '',
 })
 
-export const buildManuscript = (title: string = ''): Build<Manuscript> => ({
+export const buildManuscript = (title = ''): Build<Manuscript> => ({
   _id: generateID(ObjectTypes.Manuscript),
   objectType: ObjectTypes.Manuscript,
   title,
@@ -92,7 +93,7 @@ export type ContributorRoleType = 'author'
 export const buildContributor = (
   bibliographicName: BibliographicName,
   role: ContributorRoleType = 'author',
-  priority: number = 0,
+  priority = 0,
   userID?: string,
   invitationID?: string
 ): Build<Contributor> => ({
@@ -200,7 +201,7 @@ export const buildFigure = (blob: Blob): Build<Figure & ModelAttachment> => ({
 
 export const buildAffiliation = (
   institution: string,
-  priority: number = 0
+  priority = 0
 ): Build<Affiliation> => ({
   _id: generateID(ObjectTypes.Affiliation),
   objectType: ObjectTypes.Affiliation,
@@ -210,7 +211,7 @@ export const buildAffiliation = (
 
 export const buildUserProfileAffiliation = (
   institution: string,
-  priority: number = 0
+  priority = 0
 ): Build<UserProfileAffiliation> => ({
   _id: generateID(ObjectTypes.UserProfileAffiliation),
   objectType: ObjectTypes.UserProfileAffiliation,
@@ -220,7 +221,7 @@ export const buildUserProfileAffiliation = (
 
 export const buildComment = (
   target: string,
-  contents: string = '',
+  contents = '',
   selector?: CommentSelector
 ): Build<CommentAnnotation> => ({
   _id: generateID(ObjectTypes.CommentAnnotation),
@@ -251,7 +252,7 @@ export const buildFootnote = (
 })
 
 export const buildSection = (
-  priority: number = 0,
+  priority = 0,
   path: string[] = []
 ): Build<Section> => {
   const id = generateID(ObjectTypes.Section)

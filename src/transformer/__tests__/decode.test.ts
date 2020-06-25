@@ -19,6 +19,7 @@ import {
   ObjectTypes,
   Section,
 } from '@manuscripts/manuscripts-json-schema'
+
 import { ManuscriptNode, ManuscriptNodeType, schema } from '../../schema'
 import { Decoder, getModelData, sortSectionsByPriority } from '../decode'
 import { createTestModelMapWithCitations } from './__helpers__/citations'
@@ -35,7 +36,7 @@ const countDescendantsOfType = (
 ) => {
   let count = 0
 
-  node.descendants(childNode => {
+  node.descendants((childNode) => {
     if (childNode.type === type) {
       count++
     }

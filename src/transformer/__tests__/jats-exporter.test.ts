@@ -24,6 +24,7 @@ import {
   Section,
 } from '@manuscripts/manuscripts-json-schema'
 import { parseXml } from 'libxmljs2'
+
 import { JATSExporter } from '../jats-exporter'
 import { isFigure, isManuscript } from '../object-types'
 import { parseProjectBundle, ProjectBundle } from '../project-bundle'
@@ -242,7 +243,7 @@ describe('JATS exporter', () => {
 
     const id = 'MPParagraphElement:150780D7-CFED-4529-9398-77B5C7625044'
 
-    projectBundle.data = projectBundle.data.map(model => {
+    projectBundle.data = projectBundle.data.map((model) => {
       if (model._id === id) {
         const paragraphElement = model as ParagraphElement
 
@@ -287,7 +288,7 @@ describe('JATS exporter', () => {
     const id = 'MPSection:E07B0D52-9642-4D58-E577-26F8804E3DEE'
 
     projectBundle.data = projectBundle.data.filter(
-      model =>
+      (model) =>
         model.objectType !== ObjectTypes.BibliographyElement && model._id !== id
     )
 
@@ -421,7 +422,7 @@ describe('JATS exporter', () => {
       isManuscript
     ) as Manuscript
 
-    manuscript.keywordIDs = keywords.map(keyword => keyword._id)
+    manuscript.keywordIDs = keywords.map((keyword) => keyword._id)
 
     const transformer = new JATSExporter()
     const xml = transformer.serializeToJATS(doc.content, modelMap, {

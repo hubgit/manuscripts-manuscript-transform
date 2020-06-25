@@ -15,6 +15,7 @@
  */
 
 import { NodeSpec } from 'prosemirror-model'
+
 import { ManuscriptNode } from '../types'
 
 interface Attrs {
@@ -40,7 +41,7 @@ export const link: NodeSpec = {
   parseDOM: [
     {
       tag: 'a[href]',
-      getAttrs: a => {
+      getAttrs: (a) => {
         const dom = a as HTMLAnchorElement
 
         return {
@@ -51,7 +52,7 @@ export const link: NodeSpec = {
     },
     {
       tag: 'span.citation[data-href]',
-      getAttrs: span => {
+      getAttrs: (span) => {
         const dom = span as HTMLSpanElement
 
         return {
@@ -61,7 +62,7 @@ export const link: NodeSpec = {
       priority: 80,
     },
   ],
-  toDOM: node => {
+  toDOM: (node) => {
     const { href, title } = node.attrs
 
     const attrs: { [key: string]: string } = { href }

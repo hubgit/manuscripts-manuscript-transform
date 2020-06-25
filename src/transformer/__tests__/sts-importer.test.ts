@@ -15,6 +15,7 @@
  */
 
 import fs from 'fs'
+
 import { parseSTSBody, parseSTSFront, parseSTSStandard } from '../sts-importer'
 
 const loadFixture = async (filename: string) => {
@@ -41,7 +42,7 @@ describe('STS importer', () => {
 
     const body = parseSTSBody(standard)
 
-    body.descendants(node => {
+    body.descendants((node) => {
       // TODO: validate ids before deleting them
       delete node.attrs.id
       delete node.attrs.rid

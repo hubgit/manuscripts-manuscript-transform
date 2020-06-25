@@ -16,7 +16,7 @@
 
 // https://github.com/citation-style-language/schema
 
-// tslint:disable-next-line:no-namespace
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace CSL {
   export type ItemType =
     | 'article'

@@ -15,10 +15,11 @@
  */
 
 import { NodeSpec } from 'prosemirror-model'
+
 import { ManuscriptNode } from '../types'
 
 export interface AttributionNode extends ManuscriptNode {
-  attrs: {}
+  attrs: Record<string, unknown>
 }
 
 export const attribution: NodeSpec = {

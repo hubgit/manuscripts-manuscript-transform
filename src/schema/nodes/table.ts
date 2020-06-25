@@ -17,17 +17,17 @@
 // adapted from 'prosemirror-tables'
 
 import { NodeSpec } from 'prosemirror-model'
+
 import { ManuscriptNode } from '../types'
 
-// tslint:disable:cyclomatic-complexity
-// ^ keeping this method as close to the original as possible, for ease of updating
+// NOTE: keep this method as close to the original as possible, for ease of updating
 const getCellAttrs = (p: Node | string) => {
   const dom = p as HTMLTableCellElement
 
   const widthAttr = dom.getAttribute('data-colwidth')
   const widths =
     widthAttr && /^\d+(,\d+)*$/.test(widthAttr)
-      ? widthAttr.split(',').map(s => Number(s))
+      ? widthAttr.split(',').map((s) => Number(s))
       : null
   const colspan = Number(dom.getAttribute('colspan') || 1)
 
@@ -62,7 +62,7 @@ export const table: TableNodeSpec = {
   parseDOM: [
     {
       tag: 'table',
-      getAttrs: p => {
+      getAttrs: (p) => {
         const dom = p as HTMLTableElement
 
         return {
@@ -71,7 +71,7 @@ export const table: TableNodeSpec = {
       },
     },
   ],
-  toDOM: node => {
+  toDOM: (node) => {
     const tableNode = node as TableNode
 
     return [
@@ -105,7 +105,7 @@ export const tableRow: TableNodeSpec = {
       // }),
     },
   ],
-  toDOM: node => {
+  toDOM: (node) => {
     const tableRowNode = node as TableRowNode
 
     const attrs: { [key: string]: string } = {}
@@ -143,7 +143,7 @@ export const tableCell: TableNodeSpec = {
     { tag: 'td', getAttrs: getCellAttrs },
     { tag: 'th', getAttrs: getCellAttrs },
   ],
-  toDOM: node => {
+  toDOM: (node) => {
     const tableCellNode = node as TableCellNode
 
     const attrs: { [attr: string]: string } = {}

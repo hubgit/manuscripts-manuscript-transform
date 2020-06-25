@@ -15,6 +15,7 @@
  */
 
 import { NodeSpec } from 'prosemirror-model'
+
 import { nodeFromHTML } from '../../lib/html'
 import { ManuscriptNode } from '../types'
 
@@ -49,7 +50,7 @@ export const footnotesElement: NodeSpec = {
   parseDOM: [
     {
       tag: 'div.footnotes',
-      getAttrs: p => {
+      getAttrs: (p) => {
         const dom = p as HTMLDivElement
 
         return {
@@ -59,7 +60,7 @@ export const footnotesElement: NodeSpec = {
       },
     },
   ],
-  toDOM: node => {
+  toDOM: (node) => {
     const footnotesElementNode = node as FootnotesElementNode
 
     return (

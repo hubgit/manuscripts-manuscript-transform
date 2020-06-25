@@ -15,10 +15,11 @@
  */
 
 import { NodeSpec } from 'prosemirror-model'
+
 import { ManuscriptNode } from '../types'
 
 export interface HardBreakNode extends ManuscriptNode {
-  attrs: {}
+  attrs: Record<string, unknown>
 }
 
 export const hardBreak: NodeSpec = {

@@ -15,15 +15,16 @@
  */
 
 import { NodeType } from 'prosemirror-model'
+
 import { iterateChildren } from '../lib/utils'
 import { isHighlightMarkerNode } from '../schema'
 import { ManuscriptNode, ManuscriptNodeType } from '../schema/types'
 import { nodeNames } from './node-names'
 
-const textSnippet = (node: ManuscriptNode, max: number = 100) => {
+const textSnippet = (node: ManuscriptNode, max = 100) => {
   let text = ''
 
-  node.forEach(child => {
+  node.forEach((child) => {
     if (child.isText) {
       text += child.text
     } else if (isHighlightMarkerNode(node)) {

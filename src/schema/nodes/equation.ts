@@ -16,6 +16,7 @@
 
 import { ObjectTypes } from '@manuscripts/manuscripts-json-schema'
 import { NodeSpec } from 'prosemirror-model'
+
 import { ManuscriptNode } from '../types'
 
 interface Attrs {
@@ -39,7 +40,7 @@ export const equation: NodeSpec = {
   parseDOM: [
     {
       tag: `div.${ObjectTypes.Equation}`,
-      getAttrs: p => {
+      getAttrs: (p) => {
         const dom = p as HTMLDivElement
 
         return {
@@ -50,7 +51,7 @@ export const equation: NodeSpec = {
     },
     // TODO: convert MathML from pasted math elements?
   ],
-  toDOM: node => {
+  toDOM: (node) => {
     const equationNode = node as EquationNode
 
     const dom = document.createElement('div')

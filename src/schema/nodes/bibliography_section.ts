@@ -15,6 +15,7 @@
  */
 
 import { NodeSpec } from 'prosemirror-model'
+
 import { ManuscriptNode } from '../types'
 
 interface Attrs {
@@ -37,7 +38,7 @@ export const bibliographySection: NodeSpec = {
       tag: 'section.bibliography',
     },
   ],
-  toDOM: node => {
+  toDOM: (node) => {
     const bibliographySectionNode = node as BibliographySectionNode
 
     return [

@@ -39,6 +39,7 @@ import {
 import debug from 'debug'
 import { DOMParser, ParseOptions } from 'prosemirror-model'
 import { RxDocument } from 'rxdb'
+
 import {
   BibliographyElementNode,
   BlockquoteElementNode,
@@ -90,17 +91,25 @@ interface NodeCreatorMap {
 }
 
 export const getModelData = <T extends Model>(model: Model): T => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { _rev, _deleted, updatedAt, createdAt, sessionID, ...data } = model
 
   return data as T
 }
 
-export const getAttachment = async (doc: RxDocument<Model>, key: string) => {
+export const getAttachment = async (
+  doc: RxDocument<Model>,
+  key: string
+): Promise<string | undefined> => {
   const attachment = doc.getAttachment(key)
-  if (!attachment) return undefined
+  if (!attachment) {
+    return undefined
+  }
 
   const data = await attachment.getData()
-  if (!data) return undefined
+  if (!data) {
+    return undefined
+  }
 
   return window.URL.createObjectURL(data)
 }
@@ -112,7 +121,7 @@ export const buildModelMap = async (
   const output: Map<string, Model> = new Map()
 
   await Promise.all(
-    docs.map(async doc => {
+    docs.map(async (doc) => {
       items.set(doc._id, doc)
       output.set(doc._id, getModelData(doc.toJSON()))
     })
@@ -122,14 +131,18 @@ export const buildModelMap = async (
     if (isFigure(model)) {
       if (model.listingAttachment) {
         const { listingID, attachmentKey } = model.listingAttachment
+
         const listingDoc = items.get(listingID)
 
         if (listingDoc) {
           model.src = await getAttachment(listingDoc, attachmentKey)
         }
       } else {
-        const figureDoc = items.get(model._id)!
-        model.src = await getAttachment(figureDoc, 'image')
+        const figureDoc = items.get(model._id)
+
+        if (figureDoc) {
+          model.src = await getAttachment(figureDoc, 'image')
+        }
       }
     }
     // TODO: enable once tables can be images
@@ -147,8 +160,11 @@ export const buildModelMap = async (
     //   }
     // }
     else if (isUserProfile(model)) {
-      const userProfileDoc = items.get(model._id)!
-      model.avatar = await getAttachment(userProfileDoc, 'image')
+      const userProfileDoc = items.get(model._id)
+
+      if (userProfileDoc) {
+        model.avatar = await getAttachment(userProfileDoc, 'image')
+      }
     }
   }
 
@@ -170,7 +186,7 @@ export const getModelsByType = <T extends Model>(
   return output
 }
 
-export const sortSectionsByPriority = (a: Section, b: Section) =>
+export const sortSectionsByPriority = (a: Section, b: Section): number =>
   a.priority === b.priority ? 0 : Number(a.priority) - Number(b.priority)
 
 // TODO: include bibliography and toc sections
@@ -196,7 +212,7 @@ export class Decoder {
   private readonly modelMap: Map<string, Model>
 
   private creators: NodeCreatorMap = {
-    [ObjectTypes.BibliographyElement]: data => {
+    [ObjectTypes.BibliographyElement]: (data) => {
       const model = data as BibliographyElement
 
       return schema.nodes.bibliography_element.create({
@@ -207,14 +223,14 @@ export class Decoder {
         paragraphStyle: model.paragraphStyle,
       }) as BibliographyElementNode
     },
-    [ExtraObjectTypes.PlaceholderElement]: data => {
+    [ExtraObjectTypes.PlaceholderElement]: (data) => {
       const model = data as PlaceholderElement
 
       return schema.nodes.placeholder_element.create({
         id: model._id,
       }) as PlaceholderElementNode
     },
-    [ObjectTypes.FigureElement]: data => {
+    [ObjectTypes.FigureElement]: (data) => {
       const model = data as FigureElement
 
       const figcaptionNode: FigCaptionNode = schema.nodes.figcaption.create()
@@ -235,7 +251,7 @@ export class Decoder {
 
       const figures: Array<FigureNode | PlaceholderNode> = model
         .containedObjectIDs.length
-        ? model.containedObjectIDs.map(id => {
+        ? model.containedObjectIDs.map((id) => {
             const figcaptionNode: FigCaptionNode = schema.nodes.figcaption.create()
 
             if (!id) {
@@ -276,7 +292,7 @@ export class Decoder {
           })
         : [schema.nodes.figure.createAndFill() as FigureNode]
 
-      const content = [...figures, figcaption]
+      const content: ManuscriptNode[] = [...figures, figcaption]
 
       if (model.listingID) {
         const listingModel = this.getModel<Listing>(model.listingID)
@@ -311,7 +327,7 @@ export class Decoder {
         content
       ) as FigureElementNode
     },
-    [ObjectTypes.EquationElement]: data => {
+    [ObjectTypes.EquationElement]: (data) => {
       const model = data as EquationElement
 
       const equationModel = this.getModel<Equation>(model.containedObjectID)
@@ -349,7 +365,7 @@ export class Decoder {
         [equation, figcaption]
       ) as EquationElementNode
     },
-    [ObjectTypes.FootnotesElement]: data => {
+    [ObjectTypes.FootnotesElement]: (data) => {
       const model = data as FootnotesElement
 
       return schema.nodes.footnotes_element.create({
@@ -360,7 +376,7 @@ export class Decoder {
         paragraphStyle: model.paragraphStyle,
       }) as FootnotesElementNode
     },
-    [ObjectTypes.KeywordsElement]: data => {
+    [ObjectTypes.KeywordsElement]: (data) => {
       const model = data as KeywordsElement
 
       return schema.nodes.keywords_element.create({
@@ -371,7 +387,7 @@ export class Decoder {
         paragraphStyle: model.paragraphStyle,
       }) as TOCElementNode
     },
-    [ObjectTypes.ListElement]: data => {
+    [ObjectTypes.ListElement]: (data) => {
       const model = data as ListElement
 
       switch (model.elementType) {
@@ -409,7 +425,7 @@ export class Decoder {
           throw new Error('Unknown list element type')
       }
     },
-    [ObjectTypes.ListingElement]: data => {
+    [ObjectTypes.ListingElement]: (data) => {
       const model = data as ListingElement
 
       const listingModel = this.getModel<Listing>(model.containedObjectID)
@@ -448,7 +464,7 @@ export class Decoder {
         [listing, figcaption]
       ) as ListingElementNode
     },
-    [ObjectTypes.ParagraphElement]: data => {
+    [ObjectTypes.ParagraphElement]: (data) => {
       const model = data as ParagraphElement
 
       return this.parseContents(
@@ -465,7 +481,7 @@ export class Decoder {
         }
       ) as ParagraphNode
     },
-    [ObjectTypes.QuoteElement]: data => {
+    [ObjectTypes.QuoteElement]: (data) => {
       const model = data as QuoteElement
 
       switch (model.quoteType) {
@@ -503,8 +519,8 @@ export class Decoder {
           throw new Error('Unknown block type')
       }
     },
-    // tslint:disable-next-line:cyclomatic-complexity
-    [ObjectTypes.Section]: data => {
+
+    [ObjectTypes.Section]: (data) => {
       const model = data as Section
 
       const isKeywordsSection = model.category === 'MPSectionCategory:keywords'
@@ -555,13 +571,17 @@ export class Decoder {
 
       const nestedSections = getSections(this.modelMap)
         .filter(hasParentSection(model._id))
-        .map(this.creators[ObjectTypes.Section]) as SectionNode[]
+        .map(this.creators[ObjectTypes.Section]) as ManuscriptNode[]
 
       const sectionCategory = model.category || guessSectionCategory(elements)
 
       const sectionNodeType = chooseSectionNodeType(
         sectionCategory as SectionCategory | undefined
       )
+
+      const content: ManuscriptNode[] = [sectionTitleNode]
+        .concat(elementNodes)
+        .concat(nestedSections)
 
       const sectionNode = sectionNodeType.createAndFill(
         {
@@ -570,17 +590,17 @@ export class Decoder {
           titleSuppressed: model.titleSuppressed,
           pageBreakStyle: model.pageBreakStyle,
         },
-        [sectionTitleNode].concat(elementNodes).concat(nestedSections)
+        content
       )
 
       if (!sectionNode) {
-        console.error(model) // tslint:disable-line:no-console
+        console.error(model)
         throw new Error('Invalid content for section ' + model._id)
       }
 
       return sectionNode as SectionNode
     },
-    [ObjectTypes.TableElement]: data => {
+    [ObjectTypes.TableElement]: (data) => {
       const model = data as TableElement
 
       const tableModel = this.getModel<Table>(model.containedObjectID)
@@ -616,7 +636,7 @@ export class Decoder {
           )
         : figcaptionNode
 
-      const content = [table, figcaption]
+      const content: ManuscriptNode[] = [table, figcaption]
 
       if (model.listingID) {
         const listingModel = this.getModel<Listing>(model.listingID)
@@ -652,7 +672,7 @@ export class Decoder {
         content
       ) as TableElementNode
     },
-    [ObjectTypes.TOCElement]: data => {
+    [ObjectTypes.TOCElement]: (data) => {
       const model = data as TOCElement
 
       return schema.nodes.toc_element.create({
@@ -681,9 +701,9 @@ export class Decoder {
   public getModel = <T extends Model>(id: string): T | undefined =>
     this.modelMap.get(id) as T | undefined
 
-  public createArticleNode = (manuscriptID?: string) => {
+  public createArticleNode = (manuscriptID?: string): ManuscriptNode => {
     const rootSections = getSections(this.modelMap).filter(
-      section => !section.path || section.path.length <= 1
+      (section) => !section.path || section.path.length <= 1
     )
 
     const rootSectionNodes = rootSections
@@ -712,7 +732,7 @@ export class Decoder {
     wrapper?: string,
     highlightMarkers: HighlightMarker[] = [],
     options?: ParseOptions
-  ) => {
+  ): ManuscriptNode => {
     const contentsWithHighlightMarkers = highlightMarkers.length
       ? insertHighlightMarkers(field, contents, highlightMarkers)
       : contents

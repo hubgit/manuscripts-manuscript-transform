@@ -15,6 +15,7 @@
  */
 
 import { NodeSpec } from 'prosemirror-model'
+
 import { ManuscriptNode } from '../types'
 
 interface Attrs {
@@ -37,7 +38,7 @@ export const keywordsSection: NodeSpec = {
       tag: 'section.keywords',
     },
   ],
-  toDOM: node => {
+  toDOM: (node) => {
     const keywordsSectionNode = node as KeywordsSectionNode
 
     return [

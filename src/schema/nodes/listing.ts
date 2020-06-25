@@ -16,6 +16,7 @@
 
 import { ObjectTypes } from '@manuscripts/manuscripts-json-schema'
 import { NodeSpec } from 'prosemirror-model'
+
 import { ManuscriptNode } from '../types'
 
 interface Attrs {
@@ -48,7 +49,7 @@ export const listing: NodeSpec = {
     {
       tag: `pre.${ObjectTypes.Listing}`,
       preserveWhitespace: 'full',
-      getAttrs: p => {
+      getAttrs: (p) => {
         const node = p as HTMLPreElement
 
         return {
@@ -62,7 +63,7 @@ export const listing: NodeSpec = {
     {
       tag: 'pre',
       preserveWhitespace: 'full',
-      getAttrs: p => {
+      getAttrs: (p) => {
         const node = p as HTMLPreElement
 
         return {
@@ -73,7 +74,7 @@ export const listing: NodeSpec = {
       priority: 90,
     },
   ],
-  toDOM: node => {
+  toDOM: (node) => {
     const listingNode = node as ListingNode
 
     const dom = document.createElement('div')

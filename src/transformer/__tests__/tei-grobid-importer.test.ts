@@ -15,6 +15,7 @@
  */
 
 import fs from 'fs'
+
 import { parseTEIGROBIDArticle } from '../tei-grobid-importer'
 
 const loadFixture = async (filename: string) => {

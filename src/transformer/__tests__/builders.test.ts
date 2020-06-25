@@ -19,6 +19,7 @@ import {
   BibliographyItem,
   ObjectTypes,
 } from '@manuscripts/manuscripts-json-schema'
+
 import { CSL } from '../../types/csl'
 import {
   buildAffiliation,

@@ -15,6 +15,7 @@
  */
 
 import { NodeSpec } from 'prosemirror-model'
+
 import { ManuscriptNode } from '../types'
 
 interface Attrs {
@@ -66,7 +67,7 @@ export const section: NodeSpec = {
   parseDOM: [
     {
       tag: 'section',
-      getAttrs: dom => {
+      getAttrs: (dom) => {
         const element = dom as HTMLElement
 
         return {
@@ -76,7 +77,7 @@ export const section: NodeSpec = {
       },
     },
   ],
-  toDOM: node => {
+  toDOM: (node) => {
     const sectionNode = node as SectionNode
 
     const { id, titleSuppressed, pageBreakStyle } = sectionNode.attrs

@@ -15,6 +15,7 @@
  */
 
 import { NodeSpec } from 'prosemirror-model'
+
 import { ManuscriptNode } from '../types'
 
 interface Attrs {
@@ -39,7 +40,7 @@ export const caption: NodeSpec = {
       tag: 'caption',
     },
   ],
-  toDOM: node => {
+  toDOM: (node) => {
     const captionNode = node as CaptionNode
 
     return [
