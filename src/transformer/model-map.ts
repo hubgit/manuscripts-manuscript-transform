@@ -26,7 +26,9 @@ export const addModelToMap = (modelMap: Map<string, Model>): AddModel => <
 >(
   data: Partial<T>
 ) => {
-  data._id = generateID(data.objectType as ObjectTypes)
+  if (!data._id) {
+    data._id = generateID(data.objectType as ObjectTypes)
+  }
 
   modelMap.set(data._id, data as T)
 }

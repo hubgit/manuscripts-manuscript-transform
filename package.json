@@ -22,7 +22,7 @@
     "prebuild": "rimraf dist",
     "prettier": "prettier --write \"src/**/*.{ts,tsx}\" \"*.{js,json}\"",
     "preversion": "npm-run-all --parallel typecheck lint test",
-    "test": "XML_CATALOG_FILES=./node_modules/@jats4r/dtds/schema/catalog.xml jest",
+    "test": "jest --runInBand",
     "test:debug": "DEBUG=manuscripts-transform yarn test",
     "typecheck": "tsc --noEmit",
     "version": "yarn build"
@@ -30,6 +30,7 @@
   "dependencies": {
     "@manuscripts/manuscripts-json-schema": "^1.29.2",
     "debug": "^4.1.1",
+    "mime-types": "^2.1.27",
     "prosemirror-model": "^1.7.2",
     "uuid": "^3.3.2",
     "w3c-xmlserializer": "^2.0.0"
@@ -48,7 +49,9 @@
     "@manuscripts/examples": "^0.0.7",
     "@manuscripts/publish": "^0.2.2",
     "@types/debug": "^4.1.4",
+    "@types/fs-extra": "^9.0.1",
     "@types/jest": "^24.9.1",
+    "@types/mime-types": "^2.1.0",
     "@types/prosemirror-model": "^1.7.2",
     "@types/prosemirror-state": "^1.2.3",
     "@types/prosemirror-view": "^1.11.2",
@@ -65,6 +68,7 @@
     "eslint-plugin-react": "^7.20.0",
     "eslint-plugin-react-hooks": "^4.0.4",
     "eslint-plugin-simple-import-sort": "^5.0.3",
+    "fs-extra": "^9.0.1",
     "husky": "^4.2.3",
     "jest": "^25.1.0",
     "jest-environment-jsdom-sixteen": "^1.0.3",

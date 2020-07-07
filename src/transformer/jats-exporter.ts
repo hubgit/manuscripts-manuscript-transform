@@ -54,7 +54,7 @@ import {
   findLatestManuscriptSubmission,
   findManuscript,
 } from './project-bundle'
-import { sectionCategorySuffix } from './section-category'
+import { chooseSecType } from './section-category'
 
 interface Attrs {
   [key: string]: string
@@ -136,12 +136,67 @@ const insertAbstractNode = (articleMeta: Element, abstractNode: Element) => {
   articleMeta.appendChild(abstractNode)
 }
 
+export const createCounter = () => {
+  const counts = new Map<string, number>()
+
+  return {
+    increment: (field: string) => {
+      const value = counts.get(field)
+      const newValue = value === undefined ? 1 : value + 1
+      counts.set(field, newValue)
+      return newValue
+    },
+  }
+}
+
+const createDefaultIdGenerator = (): IDGenerator => {
+  const counter = createCounter()
+
+  return (element: Element) => {
+    const value = String(counter.increment(element.nodeName))
+
+    return `${element.nodeName}-${value}`
+  }
+}
+
+const chooseRefType = (objectType: string): string | undefined => {
+  switch (objectType) {
+    case ObjectTypes.Figure:
+    case ObjectTypes.FigureElement:
+      return 'fig'
+
+    case ObjectTypes.Footnote:
+      return 'fn' // TODO: table-fn
+
+    case ObjectTypes.Table:
+    case ObjectTypes.TableElement:
+      return 'table'
+
+    case ObjectTypes.Section:
+      return 'sec'
+
+    case ObjectTypes.Equation:
+    case ObjectTypes.EquationElement:
+      return 'disp-formula'
+  }
+}
+
+const sortContributors = (a: Contributor, b: Contributor) =>
+  Number(a.priority) - Number(b.priority)
+
+export type IDGenerator = (element: Element) => string | null
+
+export type MediaPathGenerator = (element: Element, parentID: string) => string
+
 export interface JATSExporterOptions {
   version?: Version
   doi?: string
   id?: string
   frontMatterOnly?: boolean
   links?: Links
+  citationType?: 'element' | 'mixed'
+  idGenerator?: IDGenerator
+  mediaPathGenerator?: MediaPathGenerator
 }
 
 export class JATSExporter {
@@ -155,7 +210,16 @@ export class JATSExporter {
     modelMap: Map<string, Model>,
     options: JATSExporterOptions = {}
   ): string => {
-    const { version = '1.2', doi, id, frontMatterOnly = false, links } = options
+    const {
+      version = '1.2',
+      doi,
+      id,
+      frontMatterOnly = false,
+      links,
+      // citationType,
+      idGenerator,
+      mediaPathGenerator,
+    } = options
 
     this.modelMap = modelMap
     this.models = Array.from(this.modelMap.values())
@@ -186,6 +250,9 @@ export class JATSExporter {
     article.appendChild(front)
 
     if (!frontMatterOnly) {
+      // TODO: format citations using template if citationType === 'mixed'
+      // TODO: or convert existing bibliography data to JATS?
+
       const body = this.buildBody(fragment)
       article.appendChild(body)
 
@@ -193,9 +260,92 @@ export class JATSExporter {
       article.appendChild(back)
 
       this.moveAbstract(front, body)
+      this.moveSectionsToBack(back, body)
     }
 
+    this.rewriteIDs(idGenerator)
+    if (mediaPathGenerator) {
+      this.rewriteMediaPaths(mediaPathGenerator)
+    }
+    this.rewriteCrossReferenceTypes()
+
     return serializeToXML(this.document)
+  }
+
+  protected rewriteCrossReferenceTypes = () => {
+    const figRefs = this.document.querySelectorAll('xref[ref-type=fig][rid]')
+
+    if (!figRefs.length) {
+      return
+    }
+
+    for (const xref of figRefs) {
+      const rid = xref.getAttribute('rid') // TODO: split?
+
+      if (rid) {
+        const nodeName = this.document.getElementById(rid)?.nodeName
+
+        if (nodeName) {
+          // https://jats.nlm.nih.gov/archiving/tag-library/1.2/attribute/ref-type.html
+          switch (nodeName) {
+            case 'table-wrap-group':
+            case 'table-wrap':
+            case 'table':
+              xref.setAttribute('ref-type', 'table')
+              break
+          }
+        }
+      }
+    }
+  }
+
+  protected rewriteMediaPaths = (mediaPathGenerator: MediaPathGenerator) => {
+    for (const fig of this.document.querySelectorAll('fig')) {
+      const parentID = fig.getAttribute('id') as string
+
+      for (const graphic of fig.querySelectorAll('graphic')) {
+        const newHref = mediaPathGenerator(graphic, parentID)
+        graphic.setAttributeNS(XLINK_NAMESPACE, 'href', newHref)
+      }
+    }
+  }
+
+  protected rewriteIDs = (
+    idGenerator: IDGenerator = createDefaultIdGenerator()
+  ) => {
+    const idMap = new Map<string, string | null>()
+
+    for (const element of this.document.querySelectorAll('[id]')) {
+      const previousID = element.getAttribute('id')
+
+      const newID = idGenerator(element)
+
+      if (newID) {
+        element.setAttribute('id', newID)
+      } else {
+        element.removeAttribute('id')
+      }
+
+      if (previousID) {
+        idMap.set(previousID, newID)
+      }
+    }
+
+    for (const node of this.document.querySelectorAll('[rid]')) {
+      const rids = node.getAttribute('rid')
+
+      if (rids) {
+        const newRIDs = rids
+          .split(/\s+/)
+          .filter(Boolean)
+          .map((previousRID) => idMap.get(previousRID))
+          .filter(Boolean) as string[]
+
+        if (newRIDs.length) {
+          node.setAttribute('rid', newRIDs.join(' '))
+        }
+      }
+    }
   }
 
   protected buildFront = (doi?: string, id?: string, links?: Links) => {
@@ -400,6 +550,8 @@ export class JATSExporter {
 
         const citation = this.document.createElement('element-citation')
 
+        // TODO: add option for mixed-citation; format citations using template
+
         // TODO: add citation elements depending on publication type
 
         if (bibliographyItem.type) {
@@ -418,6 +570,10 @@ export class JATSExporter {
         }
 
         if (bibliographyItem.author) {
+          const personGroupNode = this.document.createElement('person-group')
+          personGroupNode.setAttribute('person-group-type', 'author')
+          citation.appendChild(personGroupNode)
+
           bibliographyItem.author.forEach((author) => {
             const name = this.document.createElement('name')
 
@@ -433,13 +589,39 @@ export class JATSExporter {
               name.appendChild(node)
             }
 
-            citation.appendChild(name)
+            personGroupNode.appendChild(name)
           })
+        }
+
+        if (bibliographyItem.issued) {
+          const dateParts = bibliographyItem.issued['date-parts']
+
+          if (dateParts && dateParts.length) {
+            const [[year, month, day]] = dateParts
+
+            if (year) {
+              const node = this.document.createElement('year')
+              node.textContent = String(year)
+              citation.appendChild(node)
+            }
+
+            if (month) {
+              const node = this.document.createElement('month')
+              node.textContent = String(month)
+              citation.appendChild(node)
+            }
+
+            if (day) {
+              const node = this.document.createElement('day')
+              node.textContent = String(day)
+              citation.appendChild(node)
+            }
+          }
         }
 
         if (bibliographyItem.title) {
           const node = this.document.createElement('article-title')
-          node.textContent = bibliographyItem.title
+          node.innerHTML = bibliographyItem.title // TODO: convert HTML to JATS?
           citation.appendChild(node)
         }
 
@@ -490,30 +672,25 @@ export class JATSExporter {
           }
         }
 
-        if (bibliographyItem.issued) {
-          const dateParts = bibliographyItem.issued['date-parts']
+        if (bibliographyItem.DOI) {
+          const node = this.document.createElement('pub-id')
+          node.setAttribute('pub-id-type', 'doi')
+          node.textContent = String(bibliographyItem.DOI)
+          citation.appendChild(node)
+        }
 
-          if (dateParts && dateParts.length) {
-            const [[year, month, day]] = dateParts
+        if (bibliographyItem.PMID) {
+          const node = this.document.createElement('pub-id')
+          node.setAttribute('pub-id-type', 'pmid')
+          node.textContent = String(bibliographyItem.PMID)
+          citation.appendChild(node)
+        }
 
-            if (year) {
-              const node = this.document.createElement('year')
-              node.textContent = String(year)
-              citation.appendChild(node)
-            }
-
-            if (month) {
-              const node = this.document.createElement('month')
-              node.textContent = String(month)
-              citation.appendChild(node)
-            }
-
-            if (day) {
-              const node = this.document.createElement('day')
-              node.textContent = String(day)
-              citation.appendChild(node)
-            }
-          }
+        if (bibliographyItem.PMCID) {
+          const node = this.document.createElement('pub-id')
+          node.setAttribute('pub-id-type', 'pmcid')
+          node.textContent = String(bibliographyItem.PMCID)
+          citation.appendChild(node)
         }
 
         ref.appendChild(citation)
@@ -605,7 +782,19 @@ export class JATSExporter {
         }
 
         const xref = this.document.createElement('xref')
-        xref.setAttribute('ref-type', 'fig') // TODO
+        const referencedObject = getModel<Model>(
+          auxiliaryObjectReference.referencedObject
+        )
+
+        if (referencedObject) {
+          const refType = chooseRefType(referencedObject.objectType)
+
+          if (refType) {
+            xref.setAttribute('ref-type', refType)
+          } else {
+            warn(`Unset ref-type for objectType ${referencedObject.objectType}`)
+          }
+        }
 
         xref.setAttribute(
           'rid',
@@ -804,7 +993,7 @@ export class JATSExporter {
         }
 
         if (node.attrs.category) {
-          attrs['sec-type'] = sectionCategorySuffix(node.attrs.category)
+          attrs['sec-type'] = chooseSecType(node.attrs.category)
         }
 
         return ['sec', attrs, 0]
@@ -971,9 +1160,6 @@ export class JATSExporter {
   private buildContributors = (articleMeta: Node) => {
     const contributors = this.models.filter(isContributor)
 
-    const sortContributors = (a: Contributor, b: Contributor) =>
-      Number(a.priority) - Number(b.priority)
-
     const authorContributors = contributors
       .filter((contributor) => contributor.role === 'author')
       .sort(sortContributors)
@@ -997,6 +1183,13 @@ export class JATSExporter {
 
         if (contributor.isCorresponding) {
           contrib.setAttribute('corresp', 'yes')
+        }
+
+        if (contributor.ORCIDIdentifier) {
+          const identifier = this.document.createElement('contrib-id')
+          identifier.setAttribute('contrib-id-type', 'orcid')
+          identifier.textContent = contributor.ORCIDIdentifier
+          contrib.appendChild(identifier)
         }
 
         const name = this.buildContributorName(contributor)
@@ -1110,19 +1303,19 @@ export class JATSExporter {
 
       const sortedContributors = [...authorContributors, ...otherContributors]
 
-      sortedContributors.forEach((contributor) => {
+      for (const contributor of sortedContributors) {
         if (contributor.affiliations) {
           affiliationRIDs.push(...contributor.affiliations)
         }
-      })
+      }
 
       const affiliations = this.models.filter(
         hasObjectType<Affiliation>(ObjectTypes.Affiliation)
       )
 
       if (affiliations) {
-        const usedAffiliations = affiliations.filter(
-          (affiliation) => affiliationRIDs.indexOf(affiliation._id) !== -1
+        const usedAffiliations = affiliations.filter((affiliation) =>
+          affiliationRIDs.includes(affiliation._id)
         )
 
         usedAffiliations.sort(
@@ -1133,6 +1326,14 @@ export class JATSExporter {
         usedAffiliations.forEach((affiliation) => {
           const aff = this.document.createElement('aff')
           aff.setAttribute('id', normalizeID(affiliation._id))
+          contribGroup.appendChild(aff)
+
+          if (affiliation.department) {
+            const department = this.document.createElement('institution')
+            department.setAttribute('content-type', 'dept')
+            department.textContent = affiliation.department
+            aff.appendChild(department)
+          }
 
           if (affiliation.institution) {
             const institution = this.document.createElement('institution')
@@ -1169,11 +1370,43 @@ export class JATSExporter {
             country.textContent = affiliation.country
             aff.appendChild(country)
           }
-
-          articleMeta.appendChild(aff)
         })
       }
     }
+
+    // const authorNotes = this.document.createElement('author-notes')
+    // articleMeta.appendChild(authorNotes)
+
+    // corresp
+    // TODO: make this editable as plain text instead, with email addresses hyperlinked
+    // const correspondingAuthor = authorContributors.find(
+    //   (contributor) => contributor.isCorresponding
+    // )
+    //
+    // if (correspondingAuthor) {
+    //   const name = [
+    //     correspondingAuthor.bibliographicName.given,
+    //     correspondingAuthor.bibliographicName.family,
+    //   ]
+    //     .filter(Boolean)
+    //     .join(' ')
+    //
+    //   const corresp = this.document.createElement('corresp')
+    //   corresp.textContent = `Corresponding author: ${name}`
+    //   authorNotes.appendChild(corresp)
+    //
+    //   if (correspondingAuthor.email) {
+    //     const email = this.document.createElement('email')
+    //     email.setAttributeNS(
+    //       XLINK_NAMESPACE,
+    //       'href',
+    //       `mailto:${correspondingAuthor.email}`
+    //     )
+    //     email.textContent = correspondingAuthor.email
+    //     corresp.appendChild(this.document.createTextNode(' '))
+    //     corresp.appendChild(email)
+    //   }
+    // }
   }
 
   private buildKeywords(articleMeta: Node, keywordIDs: string[]) {
@@ -1267,6 +1500,7 @@ export class JATSExporter {
             // replace a single-figure fig-group with the figure
             if (figures.length === 1) {
               const figure = figures[0]
+              figure.setAttribute('fig-type', 'figure')
 
               // move any caption into the figure
               if (caption) {
@@ -1360,8 +1594,10 @@ export class JATSExporter {
       const abstractNode = this.document.createElement('abstract')
 
       // TODO: ensure that abstract section schema is valid
-      while (abstractSection.firstChild) {
-        abstractNode.appendChild(abstractSection.firstChild)
+      for (const node of abstractSection.childNodes) {
+        if (node.nodeName !== 'title') {
+          abstractNode.appendChild(node.cloneNode(true))
+        }
       }
 
       abstractSection.parentNode.removeChild(abstractSection)
@@ -1371,6 +1607,36 @@ export class JATSExporter {
       if (articleMeta) {
         insertAbstractNode(articleMeta, abstractNode)
       }
+    }
+  }
+
+  private moveSectionsToBack = (back: HTMLElement, body: HTMLElement) => {
+    const availabilitySection = body.querySelector(
+      'sec[sec-type="availability"]'
+    )
+
+    if (availabilitySection) {
+      if (back.firstChild) {
+        back.insertBefore(availabilitySection, back.firstChild)
+      } else {
+        back.appendChild(availabilitySection)
+      }
+    }
+
+    const section = body.querySelector('sec[sec-type="acknowledgments"]')
+
+    if (section) {
+      const ack = this.document.createElement('ack')
+
+      while (section.firstChild) {
+        ack.appendChild(section.firstChild)
+      }
+
+      if (section.parentNode) {
+        section.parentNode.removeChild(section)
+      }
+
+      back.insertBefore(ack, back.firstChild)
     }
   }
 

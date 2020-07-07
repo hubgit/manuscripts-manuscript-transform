@@ -58,7 +58,7 @@ Object {
         },
         Object {
           "attrs": Object {
-            "category": "",
+            "category": "MPSectionCategory:introduction",
             "pageBreakStyle": undefined,
             "titleSuppressed": false,
           },
@@ -218,7 +218,7 @@ Object {
                                         Object {
                                           "content": Array [
                                             Object {
-                                              "text": "Figure 1 Source: Wikipedia.",
+                                              "text": "Source: Wikipedia.",
                                               "type": "text",
                                             },
                                           ],
@@ -269,7 +269,7 @@ Object {
         },
         Object {
           "attrs": Object {
-            "category": "",
+            "category": "MPSectionCategory:materials-method",
             "pageBreakStyle": undefined,
             "titleSuppressed": false,
           },
@@ -301,7 +301,7 @@ Object {
         },
         Object {
           "attrs": Object {
-            "category": "",
+            "category": "MPSectionCategory:results",
             "pageBreakStyle": undefined,
             "titleSuppressed": false,
           },
@@ -620,7 +620,7 @@ Object {
         },
         Object {
           "attrs": Object {
-            "category": "",
+            "category": "MPSectionCategory:discussion",
             "pageBreakStyle": undefined,
             "titleSuppressed": false,
           },
@@ -652,7 +652,7 @@ Object {
         },
         Object {
           "attrs": Object {
-            "category": "",
+            "category": "MPSectionCategory:conclusions",
             "pageBreakStyle": undefined,
             "titleSuppressed": false,
           },
@@ -716,7 +716,39 @@ Object {
         },
         Object {
           "attrs": Object {
-            "category": "MPSectionCategory:acknowledgment",
+            "category": "MPSectionCategory:availability",
+            "pageBreakStyle": undefined,
+            "titleSuppressed": false,
+          },
+          "content": Array [
+            Object {
+              "content": Array [
+                Object {
+                  "text": "Data availability",
+                  "type": "text",
+                },
+              ],
+              "type": "section_title",
+            },
+            Object {
+              "attrs": Object {
+                "paragraphStyle": "",
+                "placeholder": "",
+              },
+              "content": Array [
+                Object {
+                  "text": "This is some information about data availability.",
+                  "type": "text",
+                },
+              ],
+              "type": "paragraph",
+            },
+          ],
+          "type": "section",
+        },
+        Object {
+          "attrs": Object {
+            "category": "MPSectionCategory:acknowledgement",
             "pageBreakStyle": undefined,
             "titleSuppressed": false,
           },

@@ -15,11 +15,27 @@
  */
 
 import { schema } from '../../schema'
+import { selectVersionIds, Version } from '../jats-versions'
 import {
   buildSectionCategory,
+  chooseSectionCategory,
+  chooseSecType,
   isAnySectionNode,
-  sectionCategorySuffix,
 } from '../section-category'
+
+const createJATSDocument = (version: Version) => {
+  const versionIDs = selectVersionIds(version)
+
+  return document.implementation.createDocument(
+    null,
+    'article',
+    document.implementation.createDocumentType(
+      'article',
+      versionIDs.publicId,
+      versionIDs.systemId
+    )
+  )
+}
 
 describe('section category helpers', () => {
   test('any section node', () => {
@@ -46,7 +62,47 @@ describe('section category helpers', () => {
     )
   })
 
-  test('section category suffix', () => {
-    expect(sectionCategorySuffix('MPSectionCategory:keywords')).toBe('keywords')
+  test('choose sec-type', () => {
+    expect(chooseSecType('MPSectionCategory:materials-method')).toBe('methods')
+    expect(chooseSecType('MPSectionCategory:results')).toBe('results')
+    expect(chooseSecType('MPSectionCategory:introduction')).toBe('intro')
+  })
+
+  test('choose section category', () => {
+    const jatsDocument = createJATSDocument('1.2')
+
+    const createSection = (secType?: string, title?: string) => {
+      const section = jatsDocument.createElement('sec')
+
+      if (secType) {
+        section.setAttribute('sec-type', secType)
+      }
+
+      if (title) {
+        const titleElement = jatsDocument.createElement('title')
+        titleElement.textContent = title
+        section.appendChild(titleElement)
+      }
+
+      return section
+    }
+
+    expect(chooseSectionCategory(createSection('intro'))).toBe(
+      'MPSectionCategory:introduction'
+    )
+
+    expect(
+      chooseSectionCategory(createSection(undefined, 'Introduction'))
+    ).toBe('MPSectionCategory:introduction')
+
+    expect(
+      chooseSectionCategory(createSection(undefined, 'Materials & Methods'))
+    ).toBe('MPSectionCategory:materials-method')
+
+    expect(
+      chooseSectionCategory(createSection('conclusions', 'The Conclusions'))
+    ).toBe('MPSectionCategory:conclusions')
+
+    expect(chooseSectionCategory(createSection('foo', 'Bar'))).toBe(undefined)
   })
 })

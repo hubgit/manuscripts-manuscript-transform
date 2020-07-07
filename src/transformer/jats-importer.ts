@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { BibliographicName, Model } from '@manuscripts/manuscripts-json-schema'
+import {
+  BibliographicName,
+  Manuscript,
+  Model,
+} from '@manuscripts/manuscripts-json-schema'
+import mime from 'mime-types'
 import { DOMParser, ParseRule } from 'prosemirror-model'
 
 import { ManuscriptNode, Marks, Nodes, schema } from '../schema'
@@ -26,13 +31,14 @@ import {
   buildBibliographyItem,
   buildCitation,
   buildContributor,
+  buildKeyword,
   buildManuscript,
 } from './builders'
 import { encode } from './encode'
 import { generateID } from './id'
 import { AddModel, addModelToMap } from './model-map'
 import { nodeTypesMap } from './node-types'
-import { SectionCategory } from './section-category'
+import { chooseSectionCategory } from './section-category'
 
 // TODO: remove element.getAttribute('id') and rewrite cross-references?
 
@@ -337,6 +343,11 @@ const nodes: NodeRule[] = [
     ignore: true, // TODO
   },
   {
+    tag: 'label',
+    context: 'figure/',
+    ignore: true, // TODO
+  },
+  {
     tag: 'table',
     node: 'table',
     // TODO: count thead and tfoot rows
@@ -413,53 +424,6 @@ const nodes: NodeRule[] = [
     },
   },
 ]
-
-const chooseSectionCategoryFromTitle = (title: string | null) => {
-  switch (title) {
-    case 'Abstract':
-      return 'MPSectionCategory:abstract'
-
-    case 'Acknowledgements':
-      return 'MPSectionCategory:acknowledgment'
-
-    case 'Bibliography':
-    case 'References':
-      return 'MPSectionCategory:bibliography'
-  }
-}
-
-const chooseSectionCategory = (
-  section: Element
-): SectionCategory | undefined => {
-  const secType = section.getAttribute('sec-type')
-
-  switch (secType) {
-    case 'abstract':
-      return 'MPSectionCategory:abstract'
-
-    case 'acknowledgments':
-      return 'MPSectionCategory:acknowledgment'
-
-    case 'bibliography':
-      return 'MPSectionCategory:bibliography'
-
-    case 'keywords':
-      return 'MPSectionCategory:keywords'
-
-    case 'toc':
-      return 'MPSectionCategory:toc'
-
-    default: {
-      const titleNode = section.firstChild
-
-      if (titleNode && titleNode.nodeName === 'title') {
-        return chooseSectionCategoryFromTitle(titleNode.textContent)
-      }
-
-      return undefined
-    }
-  }
-}
 
 // metadata
 // address, addr-line, aff, article-title, city,
@@ -597,6 +561,7 @@ const moveSectionsToBody = (doc: Document) => {
   const body = doc.querySelector('body')
 
   if (body) {
+    // move abstract from front to body
     const abstractNode = doc.querySelector('front > article-meta > abstract')
 
     if (abstractNode) {
@@ -618,11 +583,17 @@ const moveSectionsToBody = (doc: Document) => {
       body.insertBefore(section, body.firstChild)
     }
 
+    // move sections from back to body
+    for (const section of doc.querySelectorAll('back > sec')) {
+      body.appendChild(section)
+    }
+
+    // move acknowledg(e)ments from back to body section
     const ack = doc.querySelector('back > ack')
 
     if (ack) {
       const section = doc.createElement('sec')
-      section.setAttribute('sec-type', 'acknowledgements')
+      section.setAttribute('sec-type', 'acknowledgments')
 
       const titleNode = ack.querySelector('title')
 
@@ -645,6 +616,7 @@ const moveSectionsToBody = (doc: Document) => {
       body.appendChild(section)
     }
 
+    // move bibliography from back to body section
     const refList = doc.querySelector('back > ref-list')
 
     if (refList) {
@@ -660,6 +632,8 @@ const moveSectionsToBody = (doc: Document) => {
         title.textContent = 'Bibliography'
         section.appendChild(title)
       }
+
+      // TODO: generate bibliography?
 
       body.appendChild(section)
     }
@@ -702,6 +676,49 @@ export const parseJATSBody = (doc: Document): ManuscriptNode => {
   return output
 }
 
+// JATS to HTML conversion
+const jatsToHtmlTitleMap = new Map<string, string>([
+  ['bold', 'b'],
+  ['italic', 'i'],
+  ['sc', 'style'], // TODO: style
+  ['sub', 'sub'],
+  ['sup', 'sup'],
+])
+
+const renameNodes = (
+  node: Node,
+  container: Node,
+  nodeNameMap: Map<string, string>
+) => {
+  if (node.childNodes) {
+    const document = container.ownerDocument as Document
+
+    node.childNodes.forEach((childNode) => {
+      switch (childNode.nodeType) {
+        case Node.ELEMENT_NODE: {
+          const newNodeName = nodeNameMap.get(childNode.nodeName)
+
+          if (newNodeName) {
+            const newNode = document.createElement(newNodeName)
+            renameNodes(childNode, newNode, nodeNameMap)
+            container.appendChild(newNode)
+          } else {
+            console.warn(`Unhandled node name: ${newNodeName}`)
+            container.appendChild(childNode.cloneNode())
+          }
+          break
+        }
+
+        case Node.TEXT_NODE:
+        default: {
+          container.appendChild(childNode.cloneNode())
+          break
+        }
+      }
+    })
+  }
+}
+
 export const parseJATSFront = (doc: Document, addModel: AddModel): void => {
   const front = doc.querySelector('front')
 
@@ -711,11 +728,43 @@ export const parseJATSFront = (doc: Document, addModel: AddModel): void => {
 
   // manuscript
 
+  const manuscript = buildManuscript() as Manuscript
+
+  // manuscript title
   const titleNode = front.querySelector(
     'article-meta > title-group > article-title'
   )
 
-  addModel(buildManuscript(titleNode?.innerHTML))
+  if (titleNode) {
+    manuscript.title = titleNode.innerHTML
+  }
+
+  // manuscript keywords
+  const keywordGroupNode =
+    front.querySelector('article-meta > kwd-group[kwd-group-type="author"]') ||
+    front.querySelector('article-meta > kwd-group')
+
+  if (keywordGroupNode) {
+    manuscript.keywordIDs = []
+
+    const keywordNodes = keywordGroupNode.querySelectorAll('kwd')
+
+    let keywordPriority = 1
+
+    for (const keywordNode of keywordNodes) {
+      if (keywordNode.textContent) {
+        const keyword = buildKeyword(keywordNode.textContent)
+        keyword.priority = keywordPriority
+        keywordPriority++
+
+        addModel(keyword)
+
+        manuscript.keywordIDs.push(keyword._id)
+      }
+    }
+  }
+
+  addModel(manuscript)
 
   // affiliations
   const affiliationIDs = new Map<string, string>()
@@ -725,9 +774,44 @@ export const parseJATSFront = (doc: Document, addModel: AddModel): void => {
   )
 
   affiliationNodes.forEach((affiliationNode, priority) => {
-    const institution = affiliationNode.textContent // TODO: read structured affiliation
+    const affiliation = buildAffiliation('', priority)
 
-    const affiliation = buildAffiliation(institution || '', priority)
+    for (const node of affiliationNode.querySelectorAll('institution')) {
+      const content = node.textContent
+
+      if (!content) {
+        continue
+      }
+
+      const contentType = node.getAttribute('content-type')
+
+      switch (contentType) {
+        case null:
+          affiliation.institution = content
+          break
+
+        case 'dept':
+          affiliation.department = content
+          break
+      }
+    }
+
+    affiliation.addressLine1 =
+      affiliationNode.querySelector('addr-line:nth-of-type(1)')?.textContent ||
+      undefined
+    affiliation.addressLine2 =
+      affiliationNode.querySelector('addr-line:nth-of-type(2)')?.textContent ||
+      undefined
+    affiliation.addressLine3 =
+      affiliationNode.querySelector('addr-line:nth-of-type(3)')?.textContent ||
+      undefined
+
+    // affiliation.postCode =
+    //   affiliationNode.querySelector('postal-code')?.textContent || undefined
+    // affiliation.city =
+    //   affiliationNode.querySelector('city')?.textContent || undefined
+    affiliation.country =
+      affiliationNode.querySelector('country')?.textContent || undefined
 
     const id = affiliationNode.getAttribute('id')
 
@@ -740,26 +824,41 @@ export const parseJATSFront = (doc: Document, addModel: AddModel): void => {
 
   // contributors
 
+  // TODO: handle missing contrib-type?
   const authorNodes = front.querySelectorAll(
-    'article-meta > contrib-group > contrib[contrib-type=author]'
+    'article-meta > contrib-group > contrib[contrib-type="author"]'
   )
 
   authorNodes.forEach((authorNode, priority) => {
     const name = buildBibliographicName({})
 
-    const givenNamesNode = authorNode.querySelector('name > given-names')
+    const given = authorNode.querySelector('name > given-names')?.textContent
 
-    if (givenNamesNode) {
-      name.given = givenNamesNode.textContent
+    if (given) {
+      name.given = given
     }
 
-    const surnameNode = authorNode.querySelector('name > surname')
+    const surname = authorNode.querySelector('name > surname')?.textContent
 
-    if (surnameNode) {
-      name.family = surnameNode.textContent
+    if (surname) {
+      name.family = surname
     }
 
     const contributor = buildContributor(name, 'author', priority)
+
+    const corresponding = authorNode.getAttribute('corresp') === 'yes'
+
+    if (corresponding) {
+      contributor.isCorresponding = corresponding
+    }
+
+    const orcid = authorNode.querySelector(
+      'contrib-id[contrib-id-type="orcid"]'
+    )?.textContent
+
+    if (orcid) {
+      contributor.ORCIDIdentifier = orcid
+    }
 
     const xrefNode = authorNode.querySelector('xref[ref-type="aff"]')
 
@@ -768,7 +867,7 @@ export const parseJATSFront = (doc: Document, addModel: AddModel): void => {
 
       if (rid) {
         const rids = rid
-          .split(/\S+/)
+          .split(/\s+/)
           .filter((id) => affiliationIDs.has(id))
           .map((id) => affiliationIDs.get(id)) as string[]
 
@@ -789,6 +888,12 @@ const chooseContentType = (graphicNode?: Element): string | undefined => {
 
     if (mimetype && subtype) {
       return [mimetype, subtype].join('/')
+    }
+
+    const href = graphicNode.getAttributeNS(XLINK_NAMESPACE, 'href')
+
+    if (href) {
+      return mime.lookup(href) || undefined
     }
   }
 }
@@ -812,6 +917,10 @@ export const parseJATSBack = (doc: Document, addModel: AddModel): void => {
     return
   }
 
+  // TODO: appendices (app-group/app)
+  // TODO: footnotes (fn-group/fn)
+  // TODO: notes (notes)
+
   // references
 
   const referenceIDs = new Map<string, string>()
@@ -825,10 +934,14 @@ export const parseJATSBack = (doc: Document, addModel: AddModel): void => {
       type: chooseBibliographyItemType(publicationType),
     })
 
-    const title = referenceNode.querySelector('article-title')?.textContent
+    const titleNode = referenceNode.querySelector('article-title')
 
-    if (title) {
-      bibliographyItem.title = title
+    if (titleNode) {
+      const newTitleNode = doc.createElement('template')
+
+      renameNodes(titleNode, newTitleNode, jatsToHtmlTitleMap)
+
+      bibliographyItem.title = newTitleNode.innerHTML
     }
 
     const source = referenceNode.querySelector('source')?.textContent
@@ -858,9 +971,35 @@ export const parseJATSBack = (doc: Document, addModel: AddModel): void => {
       })
     }
 
-    const authorNodes = referenceNode.querySelectorAll(
-      'person-group[person-group-type="author"]'
-    )
+    const doi = referenceNode.querySelector('pub-id[pub-id-type="doi"]')
+      ?.textContent
+
+    if (doi) {
+      bibliographyItem.DOI = doi
+    }
+
+    const pmid = referenceNode.querySelector('pub-id[pub-id-type="pmid"]')
+      ?.textContent
+
+    if (pmid) {
+      bibliographyItem.PMID = pmid
+    }
+
+    const pmcid = referenceNode.querySelector('pub-id[pub-id-type="pmcid"]')
+      ?.textContent
+
+    if (pmcid) {
+      bibliographyItem.PMCID = pmcid
+    }
+
+    // TODO: handle missing person-group-type?
+    // TODO: handle contrib-group nested inside collab
+    // TODO: handle collab name
+    const authorNodes = [
+      ...referenceNode.querySelectorAll(
+        'person-group[person-group-type="author"] > *'
+      ),
+    ]
 
     const authors: BibliographicName[] = []
 
@@ -879,12 +1018,20 @@ export const parseJATSBack = (doc: Document, addModel: AddModel): void => {
         name.family = family
       }
 
+      const suffix = authorNode.querySelector('suffix')?.textContent
+
+      if (suffix) {
+        name.suffix = suffix
+      }
+
       authors.push(name)
     })
 
     if (authors.length) {
       bibliographyItem.author = authors
     }
+
+    // TODO: handle `etal`?
 
     addModel(bibliographyItem)
 
@@ -954,6 +1101,8 @@ export const parseJATSArticle = (doc: Document): Model[] => {
   }
 
   const bodyMap = encode(node.firstChild)
+
+  // TODO: use ISSN from journal-meta to choose a template
 
   return [...modelMap.values(), ...bodyMap.values()]
 }
