@@ -1,3 +1,5 @@
+image: node:12-buster
+
 stages:
   - build
   - deploy
@@ -11,8 +13,6 @@ build:
     - yarn run test --ci --coverage --reporters=default --reporters=jest-junit
     - yarn run build
   coverage: '/Statements\s*:\s*(\d+\.\d+)%/'
-  tags:
-    - nodejs-8
   artifacts:
     paths:
       - dist/
@@ -26,5 +26,3 @@ publish:
       - master
   script:
     - npx @manuscripts/publish
-  tags:
-    - nodejs-8
