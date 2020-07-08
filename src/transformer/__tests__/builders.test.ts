@@ -20,7 +20,6 @@ import {
   ObjectTypes,
 } from '@manuscripts/manuscripts-json-schema'
 
-import { CSL } from '../../types/csl'
 import {
   buildAffiliation,
   buildAuxiliaryObjectReference,
@@ -109,7 +108,7 @@ describe('commands', () => {
 
   test('build bibliographic date', () => {
     const cslDate = { 'date-parts': [['1998', '20', '1']] }
-    const date = buildBibliographicDate(cslDate as Partial<CSL.Date>)
+    const date = buildBibliographicDate(cslDate)
     expect(date._id).toMatch(/MPBibliographicDate:\S+/)
     expect(date.objectType).toBe(ObjectTypes.BibliographicDate)
     expect(date['date-parts']).toEqual(cslDate['date-parts'])

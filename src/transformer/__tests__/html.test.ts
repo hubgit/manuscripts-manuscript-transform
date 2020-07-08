@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
+// @ts-ignore
 import projectDump2 from '@manuscripts/examples/data/project-dump-2.json'
+// @ts-ignore
 import projectDump3 from '@manuscripts/examples/data/project-dump-3.json'
+// @ts-ignore
 import projectDump from '@manuscripts/examples/data/project-dump.json'
 
 // import { Keyword, Manuscript } from '@manuscripts/manuscripts-json-schema'

@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+// @ts-ignore
 import projectDumpWithCitations from '@manuscripts/examples/data/project-dump-2.json'
+// @ts-ignore
 import projectDump from '@manuscripts/examples/data/project-dump.json'
 import {
   Keyword,
@@ -23,7 +25,7 @@ import {
   ParagraphElement,
   Section,
 } from '@manuscripts/manuscripts-json-schema'
-import { parseXml } from 'libxmljs2'
+import { Element as XMLElement, parseXml } from 'libxmljs2'
 
 import { JATSExporter } from '../jats-exporter'
 import { isFigure, isManuscript } from '../object-types'
@@ -189,9 +191,9 @@ describe('JATS exporter', () => {
 
     const output = parseXMLWithDTD(xml)
 
-    expect(output.get('//journal-id')!.text()).toBe('bar')
-    expect(output.get('//journal-title')!.text()).toBe('Bar')
-    expect(output.get('//issn')!.text()).toBe('2222-2222')
+    expect(output.get<XMLElement>('//journal-id')!.text()).toBe('bar')
+    expect(output.get<XMLElement>('//journal-title')!.text()).toBe('Bar')
+    expect(output.get<XMLElement>('//issn')!.text()).toBe('2222-2222')
   })
 
   test('DTD validation', () => {
@@ -267,7 +269,7 @@ describe('JATS exporter', () => {
 
     const output = parseXMLWithDTD(xml)
 
-    const link = output.get('//ext-link[@ext-link-type="uri"]')
+    const link = output.get<XMLElement>('//ext-link[@ext-link-type="uri"]')
 
     expect(link).not.toBeNull()
     expect(link!.text()).toBe('first')
@@ -318,7 +320,7 @@ describe('JATS exporter', () => {
 
     const output = parseXMLWithDTD(xml)
 
-    const refs = output.find('//xref[@ref-type="bibr"]')
+    const refs = output.find<XMLElement>('//xref[@ref-type="bibr"]')
 
     expect(refs).toHaveLength(2)
 
@@ -435,7 +437,9 @@ describe('JATS exporter', () => {
 
     const output = parseXMLWithDTD(xml)
 
-    const kwds = output.find('//kwd-group[@kwd-group-type="author"]/kwd')
+    const kwds = output.find<XMLElement>(
+      '//kwd-group[@kwd-group-type="author"]/kwd'
+    )
 
     expect(kwds).toHaveLength(2)
     expect(kwds[0]!.text()).toBe('Foo')

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// @ts-ignore
 import project3 from '@manuscripts/examples/data/project-dump-3.json'
 import { Manuscript, ObjectTypes } from '@manuscripts/manuscripts-json-schema'
 

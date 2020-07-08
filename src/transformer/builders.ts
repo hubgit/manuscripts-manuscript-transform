@@ -47,7 +47,6 @@ import {
 } from '@manuscripts/manuscripts-json-schema'
 import serializeToXML from 'w3c-xmlserializer'
 
-import { CSL } from '../types/csl'
 import { generateID } from './id'
 import { CommentSelector, ManuscriptModel, ModelAttachment } from './models'
 import { timestamp } from './timestamp'
@@ -125,7 +124,7 @@ export const buildBibliographicName = (
 })
 
 export const buildBibliographicDate = (
-  data: Partial<CSL.Date>
+  data: Partial<BibliographicDate>
 ): BuildEmbedded<BibliographicDate, ObjectTypes.BibliographicDate> => ({
   ...data,
   _id: generateID(ObjectTypes.BibliographicDate),
