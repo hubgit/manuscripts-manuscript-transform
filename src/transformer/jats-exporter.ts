@@ -152,7 +152,7 @@ export const createCounter = () => {
 const createDefaultIdGenerator = (): IDGenerator => {
   const counter = createCounter()
 
-  return (element: Element) => {
+  return async (element: Element) => {
     const value = String(counter.increment(element.nodeName))
 
     return `${element.nodeName}-${value}`
@@ -184,9 +184,12 @@ const chooseRefType = (objectType: string): string | undefined => {
 const sortContributors = (a: Contributor, b: Contributor) =>
   Number(a.priority) - Number(b.priority)
 
-export type IDGenerator = (element: Element) => string | null
+export type IDGenerator = (element: Element) => Promise<string | null>
 
-export type MediaPathGenerator = (element: Element, parentID: string) => string
+export type MediaPathGenerator = (
+  element: Element,
+  parentID: string
+) => Promise<string>
 
 export interface JATSExporterOptions {
   version?: Version
@@ -205,11 +208,11 @@ export class JATSExporter {
   protected models: Model[]
   protected serializer: DOMSerializer<ManuscriptSchema>
 
-  public serializeToJATS = (
+  public serializeToJATS = async (
     fragment: ManuscriptFragment,
     modelMap: Map<string, Model>,
     options: JATSExporterOptions = {}
-  ): string => {
+  ): Promise<string> => {
     const {
       version = '1.2',
       doi,
@@ -263,9 +266,9 @@ export class JATSExporter {
       this.moveSectionsToBack(back, body)
     }
 
-    this.rewriteIDs(idGenerator)
+    await this.rewriteIDs(idGenerator)
     if (mediaPathGenerator) {
-      this.rewriteMediaPaths(mediaPathGenerator)
+      await this.rewriteMediaPaths(mediaPathGenerator)
     }
     this.rewriteCrossReferenceTypes()
 
@@ -299,18 +302,20 @@ export class JATSExporter {
     }
   }
 
-  protected rewriteMediaPaths = (mediaPathGenerator: MediaPathGenerator) => {
+  protected rewriteMediaPaths = async (
+    mediaPathGenerator: MediaPathGenerator
+  ) => {
     for (const fig of this.document.querySelectorAll('fig')) {
       const parentID = fig.getAttribute('id') as string
 
       for (const graphic of fig.querySelectorAll('graphic')) {
-        const newHref = mediaPathGenerator(graphic, parentID)
+        const newHref = await mediaPathGenerator(graphic, parentID)
         graphic.setAttributeNS(XLINK_NAMESPACE, 'href', newHref)
       }
     }
   }
 
-  protected rewriteIDs = (
+  protected rewriteIDs = async (
     idGenerator: IDGenerator = createDefaultIdGenerator()
   ) => {
     const idMap = new Map<string, string | null>()
@@ -318,7 +323,7 @@ export class JATSExporter {
     for (const element of this.document.querySelectorAll('[id]')) {
       const previousID = element.getAttribute('id')
 
-      const newID = idGenerator(element)
+      const newID = await idGenerator(element)
 
       if (newID) {
         element.setAttribute('id', newID)

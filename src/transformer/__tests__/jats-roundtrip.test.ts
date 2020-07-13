@@ -41,7 +41,7 @@ const parseXMLWithDTD = (data: string) =>
 const createIdGenerator = (articleID: string): IDGenerator => {
   const counter = createCounter()
 
-  return (element: Element) => {
+  return async (element: Element) => {
     switch (element.nodeName) {
       case 'contrib':
       case 'p':
@@ -88,7 +88,7 @@ const createIdGenerator = (articleID: string): IDGenerator => {
 
 const XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink'
 
-const mediaPathGenerator: MediaPathGenerator = (element, parentID) => {
+const mediaPathGenerator: MediaPathGenerator = async (element, parentID) => {
   const href = element.getAttributeNS(XLINK_NAMESPACE, 'href')
 
   if (href) {
@@ -145,7 +145,7 @@ describe.skip('JATS transformer', () => {
     const idGenerator = createIdGenerator(articleID as string)
 
     const exporter = new JATSExporter()
-    const output = exporter.serializeToJATS(article.content, modelMap, {
+    const output = await exporter.serializeToJATS(article.content, modelMap, {
       version: version as Version,
       idGenerator,
       mediaPathGenerator,

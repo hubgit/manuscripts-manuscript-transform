@@ -28,6 +28,7 @@ import {
 import { Element as XMLElement, parseXml } from 'libxmljs2'
 
 import { JATSExporter } from '../jats-exporter'
+import { Version } from '../jats-versions'
 import { isFigure, isManuscript } from '../object-types'
 import { parseProjectBundle, ProjectBundle } from '../project-bundle'
 import { submissions } from './__helpers__/submissions'
@@ -46,42 +47,44 @@ const parseXMLWithDTD = (data: string) =>
   })
 
 describe('JATS exporter', () => {
-  test('export latest version', () => {
+  test('export latest version', async () => {
     const projectBundle = cloneProjectBundle(input)
 
     const { doc, modelMap } = parseProjectBundle(projectBundle)
 
     const transformer = new JATSExporter()
-    const result = transformer.serializeToJATS(doc.content, modelMap)
+    const result = await transformer.serializeToJATS(doc.content, modelMap)
 
     expect(result).toMatchSnapshot('jats-export')
   })
 
-  test('export v1.1', () => {
+  test('export v1.1', async () => {
     const projectBundle = cloneProjectBundle(input)
 
     const { doc, modelMap } = parseProjectBundle(projectBundle)
 
     const transformer = new JATSExporter()
-    const result = transformer.serializeToJATS(doc.content, modelMap, {
+    const result = await transformer.serializeToJATS(doc.content, modelMap, {
       version: '1.1',
     })
 
     expect(result).toMatchSnapshot('jats-export-1.1')
   })
 
-  test('export unknown version', () => {
+  test('export unknown version', async () => {
     const projectBundle = cloneProjectBundle(input)
 
     const { doc, modelMap } = parseProjectBundle(projectBundle)
 
-    expect(() => {
-      // @ts-ignore (deliberately invalid)
-      serializeToJATS(doc.content, modelMap, '1.0')
-    }).toThrow()
+    await expect(async () => {
+      const transformer = new JATSExporter()
+      await transformer.serializeToJATS(doc.content, modelMap, {
+        version: ('1.0' as unknown) as Version,
+      })
+    }).rejects.toThrow(Error)
   })
 
-  test('move abstract to front by section category', () => {
+  test('move abstract to front by section category', async () => {
     const projectBundle = cloneProjectBundle(input)
 
     const model: Section = {
@@ -103,7 +106,7 @@ describe('JATS exporter', () => {
     const { doc, modelMap } = parseProjectBundle(projectBundle)
 
     const transformer = new JATSExporter()
-    const xml = transformer.serializeToJATS(doc.content, modelMap)
+    const xml = await transformer.serializeToJATS(doc.content, modelMap)
 
     const resultDoc = parseXMLWithDTD(xml)
 
@@ -112,7 +115,7 @@ describe('JATS exporter', () => {
     expect(result).not.toBeNull()
   })
 
-  test('move abstract to front by title', () => {
+  test('move abstract to front by title', async () => {
     const projectBundle = cloneProjectBundle(input)
 
     const model: Section = {
@@ -134,7 +137,7 @@ describe('JATS exporter', () => {
     const { doc, modelMap } = parseProjectBundle(projectBundle)
 
     const transformer = new JATSExporter()
-    const xml = transformer.serializeToJATS(doc.content, modelMap)
+    const xml = await transformer.serializeToJATS(doc.content, modelMap)
 
     const resultDoc = parseXMLWithDTD(xml)
 
@@ -143,13 +146,13 @@ describe('JATS exporter', () => {
     expect(result).not.toBeNull()
   })
 
-  test('handle ID', () => {
+  test('handle ID', async () => {
     const projectBundle = cloneProjectBundle(input)
 
     const { doc, modelMap } = parseProjectBundle(projectBundle)
 
     const transformer = new JATSExporter()
-    const result = transformer.serializeToJATS(doc.content, modelMap, {
+    const result = await transformer.serializeToJATS(doc.content, modelMap, {
       version: '1.2',
       id: '123',
     })
@@ -157,13 +160,13 @@ describe('JATS exporter', () => {
     expect(result).toMatchSnapshot('jats-export-id')
   })
 
-  test('handle DOI', () => {
+  test('handle DOI', async () => {
     const projectBundle = cloneProjectBundle(input)
 
     const { doc, modelMap } = parseProjectBundle(projectBundle)
 
     const transformer = new JATSExporter()
-    const result = transformer.serializeToJATS(doc.content, modelMap, {
+    const result = await transformer.serializeToJATS(doc.content, modelMap, {
       version: '1.2',
       doi: '10.0000/123',
     })
@@ -171,7 +174,7 @@ describe('JATS exporter', () => {
     expect(result).toMatchSnapshot('jats-export-doi')
   })
 
-  test('add journal ID', () => {
+  test('add journal ID', async () => {
     const projectBundle = cloneProjectBundle(input)
 
     const { doc, modelMap } = parseProjectBundle(projectBundle)
@@ -181,7 +184,7 @@ describe('JATS exporter', () => {
     }
 
     const transformer = new JATSExporter()
-    const xml = transformer.serializeToJATS(doc.content, modelMap, {
+    const xml = await transformer.serializeToJATS(doc.content, modelMap, {
       version: '1.2',
       doi: '10.0000/123',
       id: '123',
@@ -196,39 +199,39 @@ describe('JATS exporter', () => {
     expect(output.get<XMLElement>('//issn')!.text()).toBe('2222-2222')
   })
 
-  test('DTD validation', () => {
+  test('DTD validation', async () => {
     const projectBundle = cloneProjectBundle(input)
 
     const { doc, modelMap } = parseProjectBundle(projectBundle)
 
     const transformer = new JATSExporter()
-    const xml = transformer.serializeToJATS(doc.content, modelMap)
+    const xml = await transformer.serializeToJATS(doc.content, modelMap)
 
     const { errors } = parseXMLWithDTD(xml)
 
     expect(errors).toHaveLength(0)
   })
 
-  test('DTD validation: article with title markup and citations', () => {
+  test('DTD validation: article with title markup and citations', async () => {
     const projectBundle = cloneProjectBundle(inputWithCitations)
 
     const { doc, modelMap } = parseProjectBundle(projectBundle)
 
     const transformer = new JATSExporter()
-    const xml = transformer.serializeToJATS(doc.content, modelMap)
+    const xml = await transformer.serializeToJATS(doc.content, modelMap)
 
     const { errors } = parseXMLWithDTD(xml)
 
     expect(errors).toHaveLength(0)
   })
 
-  test('DTD validation: with pdf link', () => {
+  test('DTD validation: with pdf link', async () => {
     const projectBundle = cloneProjectBundle(inputWithCitations)
 
     const { doc, modelMap } = parseProjectBundle(projectBundle)
 
     const transformer = new JATSExporter()
-    const xml = transformer.serializeToJATS(doc.content, modelMap, {
+    const xml = await transformer.serializeToJATS(doc.content, modelMap, {
       version: '1.2',
       links: { self: { pdf: '123.pdf' } },
     })
@@ -240,7 +243,7 @@ describe('JATS exporter', () => {
     expect(xml).toMatch(/<self-uri content-type="pdf" xlink:href="123.pdf"\/>/)
   })
 
-  test('Export link', () => {
+  test('Export link', async () => {
     const projectBundle = cloneProjectBundle(input)
 
     const id = 'MPParagraphElement:150780D7-CFED-4529-9398-77B5C7625044'
@@ -261,7 +264,7 @@ describe('JATS exporter', () => {
     const { doc, modelMap } = parseProjectBundle(projectBundle)
 
     const transformer = new JATSExporter()
-    const xml = transformer.serializeToJATS(doc.content, modelMap)
+    const xml = await transformer.serializeToJATS(doc.content, modelMap)
 
     const { errors } = parseXMLWithDTD(xml)
 
@@ -284,7 +287,7 @@ describe('JATS exporter', () => {
     expect(attrs.title).toBe('An Example')
   })
 
-  test('Export with missing bibliography element', () => {
+  test('Export with missing bibliography element', async () => {
     const projectBundle = cloneProjectBundle(input)
 
     const id = 'MPSection:E07B0D52-9642-4D58-E577-26F8804E3DEE'
@@ -297,7 +300,7 @@ describe('JATS exporter', () => {
     const { doc, modelMap } = parseProjectBundle(projectBundle)
 
     const transformer = new JATSExporter()
-    const xml = transformer.serializeToJATS(doc.content, modelMap)
+    const xml = await transformer.serializeToJATS(doc.content, modelMap)
 
     const { errors } = parseXMLWithDTD(xml)
 
@@ -310,13 +313,13 @@ describe('JATS exporter', () => {
     expect(refs).toHaveLength(1)
   })
 
-  test('Markup in citations', () => {
+  test('Markup in citations', async () => {
     const projectBundle = cloneProjectBundle(inputWithCitations)
 
     const { doc, modelMap } = parseProjectBundle(projectBundle)
 
     const transformer = new JATSExporter()
-    const xml = transformer.serializeToJATS(doc.content, modelMap)
+    const xml = await transformer.serializeToJATS(doc.content, modelMap)
 
     const output = parseXMLWithDTD(xml)
 
@@ -330,7 +333,7 @@ describe('JATS exporter', () => {
     expect(refs[1].text()).toBe('3–5')
   })
 
-  test('Export with empty figure', () => {
+  test('Export with empty figure', async () => {
     const projectBundle = cloneProjectBundle(input)
 
     for (const model of projectBundle.data) {
@@ -343,7 +346,7 @@ describe('JATS exporter', () => {
     const { doc, modelMap } = parseProjectBundle(projectBundle)
 
     const transformer = new JATSExporter()
-    const xml = transformer.serializeToJATS(doc.content, modelMap)
+    const xml = await transformer.serializeToJATS(doc.content, modelMap)
 
     const { errors } = parseXMLWithDTD(xml)
     expect(errors).toHaveLength(0)
@@ -357,13 +360,13 @@ describe('JATS exporter', () => {
     expect(figureGroups).toHaveLength(0)
   })
 
-  test('Only export front matter', () => {
+  test('Only export front matter', async () => {
     const projectBundle = cloneProjectBundle(input)
 
     const { doc, modelMap } = parseProjectBundle(projectBundle)
 
     const transformer = new JATSExporter()
-    const xml = transformer.serializeToJATS(doc.content, modelMap, {
+    const xml = await transformer.serializeToJATS(doc.content, modelMap, {
       version: '1.2',
       doi: '10.1234/5678',
       id: '4567',
@@ -388,7 +391,7 @@ describe('JATS exporter', () => {
     expect(back).toHaveLength(0)
   })
 
-  test('handle keywords', () => {
+  test('handle keywords', async () => {
     const projectBundle = cloneProjectBundle(input)
 
     const { doc, modelMap } = parseProjectBundle(projectBundle)
@@ -427,7 +430,7 @@ describe('JATS exporter', () => {
     manuscript.keywordIDs = keywords.map((keyword) => keyword._id)
 
     const transformer = new JATSExporter()
-    const xml = transformer.serializeToJATS(doc.content, modelMap, {
+    const xml = await transformer.serializeToJATS(doc.content, modelMap, {
       version: '1.2',
       doi: '10.0000/123',
       id: '123',
