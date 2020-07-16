@@ -34,6 +34,7 @@ import {
   buildManuscript,
   buildParagraph,
   buildProject,
+  buildStatusLabel,
 } from '../builders'
 
 describe('commands', () => {
@@ -180,5 +181,12 @@ describe('commands', () => {
     expect(paragraph.contents).toBe(
       `<p xmlns="http://www.w3.org/1999/xhtml" id="${paragraph._id}" class="MPElement" data-placeholder-text="${placeholder}"></p>`
     )
+  })
+
+  test('build status label', () => {
+    const statusLabel = buildStatusLabel('test')
+    expect(statusLabel._id).toMatch(/MPStatusLabel:\S+/)
+    expect(statusLabel.objectType).toBe(ObjectTypes.StatusLabel)
+    expect(statusLabel.name).toBe('test')
   })
 })

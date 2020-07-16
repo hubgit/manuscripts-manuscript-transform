@@ -28,7 +28,7 @@
     "version": "yarn build"
   },
   "dependencies": {
-    "@manuscripts/manuscripts-json-schema": "^1.30.0",
+    "@manuscripts/manuscripts-json-schema": "^1.30.2",
     "debug": "^4.1.1",
     "mime-types": "^2.1.27",
     "prosemirror-model": "^1.11.0",

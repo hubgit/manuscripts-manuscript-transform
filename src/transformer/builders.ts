@@ -42,6 +42,7 @@ import {
   ParagraphElement,
   Project,
   Section,
+  StatusLabel,
   Submission,
   UserProfileAffiliation,
 } from '@manuscripts/manuscripts-json-schema'
@@ -331,4 +332,10 @@ export const buildAttribution = (): Build<Attribution> => ({
 export const buildSubmission = (): Build<Submission> => ({
   _id: generateID(ObjectTypes.Submission),
   objectType: ObjectTypes.Submission,
+})
+
+export const buildStatusLabel = (name: string): Build<StatusLabel> => ({
+  _id: generateID(ObjectTypes.StatusLabel),
+  objectType: ObjectTypes.StatusLabel,
+  name,
 })
