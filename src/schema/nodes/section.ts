@@ -71,6 +71,8 @@ export const section: NodeSpec = {
         const element = dom as HTMLElement
 
         return {
+          id: element.getAttribute('id') || '',
+          category: element.getAttribute('data-category') || '',
           titleSuppressed: element.classList.contains('title-suppressed'),
           pageBreakStyle: choosePageBreakStyle(element) || undefined,
         }
@@ -80,7 +82,7 @@ export const section: NodeSpec = {
   toDOM: (node) => {
     const sectionNode = node as SectionNode
 
-    const { id, titleSuppressed, pageBreakStyle } = sectionNode.attrs
+    const { id, category, titleSuppressed, pageBreakStyle } = sectionNode.attrs
 
     const classnames: string[] = []
 
@@ -102,7 +104,17 @@ export const section: NodeSpec = {
       classnames.push('page-break-after')
     }
 
-    return ['section', { id, class: classnames.join(' ') }, 0]
+    const attrs: { [key: string]: string } = { id }
+
+    if (classnames.length) {
+      attrs['class'] = classnames.join(' ')
+    }
+
+    if (category) {
+      attrs['data-category'] = node.attrs.category
+    }
+
+    return ['section', attrs, 0]
   },
 }
 

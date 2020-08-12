@@ -27,47 +27,53 @@ import { HTMLTransformer } from '../html'
 import { parseProjectBundle, ProjectBundle } from '../project-bundle'
 
 describe('html', () => {
-  test('export', () => {
+  test('export', async () => {
     const { doc, modelMap } = parseProjectBundle(projectDump as ProjectBundle)
 
     const transformer = new HTMLTransformer()
-    const result = transformer.serializeToHTML(doc.content, modelMap)
+    const result = await transformer.serializeToHTML(doc.content, modelMap)
 
     expect(result).toMatchSnapshot('html-export')
   })
 
-  test('export with citations to fix', () => {
+  test('export with citations to fix', async () => {
     const { doc, modelMap } = parseProjectBundle(projectDump2 as ProjectBundle)
 
     const transformer = new HTMLTransformer()
-    const result = transformer.serializeToHTML(doc.content, modelMap)
+    const result = await transformer.serializeToHTML(doc.content, modelMap)
 
     expect(result).toMatchSnapshot('html-export-citations')
   })
 
-  test('export one manuscript from a bundle with multiple', () => {
+  test('export one manuscript from a bundle with multiple', async () => {
     const { doc, modelMap } = parseProjectBundle(
       projectDump3 as ProjectBundle,
       'MPManuscript:BCEB682E-C475-4BF7-9470-D6194D3EF0D8'
     )
 
     const transformer = new HTMLTransformer()
-    const result = transformer.serializeToHTML(doc.content, modelMap)
+    const result = await transformer.serializeToHTML(doc.content, modelMap)
 
     expect(result).toMatchSnapshot('multi-manuscript-html-export')
   })
 
-  test('custom attachment URL', () => {
+  test('custom attachment URL', async () => {
     const { doc, modelMap } = parseProjectBundle(
       (projectDump as unknown) as ProjectBundle
     )
 
     const transformer = new HTMLTransformer()
-    const result = transformer.serializeToHTML(
-      doc.content,
-      modelMap,
-      'http://example.com/'
-    )
+    const result = await transformer.serializeToHTML(doc.content, modelMap, {
+      mediaPathGenerator: async (element) => {
+        const src = element.getAttribute('src')
+
+        if (!src) {
+          throw new Error('Media element has no src value')
+        }
+
+        return `http://example.com/${src}`
+      },
+    })
 
     expect(result).toMatchSnapshot('html-export-custom-url')
   })

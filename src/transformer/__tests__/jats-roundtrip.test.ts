@@ -19,13 +19,9 @@ import fs from 'fs-extra'
 import { parseXml } from 'libxmljs2'
 import mime from 'mime-types'
 
+import { IDGenerator, MediaPathGenerator } from '../../types'
 import { Decoder } from '../decode'
-import {
-  createCounter,
-  IDGenerator,
-  JATSExporter,
-  MediaPathGenerator,
-} from '../jats-exporter'
+import { createCounter, JATSExporter } from '../jats-exporter'
 import { parseJATSArticle } from '../jats-importer'
 import { Version } from '../jats-versions'
 

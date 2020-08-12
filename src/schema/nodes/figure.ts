@@ -70,6 +70,7 @@ export const figure: NodeSpec = {
     return [
       'figure',
       {
+        class: 'figure',
         id: figureNode.attrs.id,
       },
       0,

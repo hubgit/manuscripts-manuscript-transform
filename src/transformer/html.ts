@@ -31,6 +31,7 @@ import { buildStyledContentClass } from '../lib/styled-content'
 import {
   CitationNode,
   CrossReferenceNode,
+  FigureElementNode,
   FigureNode,
   ListingNode,
   ManuscriptFragment,
@@ -40,20 +41,84 @@ import {
   Nodes,
   schema,
 } from '../schema'
+import { IDGenerator, MediaPathGenerator } from '../types'
 import { generateAttachmentFilename } from './filename'
+import { createCounter } from './jats-exporter'
 import { isNodeType } from './node-types'
 import { hasObjectType } from './object-types'
 import { findManuscript } from './project-bundle'
+import { chooseSecType, SectionCategory } from './section-category'
+
+const chooseNodeName = (element: Element) => {
+  const nodeName = element.nodeName.toLowerCase()
+
+  if (nodeName === 'figure') {
+    if (element.classList.contains('table')) {
+      return 'figure-table'
+    }
+
+    if (element.classList.contains('listing')) {
+      return 'figure-listing'
+    }
+
+    if (element.classList.contains('equation')) {
+      return 'figure-equation'
+    }
+
+    // TODO: handle figure panels
+
+    return 'figure'
+  } else if (nodeName === 'section') {
+    const sectionCategory = element.getAttribute('data-category')
+
+    if (sectionCategory) {
+      const secType = chooseSecType(sectionCategory as SectionCategory)
+
+      if (secType) {
+        return secType
+      }
+    }
+  } else if (element.classList.length === 1) {
+    const className = element.classList.item(0)
+
+    if (className && !className.startsWith('MP')) {
+      return className
+    }
+  }
+
+  return nodeName
+}
+
+const createDefaultIdGenerator = (): IDGenerator => {
+  const counter = createCounter()
+
+  return async (element: Element) => {
+    const nodeName = chooseNodeName(element)
+
+    // TODO: remove index suffix from singular ids?
+
+    const index = counter.increment(nodeName)
+
+    return `${nodeName}-${index}`
+  }
+}
+
+export interface HTMLExporterOptions {
+  idGenerator?: IDGenerator
+  mediaPathGenerator?: MediaPathGenerator
+}
 
 export class HTMLTransformer {
   private document: Document
   private modelMap: Map<string, Model>
 
-  public serializeToHTML = (
+  public serializeToHTML = async (
     fragment: ManuscriptFragment,
     modelMap: Map<string, Model>,
-    attachmentUrlPrefix = 'Data/'
+    options: HTMLExporterOptions = {}
   ) => {
+    const { idGenerator, mediaPathGenerator } = options
+
     this.modelMap = modelMap
 
     this.document = document.implementation.createDocument(
@@ -65,16 +130,85 @@ export class HTMLTransformer {
     const article = this.document.createElement('article')
     this.document.documentElement.appendChild(article)
 
-    article.appendChild(this.buildFront(attachmentUrlPrefix))
+    article.appendChild(this.buildFront())
     article.appendChild(this.buildBody(fragment))
     // article.appendChild(this.buildBack())
 
-    this.fixBody(fragment, attachmentUrlPrefix)
+    // TODO: turn inline citation spans (with data-reference-ids attribute) into links?
+
+    // TODO: move abstract to header
+    this.fixBody(fragment)
+
+    await this.rewriteIDs(idGenerator)
+    if (mediaPathGenerator) {
+      await this.rewriteMediaPaths(mediaPathGenerator)
+    }
 
     return serializeToXML(this.document)
   }
 
-  private buildFront = (attachmentUrlPrefix: string) => {
+  protected rewriteMediaPaths = async (
+    mediaPathGenerator: MediaPathGenerator
+  ) => {
+    for (const image of this.document.querySelectorAll('figure > img')) {
+      const parentFigure = image.parentNode
+
+      if (parentFigure) {
+        const parentID = (parentFigure as Element).getAttribute('data-uuid')
+        if (parentID) {
+          const newSrc = await mediaPathGenerator(image, parentID)
+          image.setAttribute('src', newSrc)
+        }
+      }
+    }
+  }
+
+  protected rewriteIDs = async (
+    idGenerator: IDGenerator = createDefaultIdGenerator()
+  ) => {
+    const idMap = new Map<string, string | null>()
+
+    for (const element of this.document.querySelectorAll('[id]')) {
+      const previousID = element.getAttribute('id')
+
+      if (previousID && !previousID.match(/^MP[a-z]+:[a-z0-9-]+$/i)) {
+        continue
+      }
+
+      const newID = await idGenerator(element)
+
+      if (newID) {
+        element.setAttribute('id', newID)
+        if (previousID) {
+          element.setAttribute('data-uuid', previousID)
+        }
+      } else {
+        element.removeAttribute('id')
+      }
+
+      if (previousID) {
+        idMap.set(previousID, newID)
+      }
+    }
+
+    for (const node of this.document.querySelectorAll('[data-reference-ids]')) {
+      const rids = node.getAttribute('data-reference-ids')
+
+      if (rids) {
+        const newRIDs = rids
+          .split(/\s+/)
+          .filter(Boolean)
+          .map((previousRID) => idMap.get(previousRID))
+          .filter(Boolean) as string[]
+
+        if (newRIDs.length) {
+          node.setAttribute('data-reference-ids', newRIDs.join(' '))
+        }
+      }
+    }
+  }
+
+  private buildFront = () => {
     // at this point we assume that there is only one manuscript - resources
     // associated with others should have been stripped out via parseProjectBundle
     const manuscript = findManuscript(this.modelMap)
@@ -101,7 +235,7 @@ export class HTMLTransformer {
         )
 
         const img = this.document.createElement('img')
-        img.setAttribute('src', attachmentUrlPrefix + filename)
+        img.setAttribute('src', filename)
         headerFigure.appendChild(img)
 
         // TODO: title, credit
@@ -131,6 +265,8 @@ export class HTMLTransformer {
       hasObjectType<Contributor>(ObjectTypes.Contributor)
     )
 
+    const affiliationIDs: string[] = []
+
     if (contributors && contributors.length) {
       const contribGroup = this.document.createElement('div')
       contribGroup.classList.add('contrib-group')
@@ -140,6 +276,7 @@ export class HTMLTransformer {
 
       contributors.forEach((contributor) => {
         const contrib = this.document.createElement('span')
+        contrib.classList.add('contrib')
         contrib.setAttribute('id', contributor._id)
 
         if (contributor.isCorresponding) {
@@ -171,41 +308,61 @@ export class HTMLTransformer {
           name.appendChild(surname)
         }
 
-        // if (contributor.email) {
-        //   const email = this.document.createElement('a')
-        //   email.href = `mailto:${contributor.email}`
-        //   contrib.appendChild(email)
-        // }
+        if (contributor.email) {
+          const link = this.document.createElement('a')
+          link.href = `mailto:${contributor.email}`
+          contrib.appendChild(link)
+        }
 
-        // TODO: link to affiliations
+        if (contributor.affiliations) {
+          contributor.affiliations.forEach((rid) => {
+            const link = this.document.createElement('a')
+            link.setAttribute('data-ref-type', 'aff')
+            link.setAttribute('href', '#' + rid)
+
+            const affiliationIndex = affiliationIDs.indexOf(rid)
+
+            if (affiliationIndex > -1) {
+              // affiliation already seen
+              link.textContent = String(affiliationIndex + 1)
+            } else {
+              // new affiliation
+              affiliationIDs.push(rid)
+              link.textContent = String(affiliationIDs.length)
+            }
+
+            contrib.appendChild(link)
+          })
+        }
 
         contribGroup.appendChild(contrib)
       })
     }
 
-    const affiliations = Array.from(this.modelMap.values()).filter(
-      hasObjectType<Affiliation>(ObjectTypes.Affiliation)
-    )
-
-    // TODO: sort affiliations
-
-    if (affiliations && affiliations.length) {
+    if (affiliationIDs.length) {
+      // TODO: use label and tabular layout?
       const affiliationList = this.document.createElement('ol')
       affiliationList.classList.add('affiliations-list')
       articleMeta.appendChild(affiliationList)
 
-      affiliations.forEach((affiliation) => {
-        const affiliationItem = this.document.createElement('li')
-        affiliationItem.classList.add('affiliations-list-item')
-        affiliationItem.setAttribute('id', affiliation._id)
+      for (const affiliationID of affiliationIDs) {
+        const affiliation = this.modelMap.get(affiliationID) as
+          | Affiliation
+          | undefined
 
-        // TODO: all the institution fields
-        if (affiliation.institution) {
-          affiliationItem.textContent = affiliation.institution
+        if (affiliation) {
+          const affiliationItem = this.document.createElement('li')
+          affiliationItem.classList.add('affiliation')
+          affiliationItem.setAttribute('id', affiliation._id)
+
+          // TODO: all the institution fields
+          if (affiliation.institution) {
+            affiliationItem.textContent = affiliation.institution
+          }
+
+          affiliationList.appendChild(affiliationItem)
         }
-
-        affiliationList.appendChild(affiliationItem)
-      })
+      }
     }
   }
 
@@ -279,6 +436,8 @@ export class HTMLTransformer {
           'href',
           `#${auxiliaryObjectReference.referencedObject}`
         )
+
+        element.setAttribute('data-reference-ids', crossReferenceNode.attrs.rid)
       }
 
       element.textContent = crossReferenceNode.attrs.label
@@ -342,8 +501,8 @@ export class HTMLTransformer {
 
   private idSelector = (id: string) => '#' + id.replace(/:/g, '\\:')
 
-  private fixFigure = (node: FigureNode, attachmentUrlPrefix: string) => {
-    const figure = this.document.getElementById(node.attrs.id)
+  private fixFigure = (node: FigureNode) => {
+    const figure = this.document.querySelector(`[id="${node.attrs.id}"]`)
 
     if (figure) {
       if (node.attrs.embedURL) {
@@ -367,7 +526,7 @@ export class HTMLTransformer {
         )
 
         const img = this.document.createElement('img')
-        img.setAttribute('src', attachmentUrlPrefix + filename)
+        img.setAttribute('src', filename)
 
         if (this.figureHasLicense(node.attrs.id)) {
           img.setAttribute('data-licensed', 'true')
@@ -392,15 +551,12 @@ export class HTMLTransformer {
     return figureModel.attribution.licenseID !== undefined
   }
 
-  private fixBody = (
-    fragment: ManuscriptFragment,
-    attachmentUrlPrefix: string
-  ) => {
+  private fixBody = (fragment: ManuscriptFragment) => {
     fragment.descendants((node) => {
       if (node.attrs.id) {
-        if (node.attrs.titleSuppressed) {
-          const selector = this.idSelector(node.attrs.id)
+        const selector = this.idSelector(node.attrs.id)
 
+        if (node.attrs.titleSuppressed) {
           const title = this.document.querySelector(`${selector} > h1`)
 
           if (title && title.parentNode) {
@@ -409,8 +565,6 @@ export class HTMLTransformer {
         }
 
         if (node.attrs.suppressCaption) {
-          const selector = this.idSelector(node.attrs.id)
-
           // TODO: need to query deeper?
           const caption = this.document.querySelector(
             `${selector} > figcaption`
@@ -422,8 +576,55 @@ export class HTMLTransformer {
         }
 
         if (isNodeType<FigureNode>(node, 'figure')) {
-          this.fixFigure(node, attachmentUrlPrefix)
+          this.fixFigure(node)
         }
+
+        if (isNodeType<FigureElementNode>(node, 'figure_element')) {
+          const figureGroup = this.document.querySelector(`${selector}`)
+
+          if (figureGroup) {
+            const figures = this.document.querySelectorAll(
+              `${selector} > figure`
+            )
+
+            const caption = this.document.querySelector(
+              `${selector} > figcaption`
+            )
+
+            const listing = this.document.querySelector(
+              `${selector} > pre.listing`
+            )
+
+            // remove empty listing
+            if (listing && !listing.textContent) {
+              listing.remove()
+            }
+
+            // replace a single-figure fig-group with the figure
+            if (figures.length === 1) {
+              const [figure] = figures
+
+              figure.setAttribute('data-fig-type', 'figure')
+
+              // move any caption into the figure
+              if (caption) {
+                figure.insertBefore(caption, figure.firstChild)
+              }
+
+              // replace the figure element with the figure
+              if (figureGroup.parentElement) {
+                figureGroup.parentElement.replaceChild(figure, figureGroup)
+              }
+            }
+
+            // remove empty figure group
+            if (figures.length === 0 && !caption) {
+              figureGroup.remove()
+            }
+          }
+        }
+
+        // TODO: add labels from plugin state to figures, tables, etc?
       }
     })
   }

@@ -46,6 +46,7 @@ import {
   schema,
   TableElementNode,
 } from '../schema'
+import { IDGenerator, MediaPathGenerator } from '../types'
 import { generateAttachmentFilename } from './filename'
 import { selectVersionIds, Version } from './jats-versions'
 import { isExecutableNodeType, isNodeType } from './node-types'
@@ -183,13 +184,6 @@ const chooseRefType = (objectType: string): string | undefined => {
 
 const sortContributors = (a: Contributor, b: Contributor) =>
   Number(a.priority) - Number(b.priority)
-
-export type IDGenerator = (element: Element) => Promise<string | null>
-
-export type MediaPathGenerator = (
-  element: Element,
-  parentID: string
-) => Promise<string>
 
 export interface JATSExporterOptions {
   version?: Version
@@ -1595,7 +1589,7 @@ export class JATSExporter {
       return sectionTitle.textContent === 'Abstract'
     })
 
-    if (abstractSection && abstractSection.parentNode) {
+    if (abstractSection) {
       const abstractNode = this.document.createElement('abstract')
 
       // TODO: ensure that abstract section schema is valid
@@ -1605,7 +1599,7 @@ export class JATSExporter {
         }
       }
 
-      abstractSection.parentNode.removeChild(abstractSection)
+      abstractSection.remove()
 
       const articleMeta = front.querySelector(':scope > article-meta')
 
