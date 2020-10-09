@@ -30,12 +30,10 @@ import {
   TableStyle,
 } from '@manuscripts/manuscripts-json-schema'
 
-import {
-  ContainedModel,
-  generateID,
-  hasObjectType,
-  loadSharedData,
-} from '../transformer'
+import { generateID } from './id'
+import { ContainedModel } from './models'
+import { hasObjectType } from './object-types'
+import { loadSharedData } from './shared-data'
 
 export type StyleObject =
   | AuxiliaryObjectReferenceStyle
