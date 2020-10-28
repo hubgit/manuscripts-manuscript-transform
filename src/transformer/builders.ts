@@ -32,6 +32,7 @@ import {
   Figure,
   Footnote,
   Highlight,
+  HighlightMarker,
   InlineMathFragment,
   InlineStyle,
   Keyword,
@@ -338,4 +339,18 @@ export const buildStatusLabel = (name: string): Build<StatusLabel> => ({
   _id: generateID(ObjectTypes.StatusLabel),
   objectType: ObjectTypes.StatusLabel,
   name,
+})
+
+export const buildHighlightMarker = (
+  highlightID: string,
+  start: boolean,
+  offset: number,
+  field: 'caption' | 'contents' | 'title'
+): Build<HighlightMarker> => ({
+  highlightID,
+  objectType: ObjectTypes.HighlightMarker,
+  _id: generateID(ObjectTypes.HighlightMarker),
+  start,
+  offset,
+  field,
 })
