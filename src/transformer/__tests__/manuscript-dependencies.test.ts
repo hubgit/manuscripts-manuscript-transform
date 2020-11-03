@@ -34,15 +34,25 @@ describe('manuscript dependencies', () => {
   test('creates a PageLayout model', async () => {
     const models = await loadBundledDependencies()
 
-    const modelMap = new Map(
+    const modelMap = new Map(models.map((model) => [model._id, model]))
+
+    const modelMapFromPrototype = new Map(
       models.map(fromPrototype).map((model) => [model._id, model])
     )
 
     const result = updatedPageLayout(
       modelMap as Map<string, StyleObject>,
-      'MPPageLayout:defaultA4'
+      'MPPageLayout:defaultA4',
+      false
     )
 
     expect(result.objectType).toBe(ObjectTypes.PageLayout)
+
+    const resultFromPrototype = updatedPageLayout(
+      modelMapFromPrototype as Map<string, StyleObject>,
+      'MPPageLayout:defaultA4'
+    )
+
+    expect(resultFromPrototype.objectType).toBe(ObjectTypes.PageLayout)
   })
 })
