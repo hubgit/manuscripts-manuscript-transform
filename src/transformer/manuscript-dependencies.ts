@@ -114,25 +114,19 @@ const chooseNewDefaultParagraphStyle = (styles: Map<string, StyleObject>) => {
 
 export const updatedPageLayout = (
   styleMap: Map<string, StyleObject>,
-  pageLayoutID: string,
-  usePrototype = true // for backwards-compatibility
+  pageLayoutID: string
 ) => {
-  const newPageLayout = usePrototype
-    ? getByPrototype<PageLayout>(styleMap, pageLayoutID)
-    : (styleMap.get(pageLayoutID) as PageLayout | undefined)
+  const newPageLayout = getByPrototype<PageLayout>(styleMap, pageLayoutID)
 
   if (!newPageLayout) {
     throw new Error('Page layout not found')
   }
 
   const newDefaultParagraphStyle =
-    (usePrototype
-      ? getByPrototype<ParagraphStyle>(
-          styleMap,
-          newPageLayout.defaultParagraphStyle
-        )
-      : styleMap.get(newPageLayout.defaultParagraphStyle)) ||
-    chooseNewDefaultParagraphStyle(styleMap)
+    getByPrototype<ParagraphStyle>(
+      styleMap,
+      newPageLayout.defaultParagraphStyle
+    ) || chooseNewDefaultParagraphStyle(styleMap)
 
   if (!newDefaultParagraphStyle) {
     throw new Error('Default paragraph style not found')
@@ -140,5 +134,5 @@ export const updatedPageLayout = (
 
   newPageLayout.defaultParagraphStyle = newDefaultParagraphStyle._id
 
-  return fromPrototype(newPageLayout)
+  return newPageLayout
 }
