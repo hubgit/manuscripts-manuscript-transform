@@ -49,6 +49,7 @@ import {
 import { IDGenerator, MediaPathGenerator } from '../types'
 import { generateAttachmentFilename } from './filename'
 import { selectVersionIds, Version } from './jats-versions'
+import { buildTargets, Target } from './labels'
 import { isExecutableNodeType, isNodeType } from './node-types'
 import { hasObjectType } from './object-types'
 import {
@@ -201,6 +202,7 @@ export class JATSExporter {
   protected modelMap: Map<string, Model>
   protected models: Model[]
   protected serializer: DOMSerializer<ManuscriptSchema>
+  protected labelTargets?: Map<string, Target>
 
   public serializeToJATS = async (
     fragment: ManuscriptFragment,
@@ -246,9 +248,12 @@ export class JATSExporter {
     const front = this.buildFront(doi, id, links)
     article.appendChild(front)
 
+    const manuscript = findManuscript(this.modelMap)
+
     if (!frontMatterOnly) {
       // TODO: format citations using template if citationType === 'mixed'
       // TODO: or convert existing bibliography data to JATS?
+      this.labelTargets = buildTargets(fragment, manuscript)
 
       const body = this.buildBody(fragment)
       article.appendChild(body)
@@ -1049,6 +1054,14 @@ export class JATSExporter {
         const label = this.document.createElement('label')
         label.textContent = node.attrs.label
         element.appendChild(label)
+      } else if (this.labelTargets) {
+        const target = this.labelTargets.get(node.attrs.id)
+
+        if (target) {
+          const label = this.document.createElement('label')
+          label.textContent = target.label
+          element.appendChild(label)
+        }
       }
 
       const figcaptionNode = findChildNodeOfType(
@@ -1440,15 +1453,23 @@ export class JATSExporter {
           }
         }
 
-        // remove suppressed captions
+        // remove suppressed captions and labels
         if (node.attrs.suppressCaption) {
           // TODO: need to query deeper?
           const caption = body.querySelector(
             `#${normalizeID(node.attrs.id)} > caption`
           )
 
-          if (caption && caption.parentNode) {
-            caption.parentNode.removeChild(caption)
+          if (caption) {
+            caption.remove()
+          }
+
+          const label = body.querySelector(
+            `#${normalizeID(node.attrs.id)} > label`
+          )
+
+          if (label) {
+            label.remove()
           }
         }
 
@@ -1465,9 +1486,11 @@ export class JATSExporter {
                   if (node.attrs.suppressCaption) {
                     tableElement.removeChild(childNode)
                   } else {
+                    const label = tableElement.querySelector('label')
+
                     tableElement.insertBefore(
                       childNode,
-                      tableElement.firstChild
+                      label ? label.nextSibling : tableElement.firstChild
                     )
                   }
                   break
@@ -1496,6 +1519,10 @@ export class JATSExporter {
               `#${normalizeID(node.attrs.id)} > caption`
             )
 
+            const label = body.querySelector(
+              `#${normalizeID(node.attrs.id)} > label`
+            )
+
             // replace a single-figure fig-group with the figure
             if (figures.length === 1) {
               const figure = figures[0]
@@ -1504,6 +1531,11 @@ export class JATSExporter {
               // move any caption into the figure
               if (caption) {
                 figure.insertBefore(caption, figure.firstChild)
+              }
+
+              // move any label into the figure
+              if (label) {
+                figure.insertBefore(label, figure.firstChild)
               }
 
               // replace the figure element with the figure
@@ -1615,11 +1647,7 @@ export class JATSExporter {
     )
 
     if (availabilitySection) {
-      if (back.firstChild) {
-        back.insertBefore(availabilitySection, back.firstChild)
-      } else {
-        back.appendChild(availabilitySection)
-      }
+      back.insertBefore(availabilitySection, back.firstChild)
     }
 
     const section = body.querySelector('sec[sec-type="acknowledgments"]')
