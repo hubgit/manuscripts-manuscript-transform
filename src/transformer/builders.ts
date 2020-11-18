@@ -39,6 +39,7 @@ import {
   LibraryCollection,
   Manuscript,
   ManuscriptKeyword,
+  ManuscriptNote,
   ObjectTypes,
   ParagraphElement,
   Project,
@@ -229,6 +230,16 @@ export const buildComment = (
   objectType: ObjectTypes.CommentAnnotation,
   target,
   selector,
+  contents,
+})
+
+export const buildNote = (
+  target: string,
+  contents = ''
+): Build<ManuscriptNote> => ({
+  _id: generateID(ObjectTypes.ManuscriptNote),
+  objectType: ObjectTypes.ManuscriptNote,
+  target,
   contents,
 })
 
