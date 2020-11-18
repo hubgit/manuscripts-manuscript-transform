@@ -28,7 +28,7 @@
     "version": "yarn build"
   },
   "dependencies": {
-    "@manuscripts/data": "^0.1.0",
+    "@manuscripts/data": "^0.1.3",
     "@manuscripts/manuscripts-json-schema": "^1.38.0",
     "debug": "^4.1.1",
     "mime-types": "^2.1.27",
@@ -80,7 +80,7 @@
     "prosemirror-state": "^1.3.3",
     "prosemirror-view": "^1.15.0",
     "rimraf": "^2.6.3",
-    "rxdb": "gitlab:mpapp-public/rxdb#upstream-fork",
+    "@manuscripts/rxdb": "8.2.0-manuscripts1",
     "typescript": "^3.9.5"
   },
   "resolutions": {

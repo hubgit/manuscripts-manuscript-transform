@@ -36,9 +36,9 @@ import {
   TableElement,
   TOCElement,
 } from '@manuscripts/manuscripts-json-schema'
+import { RxDocument } from '@manuscripts/rxdb'
 import debug from 'debug'
 import { DOMParser, ParseOptions } from 'prosemirror-model'
-import { RxDocument } from 'rxdb'
 
 import {
   BibliographyElementNode,

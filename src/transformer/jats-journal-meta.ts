@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-type TypedValue = { type?: string | null; value: string }
+export type TypedValue = { type?: string | null; value: string }
 
 export interface Journal {
   abbreviatedTitles?: TypedValue[]
@@ -73,7 +73,7 @@ export const parseJournalISSNs = (journalMeta: Element): Array<TypedValue> => {
     const type = element.getAttribute('pub-type')
     const value = element.textContent
 
-    if (value !== null) {
+    if (value) {
       output.push({ type, value })
     }
   }

@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
+// @ts-ignore
+import bundles from '@manuscripts/data/dist/shared/bundles.json'
+// @ts-ignore
+import issnBundleIndex from '@manuscripts/data/dist/shared/issn-bundle-index.json'
 import {
   BibliographicName,
+  Bundle,
   // Journal,
   Manuscript,
   Model,
@@ -37,9 +42,10 @@ import {
   buildKeyword,
   buildManuscript,
 } from './builders'
+import { createNewBundle, createParentBundle } from './bundles'
 import { encode } from './encode'
 import { generateID } from './id'
-// import { parseJournalMeta } from './jats-journal-meta'
+import { Journal, parseJournalMeta, TypedValue } from './jats-journal-meta'
 import { AddModel, addModelToMap } from './model-map'
 import { nodeTypesMap } from './node-types'
 import { chooseSectionCategory } from './section-category'
@@ -49,6 +55,10 @@ import { chooseSectionCategory } from './section-category'
 // https://jats.nlm.nih.gov/articleauthoring/tag-library/1.2/
 
 const XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink'
+
+const bundlesMap = new Map<string, Bundle>(
+  bundles.map((bundle: Bundle) => [bundle._id, bundle])
+)
 
 export type MarkRule = ParseRule & { mark: Marks | null }
 
@@ -723,6 +733,28 @@ const renameNodes = (
   }
 }
 
+const buildJournal = (journalMeta: Element | null): Partial<Journal> | null => {
+  if (!journalMeta) {
+    return null
+  }
+
+  return {
+    ...parseJournalMeta(journalMeta),
+    // objectType: ObjectTypes.Journal,
+    // _id: generateID(ObjectTypes.Journal),
+  }
+}
+
+const chooseBundle = (issns: TypedValue[]): string | undefined => {
+  for (const { value: issn } of issns) {
+    const normalizedIssn = issn.toUpperCase().replace(/[^0-9X]/g, '')
+
+    if (normalizedIssn in issnBundleIndex) {
+      return issnBundleIndex[normalizedIssn]
+    }
+  }
+}
+
 export const parseJATSFront = (doc: Document, addModel: AddModel): void => {
   const front = doc.querySelector('front')
 
@@ -734,6 +766,40 @@ export const parseJATSFront = (doc: Document, addModel: AddModel): void => {
 
   const manuscript = buildManuscript() as Build<Manuscript> & {
     keywordIDs?: string[]
+  }
+
+  // journal metadata
+
+  const journalMeta = doc.querySelector('front > journal-meta')
+
+  const journal = buildJournal(journalMeta)
+
+  // if (journal) {
+  //   addModel<Journal>(journal) // TODO: store read-only Journal object for display?
+  // }
+
+  // manuscript bundle (CSL style)
+  if (journal && journal.issns) {
+    const bundleID = chooseBundle(journal.issns)
+
+    if (bundleID) {
+      const bundle = createNewBundle(bundleID, bundlesMap)
+
+      if (bundle) {
+        const parentBundle = createParentBundle(bundle, bundlesMap)
+        if (parentBundle) {
+          addModel(parentBundle)
+          // TODO: attach CSL style as attachment?
+        }
+
+        addModel(bundle)
+        // TODO: attach CSL style as attachment?
+
+        manuscript.bundle = bundle._id
+      }
+
+      // TODO: choose template using bundle identifier?
+    }
   }
 
   const articleMeta = front.querySelector('article-meta')
@@ -785,20 +851,6 @@ export const parseJATSFront = (doc: Document, addModel: AddModel): void => {
   }
 
   addModel<Manuscript>(manuscript)
-
-  // journal metadata
-
-  // const journalMeta = doc.querySelector('front > journal-meta')
-  //
-  // if (journalMeta) {
-  //   const journal: Journal = {
-  //     ...parseJournalMeta(journalMeta),
-  //     objectType: ObjectTypes.Journal,
-  //     _id: generateID(ObjectTypes.Journal),
-  //   }
-  //
-  //   addModel<Journal>(journal)
-  // }
 
   // affiliations
   const affiliationIDs = new Map<string, string>()

@@ -15,6 +15,7 @@
  */
 
 export * from './builders'
+export * from './bundles'
 export * from './decode'
 export * from './document-object-types'
 export * from './encode'

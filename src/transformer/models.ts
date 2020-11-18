@@ -15,7 +15,7 @@
  */
 
 import * as Models from '@manuscripts/manuscripts-json-schema'
-import { RxAttachment, RxAttachmentCreator } from 'rxdb'
+import { RxAttachment, RxAttachmentCreator } from '@manuscripts/rxdb'
 
 import { ManuscriptNode } from '../schema/types'
 
