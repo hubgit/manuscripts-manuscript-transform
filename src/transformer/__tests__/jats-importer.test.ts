@@ -65,7 +65,7 @@ describe('JATS importer', () => {
   test('parses full JATS example to Manuscripts models', async () => {
     const article = await loadFixture('jats-example-doc.xml')
 
-    const models = parseJATSArticle(article)
+    const models = await parseJATSArticle(article)
 
     expect(models).toHaveLength(211)
   })
@@ -85,7 +85,7 @@ describe('JATS importer', () => {
   test('parses JATS article to Manuscripts models', async () => {
     const article = await loadFixture('jats-example.xml')
 
-    const models = parseJATSArticle(article)
+    const models = await parseJATSArticle(article)
 
     expect(models).toHaveLength(38)
   })

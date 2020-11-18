@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-// @ts-ignore
-import bundles from '@manuscripts/data/dist/shared/bundles.json'
-// @ts-ignore
-import issnBundleIndex from '@manuscripts/data/dist/shared/issn-bundle-index.json'
 import {
   BibliographicName,
-  Bundle,
   // Journal,
   Manuscript,
   Model,
@@ -43,6 +38,7 @@ import {
   buildManuscript,
 } from './builders'
 import { createNewBundle, createParentBundle } from './bundles'
+import { loadBundlesMap, loadIssnBundleIndex } from './bundles-data'
 import { encode } from './encode'
 import { generateID } from './id'
 import { Journal, parseJournalMeta, TypedValue } from './jats-journal-meta'
@@ -55,10 +51,6 @@ import { chooseSectionCategory } from './section-category'
 // https://jats.nlm.nih.gov/articleauthoring/tag-library/1.2/
 
 const XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink'
-
-const bundlesMap = new Map<string, Bundle>(
-  bundles.map((bundle: Bundle) => [bundle._id, bundle])
-)
 
 export type MarkRule = ParseRule & { mark: Marks | null }
 
@@ -745,7 +737,11 @@ const buildJournal = (journalMeta: Element | null): Partial<Journal> | null => {
   }
 }
 
-const chooseBundle = (issns: TypedValue[]): string | undefined => {
+const chooseBundle = async (
+  issns: TypedValue[]
+): Promise<string | undefined> => {
+  const issnBundleIndex = await loadIssnBundleIndex()
+
   for (const { value: issn } of issns) {
     const normalizedIssn = issn.toUpperCase().replace(/[^0-9X]/g, '')
 
@@ -755,7 +751,10 @@ const chooseBundle = (issns: TypedValue[]): string | undefined => {
   }
 }
 
-export const parseJATSFront = (doc: Document, addModel: AddModel): void => {
+export const parseJATSFront = async (
+  doc: Document,
+  addModel: AddModel
+): Promise<void> => {
   const front = doc.querySelector('front')
 
   if (!front) {
@@ -780,9 +779,11 @@ export const parseJATSFront = (doc: Document, addModel: AddModel): void => {
 
   // manuscript bundle (CSL style)
   if (journal && journal.issns) {
-    const bundleID = chooseBundle(journal.issns)
+    const bundleID = await chooseBundle(journal.issns)
 
     if (bundleID) {
+      const bundlesMap = await loadBundlesMap()
+
       const bundle = createNewBundle(bundleID, bundlesMap)
 
       if (bundle) {
@@ -1182,11 +1183,11 @@ export const parseJATSBack = (doc: Document, addModel: AddModel): void => {
   })
 }
 
-export const parseJATSArticle = (doc: Document): Model[] => {
+export const parseJATSArticle = async (doc: Document): Promise<Model[]> => {
   const modelMap = new Map<string, Model>()
   const addModel = addModelToMap(modelMap)
 
-  parseJATSFront(doc, addModel)
+  await parseJATSFront(doc, addModel)
   parseJATSBack(doc, addModel)
 
   const node = parseJATSBody(doc)

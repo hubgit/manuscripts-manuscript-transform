@@ -123,7 +123,7 @@ describe.skip('JATS transformer', () => {
     const version =
       doc.querySelector('article')?.getAttribute('dtd-version') || '1.2'
 
-    const models = parseJATSArticle(doc)
+    const models = await parseJATSArticle(doc)
 
     const modelMap = new Map<string, Model>()
 
