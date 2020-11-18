@@ -55,6 +55,7 @@ import { hasObjectType } from './object-types'
 import {
   findLatestManuscriptSubmission,
   findManuscript,
+  // findManuscriptModelByType,
 } from './project-bundle'
 import { chooseSecType } from './section-category'
 
@@ -352,17 +353,97 @@ export class JATSExporter {
     }
   }
 
+  protected setTitleContent = (element: HTMLElement, title: string) => {
+    const htmlTitleNode = nodeFromHTML(`<h1>${title}</h1>`)
+
+    if (htmlTitleNode) {
+      // TODO: parse and serialize with title schema
+      const titleNode = parser.parse(htmlTitleNode, {
+        topNode: schema.nodes.section_title.create(),
+      })
+
+      const jatsTitleNode = this.serializeNode(titleNode)
+
+      while (jatsTitleNode.firstChild) {
+        element.appendChild(jatsTitleNode.firstChild)
+      }
+    }
+  }
+
   protected buildFront = (doi?: string, id?: string, links?: Links) => {
     const manuscript = findManuscript(this.modelMap)
 
     const submission = findLatestManuscriptSubmission(this.modelMap, manuscript)
 
+    // https://jats.nlm.nih.gov/archiving/tag-library/1.2/element/front.html
     const front = this.document.createElement('front')
 
-    if (submission) {
-      const journalMeta = this.document.createElement('journal-meta')
-      front.appendChild(journalMeta)
+    // https://jats.nlm.nih.gov/archiving/tag-library/1.2/element/journal-meta.html
+    const journalMeta = this.document.createElement('journal-meta')
+    front.appendChild(journalMeta)
 
+    // https://jats.nlm.nih.gov/archiving/tag-library/1.2/element/article-meta.html
+    const articleMeta = this.document.createElement('article-meta')
+    front.appendChild(articleMeta)
+
+    // const journal = findManuscriptModelByType<Journal>(
+    //   this.modelMap,
+    //   manuscript,
+    //   ObjectTypes.Journal
+    // )
+
+    // if (journal) {
+    //   if (journal.identifiers) {
+    //     for (const item of journal.identifiers) {
+    //       const element = this.document.createElement('journal-id')
+    //       if (item.type) {
+    //         element.setAttribute('journal-id-type', item.type)
+    //       }
+    //       element.textContent = item.value
+    //       journalMeta.appendChild(element)
+    //     }
+    //   }
+    //
+    //   if (journal.title || journal.abbreviatedTitle) {
+    //     const parentElement = this.document.createElement('journal-title-group')
+    //     journalMeta.appendChild(parentElement)
+    //
+    //     if (journal.title) {
+    //       const element = this.document.createElement('journal-title')
+    //       element.textContent = journal.title
+    //       parentElement.appendChild(element)
+    //     }
+    //
+    //     if (journal.abbreviatedTitle) {
+    //       for (const item of journal.abbreviatedTitle) {
+    //         const element = this.document.createElement('abbrev-journal-title')
+    //         if (item.type) {
+    //           element.setAttribute('abbrev-type', item.type)
+    //         }
+    //         element.textContent = item.value
+    //         parentElement.appendChild(element)
+    //       }
+    //     }
+    //   }
+    //
+    //   if (journal.issn) {
+    //     for (const item of journal.issn) {
+    //       const element = this.document.createElement('issn')
+    //       if (item.type) {
+    //         element.setAttribute('pub-type', item.type)
+    //       }
+    //       element.textContent = item.value
+    //       journalMeta.appendChild(element)
+    //     }
+    //   }
+    //
+    //   if (journal.publisher) {
+    //     const element = this.document.createElement('publisher')
+    //     element.textContent = journal.publisher
+    //     journalMeta.appendChild(element)
+    //   }
+    // } else {
+    if (submission) {
       if (submission.journalCode) {
         const journalID = this.document.createElement('journal-id')
         journalID.setAttribute('journal-id-type', 'publisher-id')
@@ -389,9 +470,6 @@ export class JATSExporter {
       }
     }
 
-    const articleMeta = this.document.createElement('article-meta')
-    front.appendChild(articleMeta)
-
     if (id) {
       const articleID = this.document.createElement('article-id')
       articleID.setAttribute('pub-id-type', 'publisher-id')
@@ -405,27 +483,28 @@ export class JATSExporter {
       articleID.textContent = doi
       articleMeta.appendChild(articleID)
     }
+    // }
 
     const titleGroup = this.document.createElement('title-group')
     articleMeta.appendChild(titleGroup)
 
     if (manuscript.title) {
-      const htmlTitleNode = nodeFromHTML(`<h1>${manuscript.title}</h1>`)
+      const element = this.document.createElement('article-title')
+      this.setTitleContent(element, manuscript.title)
+      titleGroup.appendChild(element)
+    }
 
-      if (htmlTitleNode) {
-        // TODO: parse and serialize with title schema
-        const titleNode = parser.parse(htmlTitleNode, {
-          topNode: schema.nodes.section_title.create(),
-        })
+    if (manuscript.subtitle) {
+      const element = this.document.createElement('subtitle')
+      this.setTitleContent(element, manuscript.subtitle)
+      titleGroup.appendChild(element)
+    }
 
-        const jatsTitleNode = this.serializeNode(titleNode)
-
-        const articleTitle = this.document.createElement('article-title')
-        while (jatsTitleNode.firstChild) {
-          articleTitle.appendChild(jatsTitleNode.firstChild)
-        }
-        titleGroup.appendChild(articleTitle)
-      }
+    if (manuscript.runningTitle) {
+      const element = this.document.createElement('alt-title')
+      element.setAttribute('alt-title-type', 'right-running')
+      this.setTitleContent(element, manuscript.runningTitle)
+      titleGroup.appendChild(element)
     }
 
     this.buildContributors(articleMeta)
@@ -441,6 +520,10 @@ export class JATSExporter {
 
     if (manuscript.keywordIDs) {
       this.buildKeywords(articleMeta, manuscript.keywordIDs)
+    }
+
+    if (!journalMeta.hasChildNodes()) {
+      journalMeta.remove()
     }
 
     return front
@@ -625,7 +708,7 @@ export class JATSExporter {
 
         if (bibliographyItem.title) {
           const node = this.document.createElement('article-title')
-          node.innerHTML = bibliographyItem.title // TODO: convert HTML to JATS?
+          this.setTitleContent(node, bibliographyItem.title)
           citation.appendChild(node)
         }
 

@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@manuscripts/data": "^0.1.0",
-    "@manuscripts/manuscripts-json-schema": "^1.32.0",
+    "@manuscripts/manuscripts-json-schema": "^1.38.0",
     "debug": "^4.1.1",
     "mime-types": "^2.1.27",
     "prosemirror-model": "^1.11.0",
@@ -45,7 +45,7 @@
     "@babel/polyfill": "^7.10.4",
     "@babel/preset-env": "^7.10.4",
     "@babel/preset-typescript": "^7.10.4",
-    "@jats4r/dtds": "^0.0.6",
+    "@jats4r/dtds": "^0.0.7",
     "@manuscripts/eslint-config": "^0.2.2",
     "@manuscripts/examples": "^0.0.7",
     "@manuscripts/publish": "^0.2.2",

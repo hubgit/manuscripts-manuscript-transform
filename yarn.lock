@@ -906,10 +906,10 @@
   resolved "https://registry.npmjs.org/@istanbuljs/schema/-/schema-0.1.2.tgz#26520bf09abe4a5644cd5414e37125a8954241dd"
   integrity sha512-tsAQNx32a8CoFhjhijUIhI4kccIAgmGhy8LZMZgGfmXcpMbPRUqn5LWmgRttILi6yeGmBJd2xsPkFMs0PzgPCw==
 
-"@jats4r/dtds@^0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@jats4r/dtds/-/dtds-0.0.6.tgz#27698fb3001079df8c5c0b5aa74bee183f881a6c"
-  integrity sha512-Woi6eQqTDRrCSgdXm2jl8H8D0s6x5z6olC4a9YwIqyS7c7wXC+VihCLtSKK3giwkRHdR6W/6HEPlPjoKgNhzCg==
+"@jats4r/dtds@^0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@jats4r/dtds/-/dtds-0.0.7.tgz#41a936074e241aef0f52690a8a1c65b132582416"
+  integrity sha512-0jiff93SEZ3czGdY9kNEgrc9HsBAfrGaZS6sK5rACyRRntSe4mHQBwj1eSOb3/7xX6tbqx5sg3uVmtMwp/e9RQ==
 
 "@jest/console@^26.1.0":
   version "26.1.0"
@@ -1106,10 +1106,10 @@
   resolved "https://registry.npmjs.org/@manuscripts/examples/-/examples-0.0.7.tgz#f7f0cef173fb2c83fbf283a2c2962b5d6ea32874"
   integrity sha512-7a1y6H/wnvn4hTh7S+TEyC8R5tLHHNiWYJnbeS43JCMYS/6qhMCzJTS0PwQynoep7PWwi2LdgaSZ3qALxzgg0g==
 
-"@manuscripts/manuscripts-json-schema@^1.32.0":
-  version "1.32.0"
-  resolved "https://registry.yarnpkg.com/@manuscripts/manuscripts-json-schema/-/manuscripts-json-schema-1.32.0.tgz#e47dca8d9ee215fb8cfdfec25b785a03203a9fdf"
-  integrity sha512-1Ad1prk3VWLaYPHJwCcSaGw5c9ojtG91CQ307w0R50GC8t/grfDq7b3NuHLxETXpoE8NeWGvUyFlV5yWEcL6lQ==
+"@manuscripts/manuscripts-json-schema@^1.38.0":
+  version "1.38.0"
+  resolved "https://registry.yarnpkg.com/@manuscripts/manuscripts-json-schema/-/manuscripts-json-schema-1.38.0.tgz#8ec4288e209f4cde47965efd4079e49f917c1ee1"
+  integrity sha512-MxjIliuQI2g4bUGn6jv749KVr/ZNCR7Kx2dlnlzbKL5u62WxQBaJ4IK3AzbmeYN5e9kONyX2pdbRezea+C4cDg==
   dependencies:
     ajv "^6.10.0"
     deepmerge "^3.2.0"

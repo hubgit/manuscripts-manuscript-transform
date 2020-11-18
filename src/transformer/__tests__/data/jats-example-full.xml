@@ -3,14 +3,14 @@
 <article article-type="research-article" dtd-version="1.1" xml:lang="en" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:mml="http://www.w3.org/1998/Math/MathML">
   <front>
     <journal-meta>
-      <journal-id journal-id-type="publisher-id">NLM-Export</journal-id>
-      <journal-id journal-id-type="nlm-ta">NLM-Export</journal-id>
+      <journal-id journal-id-type="publisher-id">Journal Publisher ID</journal-id>
+      <journal-id journal-id-type="nlm-ta">Journal NLM ID</journal-id>
       <journal-title-group>
-        <journal-title>NLM-Export</journal-title>
-        <abbrev-journal-title abbrev-type="pubmed">NLM-Export</abbrev-journal-title>
+        <journal-title>Journal Title</journal-title>
+        <abbrev-journal-title abbrev-type="pubmed">PubMed Abbreviated Journal Title</abbrev-journal-title>
       </journal-title-group>
       <issn>1234-5678</issn>
-      <publisher><publisher-name>ArcFullText</publisher-name></publisher>
+      <publisher><publisher-name>Publisher Name</publisher-name></publisher>
     </journal-meta>
     <article-meta>
       <article-id pub-id-type="publisher-id">123412341234</article-id>

@@ -244,12 +244,14 @@ export const buildInlineMathFragment = (
 
 export const buildFootnote = (
   containingObject: string,
-  contents: string
+  contents: string,
+  kind: 'footnote' | 'endnote' = 'footnote'
 ): Build<Footnote> => ({
   _id: generateID(ObjectTypes.Footnote),
   objectType: ObjectTypes.Footnote,
   containingObject,
   contents,
+  kind,
 })
 
 export const buildSection = (

@@ -16,14 +16,17 @@
 
 import {
   BibliographicName,
+  // Journal,
   Manuscript,
   Model,
+  // ObjectTypes,
 } from '@manuscripts/manuscripts-json-schema'
 import mime from 'mime-types'
 import { DOMParser, ParseRule } from 'prosemirror-model'
 
 import { ManuscriptNode, Marks, Nodes, schema } from '../schema'
 import {
+  Build,
   buildAffiliation,
   buildAuxiliaryObjectReference,
   buildBibliographicDate,
@@ -36,6 +39,7 @@ import {
 } from './builders'
 import { encode } from './encode'
 import { generateID } from './id'
+// import { parseJournalMeta } from './jats-journal-meta'
 import { AddModel, addModelToMap } from './model-map'
 import { nodeTypesMap } from './node-types'
 import { chooseSectionCategory } from './section-category'
@@ -677,7 +681,7 @@ export const parseJATSBody = (doc: Document): ManuscriptNode => {
 }
 
 // JATS to HTML conversion
-const jatsToHtmlTitleMap = new Map<string, string>([
+const jatsToHtmlElementMap = new Map<string, string>([
   ['bold', 'b'],
   ['italic', 'i'],
   ['sc', 'style'], // TODO: style
@@ -728,43 +732,73 @@ export const parseJATSFront = (doc: Document, addModel: AddModel): void => {
 
   // manuscript
 
-  const manuscript = buildManuscript() as Manuscript
-
-  // manuscript title
-  const titleNode = front.querySelector(
-    'article-meta > title-group > article-title'
-  )
-
-  if (titleNode) {
-    manuscript.title = titleNode.innerHTML
+  const manuscript = buildManuscript() as Build<Manuscript> & {
+    keywordIDs?: string[]
   }
 
-  // manuscript keywords
-  const keywordGroupNode =
-    front.querySelector('article-meta > kwd-group[kwd-group-type="author"]') ||
-    front.querySelector('article-meta > kwd-group')
+  const articleMeta = front.querySelector('article-meta')
 
-  if (keywordGroupNode) {
-    manuscript.keywordIDs = []
+  if (articleMeta) {
+    // manuscript titles
+    manuscript.title = htmlFromJatsNode(
+      doc,
+      articleMeta.querySelector('title-group > article-title')
+    )
 
-    const keywordNodes = keywordGroupNode.querySelectorAll('kwd')
+    manuscript.subtitle = htmlFromJatsNode(
+      doc,
+      articleMeta.querySelector('title-group > subtitle')
+    )
 
-    let keywordPriority = 1
+    manuscript.runningTitle = htmlFromJatsNode(
+      doc,
+      articleMeta.querySelector(
+        'title-group > alt-title[alt-title-type="right-running"]'
+      )
+    )
 
-    for (const keywordNode of keywordNodes) {
-      if (keywordNode.textContent) {
-        const keyword = buildKeyword(keywordNode.textContent)
-        keyword.priority = keywordPriority
-        keywordPriority++
+    // manuscript keywords
+    const keywordGroupNode =
+      articleMeta.querySelector(
+        'article-meta > kwd-group[kwd-group-type="author"]'
+      ) || articleMeta.querySelector('article-meta > kwd-group')
 
-        addModel(keyword)
+    if (keywordGroupNode) {
+      manuscript.keywordIDs = []
 
-        manuscript.keywordIDs.push(keyword._id)
+      const keywordNodes = keywordGroupNode.querySelectorAll('kwd')
+
+      let keywordPriority = 1
+
+      for (const keywordNode of keywordNodes) {
+        if (keywordNode.textContent) {
+          const keyword = buildKeyword(keywordNode.textContent)
+          keyword.priority = keywordPriority
+          keywordPriority++
+
+          addModel(keyword)
+
+          manuscript.keywordIDs.push(keyword._id)
+        }
       }
     }
   }
 
-  addModel(manuscript)
+  addModel<Manuscript>(manuscript)
+
+  // journal metadata
+
+  // const journalMeta = doc.querySelector('front > journal-meta')
+  //
+  // if (journalMeta) {
+  //   const journal: Journal = {
+  //     ...parseJournalMeta(journalMeta),
+  //     objectType: ObjectTypes.Journal,
+  //     _id: generateID(ObjectTypes.Journal),
+  //   }
+  //
+  //   addModel<Journal>(journal)
+  // }
 
   // affiliations
   const affiliationIDs = new Map<string, string>()
@@ -910,6 +944,19 @@ const chooseBibliographyItemType = (publicationType: string | null) => {
   }
 }
 
+const htmlFromJatsNode = (
+  doc: Document,
+  element: Element | null
+): string | undefined => {
+  if (element) {
+    const template = doc.createElement('template')
+
+    renameNodes(element, template, jatsToHtmlElementMap)
+
+    return template.innerHTML
+  }
+}
+
 export const parseJATSBack = (doc: Document, addModel: AddModel): void => {
   const back = doc.querySelector('back')
 
@@ -937,11 +984,7 @@ export const parseJATSBack = (doc: Document, addModel: AddModel): void => {
     const titleNode = referenceNode.querySelector('article-title')
 
     if (titleNode) {
-      const newTitleNode = doc.createElement('template')
-
-      renameNodes(titleNode, newTitleNode, jatsToHtmlTitleMap)
-
-      bibliographyItem.title = newTitleNode.innerHTML
+      bibliographyItem.title = htmlFromJatsNode(doc, titleNode)
     }
 
     const source = referenceNode.querySelector('source')?.textContent

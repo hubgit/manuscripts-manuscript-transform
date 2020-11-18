@@ -65,6 +65,25 @@ export const findManuscript = (modelMap: Map<string, Model>): Manuscript => {
   throw new Error('No manuscript found')
 }
 
+const isManuscriptModel = (model: Model): model is ManuscriptModel =>
+  'manuscriptID' in model
+
+export const findManuscriptModelByType = <T extends ManuscriptModel>(
+  modelMap: Map<string, Model>,
+  manuscript: Manuscript,
+  objectType: ObjectTypes
+): T | undefined => {
+  for (const model of modelMap.values()) {
+    if (
+      model.objectType === objectType &&
+      isManuscriptModel(model) &&
+      manuscript._id === model.manuscriptID
+    ) {
+      return model as T
+    }
+  }
+}
+
 const isSubmission = hasObjectType<Submission>(ObjectTypes.Submission)
 
 const newestFirst = (a: Model, b: Model) => b.createdAt - a.createdAt
