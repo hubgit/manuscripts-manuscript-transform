@@ -373,6 +373,8 @@ const nodes: NodeRule[] = [
 
       return {
         id: element.getAttribute('id'),
+        suppressFooter: !element.querySelector('table > tfoot > tr'),
+        suppressHeader: !element.querySelector('table > thead > tr'),
       }
     },
   },
@@ -1183,6 +1185,31 @@ export const parseJATSBack = (doc: Document, addModel: AddModel): void => {
   })
 }
 
+const preprocessDocument = (doc: Document) => {
+  // ensure that tables have a header and footer row
+  for (const table of doc.querySelectorAll('table-wrap > table')) {
+    const tbody = table.querySelector('tbody')
+
+    if (tbody) {
+      // if there are no table header rows, add an extra row to the start of the table body
+      const headerRow = table.querySelector('thead > tr')
+
+      if (!headerRow) {
+        const tr = doc.createElement('tr')
+        tbody.insertBefore(tr, tbody.firstElementChild)
+      }
+
+      // if there are no table footer rows, add an extra row to the end of the table body
+      const footerRow = table.querySelector('tfoot > tr')
+
+      if (!footerRow) {
+        const tr = doc.createElement('tr')
+        tbody.appendChild(tr)
+      }
+    }
+  }
+}
+
 export const parseJATSArticle = async (doc: Document): Promise<Model[]> => {
   const modelMap = new Map<string, Model>()
   const addModel = addModelToMap(modelMap)
@@ -1190,6 +1217,7 @@ export const parseJATSArticle = async (doc: Document): Promise<Model[]> => {
   await parseJATSFront(doc, addModel)
   parseJATSBack(doc, addModel)
 
+  preprocessDocument(doc)
   const node = parseJATSBody(doc)
 
   if (!node.firstChild) {
