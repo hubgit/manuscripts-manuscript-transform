@@ -17,7 +17,7 @@
 import { Model } from '@manuscripts/manuscripts-json-schema'
 import fs from 'fs-extra'
 import { parseXml } from 'libxmljs2'
-import mime from 'mime-types'
+import mime from 'mime'
 
 import { IDGenerator, MediaPathGenerator } from '../../types'
 import { Decoder } from '../decode'
@@ -99,7 +99,7 @@ const mediaPathGenerator: MediaPathGenerator = async (element, parentID) => {
   const mimeSubtype = element.getAttribute('mime-subtype')
 
   if (mimetype && mimeSubtype) {
-    const extension = mime.extension(`${mimetype}/${mimeSubtype}`)
+    const extension = mime.getExtension(`${mimetype}/${mimeSubtype}`)
 
     if (extension) {
       return `${parentID}.${extension}`

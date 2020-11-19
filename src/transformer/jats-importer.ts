@@ -21,7 +21,7 @@ import {
   Model,
   // ObjectTypes,
 } from '@manuscripts/manuscripts-json-schema'
-import mime from 'mime-types'
+import mime from 'mime'
 import { DOMParser, ParseRule } from 'prosemirror-model'
 
 import { ManuscriptNode, Marks, Nodes, schema } from '../schema'
@@ -980,7 +980,7 @@ const chooseContentType = (graphicNode?: Element): string | undefined => {
     const href = graphicNode.getAttributeNS(XLINK_NAMESPACE, 'href')
 
     if (href) {
-      return mime.lookup(href) || undefined
+      return mime.getType(href) || undefined
     }
   }
 }
