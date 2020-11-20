@@ -1348,7 +1348,7 @@ export const parseJATSArticle = async (doc: Document): Promise<Model[]> => {
   parseJATSBack(doc, addModel)
 
   preprocessDocument(doc)
-  const node = await parseJATSBody(doc, modelMap)
+  const node = parseJATSBody(doc, modelMap)
 
   if (!node.firstChild) {
     throw new Error('No content was parsed from the article body')
