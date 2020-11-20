@@ -335,6 +335,8 @@ export class Decoder {
       const equation: EquationNode | PlaceholderNode = equationModel
         ? (schema.nodes.equation.create({
             id: equationModel._id,
+            MathMLStringRepresentation:
+              equationModel.MathMLStringRepresentation,
             SVGStringRepresentation: equationModel.SVGStringRepresentation,
             TeXRepresentation: equationModel.TeXRepresentation,
           }) as EquationNode)

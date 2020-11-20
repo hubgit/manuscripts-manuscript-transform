@@ -301,6 +301,8 @@ const encoders: NodeEncoderMap = {
     suppressCaption: node.attrs.suppressCaption === true ? undefined : false,
   }),
   equation: (node): Partial<Equation> => ({
+    MathMLStringRepresentation:
+      node.attrs.MathMLStringRepresentation || undefined,
     TeXRepresentation: node.attrs.TeXRepresentation,
     SVGStringRepresentation: node.attrs.SVGStringRepresentation,
     // title: 'Equation',
@@ -342,6 +344,7 @@ const encoders: NodeEncoderMap = {
   }),
   inline_equation: (node, parent): Partial<InlineMathFragment> => ({
     containingObject: parent.attrs.id,
+    // MathMLRepresentation: node.attrs.MathMLRepresentation || undefined,
     TeXRepresentation: node.attrs.TeXRepresentation,
     SVGRepresentation: node.attrs.SVGRepresentation,
     SVGGlyphs: svgDefs(node.attrs.SVGRepresentation),

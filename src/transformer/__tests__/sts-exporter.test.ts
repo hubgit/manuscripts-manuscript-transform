@@ -39,8 +39,8 @@ describe('STS exporter', () => {
       'application/xml'
     )
 
-    const doc = parseSTSBody(standard)
     const modelMap = parseSTSFront(standard)
+    const doc = await parseSTSBody(standard, modelMap)
 
     const transformer = new STSExporter()
     const xml = transformer.serializeToSTS(doc.content, modelMap)

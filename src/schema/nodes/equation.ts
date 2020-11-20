@@ -21,6 +21,7 @@ import { ManuscriptNode } from '../types'
 
 interface Attrs {
   id: string
+  MathMLStringRepresentation: string
   SVGStringRepresentation: string
   TeXRepresentation: string
 }
@@ -32,6 +33,7 @@ export interface EquationNode extends ManuscriptNode {
 export const equation: NodeSpec = {
   attrs: {
     id: { default: '' },
+    MathMLStringRepresentation: { default: '' },
     SVGStringRepresentation: { default: '' },
     TeXRepresentation: { default: '' },
     // placeholder: { default: 'Click to edit equation' },
@@ -44,6 +46,9 @@ export const equation: NodeSpec = {
         const dom = p as HTMLDivElement
 
         return {
+          // MathMLStringRepresentation: dom.getAttribute(
+          //   'data-mathml-string-representation'
+          // ),
           SVGStringRepresentation: dom.innerHTML,
           TeXRepresentation: dom.getAttribute('data-tex-representation'),
         }
@@ -57,6 +62,12 @@ export const equation: NodeSpec = {
     const dom = document.createElement('div')
     dom.setAttribute('id', equationNode.attrs.id)
     dom.classList.add(ObjectTypes.Equation)
+    // if (equationNode.attrs.MathMLStringRepresentation) {
+    //   dom.setAttribute(
+    //     'data-mathml-string-representation',
+    //     equationNode.attrs.MathMLStringRepresentation
+    //   )
+    // }
     dom.setAttribute(
       'data-tex-representation',
       equationNode.attrs.TeXRepresentation

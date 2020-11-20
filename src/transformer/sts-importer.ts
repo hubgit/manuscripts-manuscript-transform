@@ -25,8 +25,11 @@ import { parseJATSBody } from './jats-importer'
 
 // TODO: STS-specific rules
 
-export const parseSTSBody = (doc: Document) => {
-  return parseJATSBody(doc)
+export const parseSTSBody = async (
+  doc: Document,
+  modelMap: Map<string, Model>
+) => {
+  return parseJATSBody(doc, modelMap)
 }
 
 export const parseSTSFront = (doc: Document) => {
@@ -55,10 +58,10 @@ export const parseSTSFront = (doc: Document) => {
   return modelMap
 }
 
-export const parseSTSStandard = (doc: Document): Model[] => {
-  const front = parseSTSFront(doc)
+export const parseSTSStandard = async (doc: Document): Promise<Model[]> => {
+  const modelMap = parseSTSFront(doc)
 
-  const node = parseSTSBody(doc)
+  const node = await parseSTSBody(doc, modelMap)
 
   if (!node.firstChild) {
     throw new Error('No content was parsed from the article body')
@@ -66,5 +69,5 @@ export const parseSTSStandard = (doc: Document): Model[] => {
 
   const body = encode(node.firstChild)
 
-  return [...front.values(), ...body.values()]
+  return [...modelMap.values(), ...body.values()]
 }

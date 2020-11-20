@@ -15,15 +15,17 @@
  */
 
 import {
+  AuxiliaryObjectReference,
   BibliographicName,
-  // Journal,
   Manuscript,
   Model,
-  // ObjectTypes,
+  ObjectTypes,
 } from '@manuscripts/manuscripts-json-schema'
 import mime from 'mime'
-import { DOMParser, ParseRule } from 'prosemirror-model'
+import { DOMParser, Fragment, ParseRule } from 'prosemirror-model'
 
+import { convertMathMLToSVG } from '../mathjax/mathml-to-svg'
+import { convertTeXToSVG } from '../mathjax/tex-to-svg'
 import { ManuscriptNode, Marks, Nodes, schema } from '../schema'
 import {
   Build,
@@ -44,7 +46,9 @@ import { generateID } from './id'
 import { Journal, parseJournalMeta, TypedValue } from './jats-journal-meta'
 import { AddModel, addModelToMap } from './model-map'
 import { nodeTypesMap } from './node-types'
+import { hasObjectType } from './object-types'
 import { chooseSectionCategory } from './section-category'
+import { xmlSerializer } from './serializer'
 
 // TODO: remove element.getAttribute('id') and rewrite cross-references?
 
@@ -147,17 +151,76 @@ const nodes: NodeRule[] = [
   },
   {
     tag: 'disp-formula',
-    node: 'equation',
+    node: 'equation_element',
     getAttrs: (node) => {
       const element = node as HTMLElement
 
-      const TeXRepresentation =
-        element.querySelector('tex-math')?.textContent?.trim() ?? ''
+      const caption = element.querySelector('figcaption')
 
       return {
         id: element.getAttribute('id'),
-        TeXRepresentation,
+        suppressCaption: !caption,
       }
+    },
+    getContent: (node, schema) => {
+      const element = node as HTMLElement
+
+      const attrs: {
+        MathMLStringRepresentation: string
+        SVGStringRepresentation: string
+        TeXRepresentation: string
+      } = {
+        // id: generateID(ObjectTypes.Equation)
+        MathMLStringRepresentation: '',
+        SVGStringRepresentation: '',
+        TeXRepresentation: '',
+      }
+
+      const container = element.querySelector('alternatives') ?? element
+
+      for (const child of container.childNodes) {
+        // remove namespace prefix
+        // TODO: real namespaces
+        const nodeName = child.nodeName.replace(/^[a-z]:/, '')
+
+        switch (nodeName) {
+          case 'tex-math':
+            attrs.TeXRepresentation = child.textContent?.trim() ?? ''
+            if (attrs.TeXRepresentation) {
+              attrs.SVGStringRepresentation =
+                convertTeXToSVG(attrs.TeXRepresentation, true) ?? ''
+            }
+            break
+
+          case 'mml:math':
+            ;(child as Element).removeAttribute('id')
+            // TODO: remove namespace?
+            attrs.MathMLStringRepresentation = xmlSerializer.serializeToString(
+              child
+            )
+            // TODO: convert MathML to TeX with mml2tex?
+            if (attrs.MathMLStringRepresentation) {
+              attrs.SVGStringRepresentation =
+                convertMathMLToSVG(attrs.MathMLStringRepresentation, true) ?? ''
+            }
+            // TODO: add format property (TeX or MathML)
+            // TODO: make MathMLRepresentation editable
+            break
+        }
+      }
+
+      const caption = element.querySelector('figcaption')
+
+      const figcaption = schema.nodes.figcaption.create()
+
+      return Fragment.from([
+        schema.nodes.equation.createChecked(attrs),
+        caption
+          ? parser.parse(caption, {
+              topNode: figcaption,
+            })
+          : figcaption,
+      ]) as Fragment
     },
   },
   {
@@ -273,15 +336,50 @@ const nodes: NodeRule[] = [
     getAttrs: (node) => {
       const element = node as HTMLElement
 
-      const TeXRepresentation =
-        element.querySelector('tex-math')?.textContent?.trim() ?? ''
-
-      // TODO: call convertToSVG to get SVGRepresentation?
-
-      return {
+      const attrs: {
+        id: string | null
+        MathMLRepresentation: string // NOTE: not MathMLStringRepresentation
+        SVGRepresentation: string // NOTE: not SVGStringRepresentation
+        TeXRepresentation: string
+      } = {
         id: element.getAttribute('id'),
-        TeXRepresentation,
+        MathMLRepresentation: '', // default
+        SVGRepresentation: '',
+        TeXRepresentation: '', // default
       }
+
+      const container = element.querySelector('alternatives') ?? element
+
+      for (const child of container.childNodes) {
+        // remove namespace prefix
+        // TODO: real namespaces
+        const nodeName = child.nodeName.replace(/^[a-z]:/, '')
+
+        switch (nodeName) {
+          case 'tex-math':
+            attrs.TeXRepresentation = child.textContent?.trim() ?? ''
+            if (attrs.TeXRepresentation) {
+              attrs.SVGRepresentation =
+                convertTeXToSVG(attrs.TeXRepresentation, true) ?? ''
+            }
+            break
+
+          case 'mml:math':
+            ;(child as Element).removeAttribute('id')
+            // FIXME: remove namespace?
+            attrs.MathMLRepresentation = xmlSerializer.serializeToString(child)
+            // TODO: convert MathML to TeX with mml2tex?
+            if (attrs.MathMLRepresentation) {
+              attrs.SVGRepresentation =
+                convertMathMLToSVG(attrs.MathMLRepresentation, true) ?? ''
+            }
+            // TODO: add format property (TeX or MathML)
+            // TODO: make MathMLRepresentation editable
+            break
+        }
+      }
+
+      return attrs
     },
   },
   {
@@ -438,6 +536,8 @@ const nodes: NodeRule[] = [
 
 export const jatsRules = [...marks, ...nodes]
 
+const parser = new DOMParser(schema, jatsRules)
+
 // wrap single figures in fig-group
 export const wrapFigures = (body: Element) => {
   const doc = body.ownerDocument as Document
@@ -456,7 +556,13 @@ export const wrapFigures = (body: Element) => {
 
     const figGroup = doc.createElement('fig-group')
     section.insertBefore(figGroup, figure)
-    // TODO: move id from figure?
+
+    // move id from figure to fig-group
+    const figureID = figure.getAttribute('id')
+    if (figureID) {
+      figGroup.setAttribute('id', figureID)
+    }
+    figure.removeAttribute('id')
 
     // move caption into fig-group
     const figCaption = figure.querySelector('caption')
@@ -516,8 +622,15 @@ export const unwrapParagraphsInCaptions = (body: Element) => {
   }
 }
 
+const isAuxiliaryObjectReference = hasObjectType<AuxiliaryObjectReference>(
+  ObjectTypes.AuxiliaryObjectReference
+)
+
 // add/rewrite ids
-export const rewriteIDs = (output: ManuscriptNode) => {
+export const rewriteIDs = (
+  output: ManuscriptNode,
+  modelMap: Map<string, Model>
+) => {
   const replacements = new Map<string, string>()
 
   output.descendants((node) => {
@@ -563,6 +676,19 @@ export const rewriteIDs = (output: ManuscriptNode) => {
       }
     }
   })
+
+  // fix references to elements from models
+  for (const model of modelMap.values()) {
+    if (isAuxiliaryObjectReference(model)) {
+      const newReferencedId = replacements.get(model.referencedObject)
+
+      if (newReferencedId) {
+        model.referencedObject = newReferencedId
+      } else {
+        // console.warn(`Missing replacement for ${model.referencedObject}`)
+      }
+    }
+  }
 }
 
 const moveSectionsToBody = (doc: Document) => {
@@ -662,7 +788,10 @@ const ensureSection = (body: Element) => {
   }
 }
 
-export const parseJATSBody = (doc: Document): ManuscriptNode => {
+export const parseJATSBody = (
+  doc: Document,
+  modelMap: Map<string, Model>
+): ManuscriptNode => {
   const body = doc.querySelector('body')
 
   if (!body) {
@@ -676,12 +805,11 @@ export const parseJATSBody = (doc: Document): ManuscriptNode => {
   moveCaptionsToEnd(body)
   unwrapParagraphsInCaptions(body)
 
-  const parser = new DOMParser(schema, jatsRules)
-  const output = parser.parse(body)
+  const node = parser.parse(body)
 
-  rewriteIDs(output)
+  rewriteIDs(node, modelMap)
 
-  return output
+  return node
 }
 
 // JATS to HTML conversion
@@ -1140,6 +1268,8 @@ export const parseJATSBack = (doc: Document, addModel: AddModel): void => {
     }
   })
 
+  // cross-references
+
   const crossReferenceNodes = doc.querySelectorAll('body xref')
 
   crossReferenceNodes.forEach((crossReferenceNode) => {
@@ -1218,7 +1348,7 @@ export const parseJATSArticle = async (doc: Document): Promise<Model[]> => {
   parseJATSBack(doc, addModel)
 
   preprocessDocument(doc)
-  const node = parseJATSBody(doc)
+  const node = await parseJATSBody(doc, modelMap)
 
   if (!node.firstChild) {
     throw new Error('No content was parsed from the article body')

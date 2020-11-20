@@ -17,6 +17,7 @@
 import fs from 'fs'
 
 import { parseSTSBody, parseSTSFront, parseSTSStandard } from '../sts-importer'
+import { normalizeIDs } from './__helpers__/ids'
 
 const loadFixture = async (filename: string) => {
   const xml = await fs.promises.readFile(
@@ -40,7 +41,8 @@ describe('STS importer', () => {
   test('parses STS body to a ProseMirror doc', async () => {
     const standard = await loadFixture('sts-example.xml')
 
-    const body = parseSTSBody(standard)
+    const modelMap = new Map()
+    const body = await parseSTSBody(standard, modelMap)
 
     body.descendants((node) => {
       // TODO: validate ids before deleting them
@@ -54,9 +56,9 @@ describe('STS importer', () => {
   test('parses STS article to Manuscripts models', async () => {
     const standard = await loadFixture('sts-example.xml')
 
-    const modelMap = parseSTSStandard(standard)
+    const modelMap = await parseSTSStandard(standard)
     const models = [...modelMap.values()]
 
-    expect(models).toHaveLength(2077)
+    expect(normalizeIDs(models)).toMatchSnapshot()
   })
 })

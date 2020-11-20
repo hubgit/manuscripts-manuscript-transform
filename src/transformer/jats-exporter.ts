@@ -897,9 +897,19 @@ export class JATSExporter {
         const formula = this.document.createElement('disp-formula')
         formula.setAttribute('id', normalizeID(node.attrs.id))
 
-        const math = this.document.createElement('tex-math')
-        math.textContent = node.attrs.TeXRepresentation
-        formula.appendChild(math)
+        // const alternatives = this.document.createElement('alternatives')
+        // formula.appendChild(alternatives)
+
+        if (node.attrs.TeXRepresentation) {
+          const math = this.document.createElement('tex-math')
+          math.textContent = node.attrs.TeXRepresentation
+          formula.appendChild(math)
+        } else if (node.attrs.MathMLStringRepresentation) {
+          const math = nodeFromHTML(node.attrs.MathMLStringRepresentation)
+          if (math) {
+            formula.appendChild(math)
+          }
+        }
 
         return formula
       },
@@ -990,9 +1000,16 @@ export class JATSExporter {
       inline_equation: (node) => {
         const formula = this.document.createElement('inline-formula')
 
-        const math = this.document.createElement('tex-math')
-        math.textContent = node.attrs.TeXRepresentation
-        formula.appendChild(math)
+        if (node.attrs.TeXRepresentation) {
+          const math = this.document.createElement('tex-math')
+          math.textContent = node.attrs.TeXRepresentation
+          formula.appendChild(math)
+        } else if (node.attrs.MathMLStringRepresentation) {
+          const math = nodeFromHTML(node.attrs.MathMLStringRepresentation)
+          if (math) {
+            formula.appendChild(math)
+          }
+        }
 
         return formula
       },

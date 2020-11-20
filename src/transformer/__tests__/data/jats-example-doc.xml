@@ -55,7 +55,7 @@
       <label>II</label><title>Measures of Liquidity and Data Description</title>
       <sec>
         <title>Measuring Liquidity</title>
-        <p>We follow <xref ref-type="bibr" rid="bib18">Holden and Jacobsen (2014)</xref> and analyze standard measures of market liquidity. First, we evaluate the quoted bid&#x2013;ask spread, which is the difference between the prices quoted for an immediate sale and an immediate buy for one share of stock. For a given time interval <italic>t</italic>, the percent quoted spread is measured as<disp-formula id="eq1"><mml:math id="m1">
+        <p>We follow <xref ref-type="bibr" rid="bib18">Holden and Jacobsen (2014)</xref> and analyze standard measures of market liquidity. First, we evaluate the quoted bid&#x2013;ask spread, which is the difference between the prices quoted for an immediate sale and an immediate buy for one share of stock. For a given time interval <italic>t</italic>, the percent quoted spread is measured as</p><disp-formula id="eq1"><mml:math id="m1">
           <mml:mrow>
             <mml:mi>P</mml:mi><mml:mi>e</mml:mi><mml:mi>r</mml:mi><mml:mi>c</mml:mi><mml:mi>e</mml:mi><mml:mi>n</mml:mi><mml:mi>t</mml:mi><mml:mo>&#x00A0;</mml:mo><mml:mi>Q</mml:mi><mml:mi>u</mml:mi><mml:mi>o</mml:mi><mml:mi>t</mml:mi><mml:mi>e</mml:mi><mml:mi>d</mml:mi><mml:mo>&#x00A0;</mml:mo><mml:mi>S</mml:mi><mml:mi>p</mml:mi><mml:mi>r</mml:mi><mml:mi>e</mml:mi><mml:mi>a</mml:mi><mml:msub>
             <mml:mi>d</mml:mi>
@@ -80,7 +80,7 @@
             </mml:mrow>
           </mml:mfrac>
           </mml:mrow>
-        </mml:math>,<label>(1)</label></disp-formula>where <italic>Ask<sub>t</sub></italic> is the National Best Ask and <italic>Bid<sub>t</sub></italic> is the National Best Bid assigned to time <italic>t</italic> and <inline-formula><mml:math id="m2">
+        </mml:math>,<label>(1)</label></disp-formula><p>where <italic>Ask<sub>t</sub></italic> is the National Best Ask and <italic>Bid<sub>t</sub></italic> is the National Best Bid assigned to time <italic>t</italic> and <inline-formula><mml:math id="m2">
           <mml:mrow>
             <mml:msub>
               <mml:mi>M</mml:mi>
@@ -88,7 +88,7 @@
             </mml:msub>
           </mml:mrow>
         </mml:math></inline-formula> is the midpoint, which is the average of <italic>Ask<sub>t</sub></italic> and <italic>Bid<sub>t</sub></italic>.</p>
-        <p>To more accurately measure the round-trip trading costs when trades occur at prices inside the posted bid and ask quotes, we estimate the effective spread. For a given security, the percent effective spread on the <italic>k</italic>th trade is defined as<disp-formula id="eq2"><mml:math id="m3">
+        <p>To more accurately measure the round-trip trading costs when trades occur at prices inside the posted bid and ask quotes, we estimate the effective spread. For a given security, the percent effective spread on the <italic>k</italic>th trade is defined as</p><disp-formula id="eq2"><mml:math id="m3">
           <mml:mrow>
             <mml:mi>P</mml:mi><mml:mi>e</mml:mi><mml:mi>r</mml:mi><mml:mi>c</mml:mi><mml:mi>e</mml:mi><mml:mi>n</mml:mi><mml:mi>t</mml:mi><mml:mo>&#x00A0;</mml:mo><mml:mi>E</mml:mi><mml:mi>f</mml:mi><mml:mi>f</mml:mi><mml:mi>e</mml:mi><mml:mi>c</mml:mi><mml:mi>t</mml:mi><mml:mi>i</mml:mi><mml:mi>v</mml:mi><mml:mi>e</mml:mi><mml:mo>&#x00A0;</mml:mo><mml:mi>S</mml:mi><mml:mi>p</mml:mi><mml:mi>r</mml:mi><mml:mi>e</mml:mi><mml:mi>a</mml:mi><mml:msub>
             <mml:mi>d</mml:mi>
@@ -120,7 +120,7 @@
             </mml:mrow>
           </mml:mfrac>
             <mml:mo>&#x00A0;</mml:mo><mml:mo>,</mml:mo></mml:mrow>
-        </mml:math><label>(2)</label></disp-formula>where <italic>D<sub>k</sub></italic> is an indicator variable that equals +1 if the <italic>k</italic>th trade is a buy and &#x2212;1 if the <italic>k</italic>th trade is a sell, <inline-formula><mml:math id="m4">
+        </mml:math><label>(2)</label></disp-formula><p>where <italic>D<sub>k</sub></italic> is an indicator variable that equals +1 if the <italic>k</italic>th trade is a buy and &#x2212;1 if the <italic>k</italic>th trade is a sell, <inline-formula><mml:math id="m4">
           <mml:mi>P</mml:mi>
         </mml:math></inline-formula><italic><sub>k</sub></italic> is the price of the <italic>k</italic>th trade, and <inline-formula><mml:math id="m5">
           <mml:mi>M</mml:mi>
@@ -167,7 +167,7 @@
             </mml:msub>
           </mml:mrow>
         </mml:math></inline-formula>. The tick test determines a trade is a buy (sell) if the most recent prior trade at a different price was at a lower (higher) price.</p>
-        <p>To measure the adverse selection component of the bid&#x2013;ask spread, we calculate price impact. For a given security, the percent price impact on the <italic>k</italic>th trade are defined as<disp-formula id="eq3"><mml:math id="m12">
+        <p>To measure the adverse selection component of the bid&#x2013;ask spread, we calculate price impact. For a given security, the percent price impact on the <italic>k</italic>th trade are defined as</p><disp-formula id="eq3"><mml:math id="m12">
           <mml:mrow>
             <mml:mi>P</mml:mi><mml:mi>e</mml:mi><mml:mi>r</mml:mi><mml:mi>c</mml:mi><mml:mi>e</mml:mi><mml:mi>n</mml:mi><mml:mi>t</mml:mi><mml:mo>&#x00A0;</mml:mo><mml:mi>P</mml:mi><mml:mi>r</mml:mi><mml:mi>i</mml:mi><mml:mi>c</mml:mi><mml:mi>e</mml:mi><mml:mo>&#x00A0;</mml:mo><mml:mi>I</mml:mi><mml:mi>m</mml:mi><mml:mi>p</mml:mi><mml:mi>a</mml:mi><mml:mi>c</mml:mi><mml:msub>
             <mml:mi>t</mml:mi>
@@ -200,7 +200,7 @@
             </mml:mrow>
           </mml:mfrac>
             <mml:mo>&#x00A0;</mml:mo><mml:mo>,</mml:mo></mml:mrow>
-        </mml:math><label>(3)</label></disp-formula>where <inline-formula><mml:math id="m13">
+        </mml:math><label>(3)</label></disp-formula><p>where <inline-formula><mml:math id="m13">
           <mml:mrow>
             <mml:msub>
               <mml:mi>M</mml:mi>
@@ -493,7 +493,7 @@
     </sec>
     <sec id="secIII" sec-type="methods">
       <label>III</label><title>Empirical Methodology</title>
-      <p>In our empirical analysis, we use the highly unexpected victory of Trump in the 2016 U.S. presidential election to assess the effects of political uncertainty on market liquidity. Again, this event is chosen as its outcome provides a source of political uncertainty, rather than the resolution of uncertainty. We use the 2012 U.S. presidential election as our primary benchmark, although we show that our results are robust to an alternative election. We estimate the following general fixed-effects regression equation for common stock observations in the 121 days [&#x2212;90,30] surrounding both the 2012 and 2016 elections:<disp-formula id="eq4"><mml:math id="m21">
+      <p>In our empirical analysis, we use the highly unexpected victory of Trump in the 2016 U.S. presidential election to assess the effects of political uncertainty on market liquidity. Again, this event is chosen as its outcome provides a source of political uncertainty, rather than the resolution of uncertainty. We use the 2012 U.S. presidential election as our primary benchmark, although we show that our results are robust to an alternative election. We estimate the following general fixed-effects regression equation for common stock observations in the 121 days [&#x2212;90,30] surrounding both the 2012 and 2016 elections:</p><disp-formula id="eq4"><mml:math id="m21">
         <mml:mrow>
           <mml:mi>L</mml:mi><mml:mi>i</mml:mi><mml:msub>
           <mml:mi>q</mml:mi>
@@ -521,8 +521,9 @@
             <mml:mi>i</mml:mi><mml:mo>,</mml:mo><mml:mi>t</mml:mi></mml:mrow>
         </mml:msub>
           <mml:mo>&#x00A0;</mml:mo><mml:mo>,</mml:mo></mml:mrow>
-      </mml:math><label>(4)</label></disp-formula>where the dependent variable is one of seven liquidity metrics: <italic>Quoted Spread, Effective Spread, Price Impact, Amihud Illiquidity, Total Volatility, Systematic Volatility,</italic> or <italic>Idiosyncratic Volatility</italic>. We include 10 pre-trend indicator variables for the 10 trading days leading up to the election, 31 post-trend indicator variables for the 31 trading days following the election (election day included), and stock fixed effects.<xref ref-type="fn" rid="fn16"><sup>16</sup></xref> All indicator variables are interpreted in comparison to the 80-day pre-election period. We estimate <xref ref-type="disp-formula" rid="eq4">equation (4)</xref> for each election separately and cluster standard errors at the stock level. Rather than report coefficient estimates in a table setting, we provide the plot of the beta coefficient estimates with 95% confidence intervals across the 40-day event window, covering the 10 days before and 30 days after the election dates.</p>
-      <p>To assess the statistical impact of the 2016 election on market liquidity, relative to the 2012 benchmark election, we estimate the following difference-in-difference regression equation:<disp-formula id="eq5"><mml:math id="m22">
+      </mml:math><label>(4)</label></disp-formula><p>where the dependent variable is one of seven liquidity metrics: <italic>Quoted Spread, Effective Spread, Price Impact, Amihud Illiquidity, Total Volatility, Systematic Volatility,</italic> or <italic>Idiosyncratic Volatility</italic>. We include 10 pre-trend indicator variables for the 10 trading days leading up to the election, 31 post-trend indicator variables for the 31 trading days following the election (election day included), and stock fixed effects.<xref ref-type="fn" rid="fn16"><sup>16</sup></xref> All indicator variables are interpreted in comparison to the 80-day pre-election period. We estimate <xref ref-type="disp-formula" rid="eq4">equation (4)</xref> for each election separately and cluster standard errors at the stock level. Rather than report coefficient estimates in a table setting, we provide the plot of the beta coefficient estimates with 95% confidence intervals across the 40-day event window, covering the 10 days before and 30 days after the election dates.</p>
+      <p>To assess the statistical impact of the 2016 election on market liquidity, relative to the 2012 benchmark election, we estimate the following difference-in-difference regression equation:</p>
+      <disp-formula id="eq5"><mml:math id="m22">
         <mml:mrow>
           <mml:mi>L</mml:mi><mml:mi>i</mml:mi><mml:msub>
           <mml:mi>q</mml:mi>
@@ -565,7 +566,8 @@
             <mml:mi>i</mml:mi><mml:mo>,</mml:mo><mml:mi>t</mml:mi><mml:mo>,</mml:mo><mml:mi>j</mml:mi></mml:mrow>
         </mml:msub>
           <mml:mo>,</mml:mo><mml:mo>&#x00A0;</mml:mo></mml:mrow>
-      </mml:math><label>(5)</label></disp-formula>where the dependent variable is one of seven liquidity measures: <italic>Quoted Spread, Effective Spread, Price Impact, Amihud Illiquidity, Total Volatility, Systematic Volatility,</italic> or <italic>Idiosyncratic Volatility</italic>. We include 10 pre-trend interaction variables for the 10 days leading up to each election, 31 post-trend interaction variables for the 31 days following the election outcomes (election days included), time trends, level effects, and stock fixed effects. The interaction terms serve as difference-in-difference estimators between the pre- and post-election windows and the 2012 and 2016 elections. The <italic>Trump</italic> indicator variable equals 1 if the observation is during the 2016 election cycle and 0 otherwise, which controls for differences in liquidity between the two election periods. The event fixed effects, <inline-formula><mml:math id="m23">
+      </mml:math><label>(5)</label></disp-formula>
+      <p>where the dependent variable is one of seven liquidity measures: <italic>Quoted Spread, Effective Spread, Price Impact, Amihud Illiquidity, Total Volatility, Systematic Volatility,</italic> or <italic>Idiosyncratic Volatility</italic>. We include 10 pre-trend interaction variables for the 10 days leading up to each election, 31 post-trend interaction variables for the 31 days following the election outcomes (election days included), time trends, level effects, and stock fixed effects. The interaction terms serve as difference-in-difference estimators between the pre- and post-election windows and the 2012 and 2016 elections. The <italic>Trump</italic> indicator variable equals 1 if the observation is during the 2016 election cycle and 0 otherwise, which controls for differences in liquidity between the two election periods. The event fixed effects, <inline-formula><mml:math id="m23">
         <mml:mrow>
           <mml:msub>
             <mml:mi>&#x03B4;</mml:mi>

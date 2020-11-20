@@ -23,6 +23,7 @@ import {
   parseJATSFront,
 } from '../jats-importer'
 import { addModelToMap } from '../model-map'
+import { normalizeIDs } from './__helpers__/ids'
 
 const loadFixture = async (filename: string) => {
   const xml = await fs.promises.readFile(
@@ -37,7 +38,8 @@ describe('JATS importer', () => {
   test('parses minimal JATS body to a ProseMirror doc', async () => {
     const article = await loadFixture('jats-example.xml')
 
-    const doc = parseJATSBody(article)
+    const modelMap = new Map()
+    const doc = parseJATSBody(article, modelMap)
 
     doc.descendants((node) => {
       // TODO: validate ids before deleting them
@@ -51,7 +53,8 @@ describe('JATS importer', () => {
   test('parses full JATS body to a ProseMirror doc', async () => {
     const article = await loadFixture('jats-example-full.xml')
 
-    const doc = parseJATSBody(article)
+    const modelMap = new Map()
+    const doc = parseJATSBody(article, modelMap)
 
     doc.descendants((node) => {
       // TODO: validate ids before deleting them
@@ -67,7 +70,7 @@ describe('JATS importer', () => {
 
     const models = await parseJATSArticle(article)
 
-    expect(models).toHaveLength(211)
+    expect(normalizeIDs(models)).toMatchSnapshot()
   })
 
   test('parses JATS front to Manuscripts models', async () => {
@@ -76,10 +79,11 @@ describe('JATS importer', () => {
     const modelMap = new Map<string, Model>()
     const addModel = addModelToMap(modelMap)
 
-    parseJATSFront(article, addModel)
+    await parseJATSFront(article, addModel)
 
     const models = [...modelMap.values()]
-    expect(models).toHaveLength(2)
+
+    expect(normalizeIDs(models)).toMatchSnapshot()
   })
 
   test('parses JATS article to Manuscripts models', async () => {
@@ -87,6 +91,6 @@ describe('JATS importer', () => {
 
     const models = await parseJATSArticle(article)
 
-    expect(models).toHaveLength(38)
+    expect(normalizeIDs(models)).toMatchSnapshot()
   })
 })

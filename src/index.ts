@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+export * from './mathjax'
 export * from './schema'
 export * from './transformer'
 export * from './types'
