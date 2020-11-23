@@ -140,7 +140,7 @@ export const buildAuxiliaryObjectReference = (
 ): Build<AuxiliaryObjectReference> => ({
   _id: generateID(ObjectTypes.AuxiliaryObjectReference),
   objectType: ObjectTypes.AuxiliaryObjectReference,
-  containingObject,
+  containingObject: containingObject || undefined,
   referencedObject,
 })
 
@@ -158,7 +158,7 @@ export const buildCitation = (
 ): Build<Citation> => ({
   _id: generateID(ObjectTypes.Citation),
   objectType: ObjectTypes.Citation,
-  containingObject,
+  containingObject: containingObject || undefined,
   embeddedCitationItems: embeddedCitationItems.map(buildEmbeddedCitationItem),
 })
 
@@ -249,7 +249,7 @@ export const buildInlineMathFragment = (
 ): Build<InlineMathFragment> => ({
   _id: generateID(ObjectTypes.InlineMathFragment),
   objectType: ObjectTypes.InlineMathFragment,
-  containingObject,
+  containingObject: containingObject || undefined,
   TeXRepresentation,
 })
 
@@ -260,7 +260,7 @@ export const buildFootnote = (
 ): Build<Footnote> => ({
   _id: generateID(ObjectTypes.Footnote),
   objectType: ObjectTypes.Footnote,
-  containingObject,
+  containingObject: containingObject || undefined,
   contents,
   kind,
 })

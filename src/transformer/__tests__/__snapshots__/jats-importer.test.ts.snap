@@ -75,7 +75,6 @@ Array [
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -87,7 +86,6 @@ Array [
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -104,7 +102,6 @@ Array [
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -2615,37 +2612,31 @@ Array [
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "fn1",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "fn2",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "fn3",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPFigureElement:test",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "fn4",
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -2657,7 +2648,6 @@ Array [
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -2669,7 +2659,6 @@ Array [
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -2681,7 +2670,6 @@ Array [
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -2693,7 +2681,6 @@ Array [
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -2705,7 +2692,6 @@ Array [
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -2717,7 +2703,6 @@ Array [
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -2729,7 +2714,6 @@ Array [
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -2741,7 +2725,6 @@ Array [
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -2753,7 +2736,6 @@ Array [
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -2765,7 +2747,6 @@ Array [
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -2777,13 +2758,11 @@ Array [
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "fn5",
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -2795,19 +2774,16 @@ Array [
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "fn6",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "fn7",
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -2819,7 +2795,6 @@ Array [
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -2831,7 +2806,6 @@ Array [
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -2843,7 +2817,6 @@ Array [
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -2855,25 +2828,21 @@ Array [
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "fn8",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "fn9",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "fn10",
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -2885,7 +2854,6 @@ Array [
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -2897,7 +2865,6 @@ Array [
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -2909,13 +2876,11 @@ Array [
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "fn11",
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -2927,7 +2892,6 @@ Array [
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -2939,7 +2903,6 @@ Array [
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -2951,13 +2914,11 @@ Array [
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "fn12",
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -2969,7 +2930,6 @@ Array [
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -2981,31 +2941,26 @@ Array [
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "fn13",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "fn14",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPTableElement:test",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "fn15",
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -3017,7 +2972,6 @@ Array [
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -3029,79 +2983,66 @@ Array [
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPTableElement:test",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "fn16",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPEquationElement:test",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "fn17",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPEquationElement:test",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPEquationElement:test",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPFigureElement:test",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPTableElement:test",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPFigureElement:test",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPFigureElement:test",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPEquationElement:test",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPEquationElement:test",
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -3113,13 +3054,11 @@ Array [
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPFigureElement:test",
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -3131,13 +3070,11 @@ Array [
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPTableElement:test",
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -3149,19 +3086,16 @@ Array [
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPFigureElement:test",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPFigureElement:test",
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -3173,7 +3107,6 @@ Array [
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -3185,91 +3118,76 @@ Array [
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPEquationElement:test",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPEquationElement:test",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPFigureElement:test",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPTableElement:test",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPFigureElement:test",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPFigureElement:test",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPFigureElement:test",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "fn18",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPEquationElement:test",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPFigureElement:test",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPTableElement:test",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPEquationElement:test",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPFigureElement:test",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPTableElement:test",
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -3281,7 +3199,6 @@ Array [
   },
   Object {
     "_id": "MPCitation:test",
-    "containingObject": "",
     "embeddedCitationItems": Array [
       Object {
         "_id": "MPCitationItem:test",
@@ -3293,37 +3210,31 @@ Array [
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "fn19",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPEquationElement:test",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPFigureElement:test",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPTableElement:test",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPFigureElement:test",
   },
   Object {
     "_id": "MPAuxiliaryObjectReference:test",
-    "containingObject": "",
     "objectType": "MPAuxiliaryObjectReference",
     "referencedObject": "MPTableElement:test",
   },
