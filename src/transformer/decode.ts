@@ -230,6 +230,34 @@ export class Decoder {
         id: model._id,
       }) as PlaceholderElementNode
     },
+    [ObjectTypes.Figure]: (data) => {
+      const model = data as Figure
+
+      const figcaptionNode: FigCaptionNode = schema.nodes.figcaption.create()
+
+      const figcaption: FigCaptionNode = model.title
+        ? this.parseContents(
+            'title',
+            model.title,
+            'figcaption',
+            model.highlightMarkers,
+            {
+              topNode: figcaptionNode,
+            }
+          )
+        : figcaptionNode
+
+      return schema.nodes.figure.create(
+        {
+          id: model._id,
+          contentType: model.contentType,
+          src: model.src,
+          listingAttachment: model.listingAttachment,
+          embedURL: model.embedURL,
+        },
+        [figcaption]
+      )
+    },
     [ObjectTypes.FigureElement]: (data) => {
       const model = data as FigureElement
 
@@ -252,8 +280,6 @@ export class Decoder {
       const figures: Array<FigureNode | PlaceholderNode> = model
         .containedObjectIDs.length
         ? model.containedObjectIDs.map((id) => {
-            const figcaptionNode: FigCaptionNode = schema.nodes.figcaption.create()
-
             if (!id) {
               return schema.nodes.figure.createAndFill() as FigureNode
             }
@@ -267,28 +293,7 @@ export class Decoder {
               }) as PlaceholderNode
             }
 
-            const figcaption: FigCaptionNode = figureModel.title
-              ? this.parseContents(
-                  'title',
-                  figureModel.title,
-                  'figcaption',
-                  figureModel.highlightMarkers,
-                  {
-                    topNode: figcaptionNode,
-                  }
-                )
-              : figcaptionNode
-
-            return schema.nodes.figure.create(
-              {
-                id: figureModel._id,
-                contentType: figureModel.contentType,
-                src: figureModel.src,
-                listingAttachment: figureModel.listingAttachment,
-                embedURL: figureModel.embedURL,
-              },
-              [figcaption]
-            ) as FigureNode
+            return this.decode(figureModel) as FigureNode
           })
         : [schema.nodes.figure.createAndFill() as FigureNode]
 
@@ -298,12 +303,7 @@ export class Decoder {
         const listingModel = this.getModel<Listing>(model.listingID)
 
         const listing = listingModel
-          ? (schema.nodes.listing.create({
-              id: listingModel._id,
-              contents: listingModel.contents,
-              language: listingModel.language,
-              languageKey: listingModel.languageKey,
-            }) as ListingNode)
+          ? (this.decode(listingModel) as ListingNode)
           : (schema.nodes.placeholder.create({
               id: model.listingID,
               label: 'A listing',
@@ -332,6 +332,7 @@ export class Decoder {
 
       return schema.nodes.equation.createChecked({
         id: model._id,
+        MathMLStringRepresentation: model.MathMLStringRepresentation,
         SVGStringRepresentation: model.SVGStringRepresentation,
         TeXRepresentation: model.TeXRepresentation,
       }) as EquationNode
@@ -342,13 +343,7 @@ export class Decoder {
       const equationModel = this.getModel<Equation>(model.containedObjectID)
 
       const equation: EquationNode | PlaceholderNode = equationModel
-        ? (schema.nodes.equation.create({
-            id: equationModel._id,
-            MathMLStringRepresentation:
-              equationModel.MathMLStringRepresentation,
-            SVGStringRepresentation: equationModel.SVGStringRepresentation,
-            TeXRepresentation: equationModel.TeXRepresentation,
-          }) as EquationNode)
+        ? (this.decode(equationModel) as EquationNode)
         : (schema.nodes.placeholder.create({
             id: model.containedObjectID,
             label: 'An equation',
@@ -452,12 +447,7 @@ export class Decoder {
       const listingModel = this.getModel<Listing>(model.containedObjectID)
 
       const listing: ListingNode | PlaceholderNode = listingModel
-        ? (schema.nodes.listing.create({
-            id: listingModel._id,
-            contents: listingModel.contents,
-            language: listingModel.language,
-            languageKey: listingModel.languageKey,
-          }) as ListingNode)
+        ? (this.decode(listingModel) as ListingNode)
         : (schema.nodes.placeholder.create({
             id: model.containedObjectID,
             label: 'A listing',
@@ -621,23 +611,28 @@ export class Decoder {
 
       return sectionNode as SectionNode
     },
+    [ObjectTypes.Table]: (data) => {
+      const model = data as Table
+
+      return this.parseContents(
+        'contents',
+        model.contents,
+        undefined,
+        model.highlightMarkers,
+        {
+          topNode: schema.nodes.table.create({
+            id: model._id,
+          }),
+        }
+      ) as TableNode
+    },
     [ObjectTypes.TableElement]: (data) => {
       const model = data as TableElement
 
       const tableModel = this.getModel<Table>(model.containedObjectID)
 
       const table: TableNode | PlaceholderNode = tableModel
-        ? (this.parseContents(
-            'contents',
-            tableModel.contents,
-            undefined,
-            tableModel.highlightMarkers,
-            {
-              topNode: schema.nodes.table.create({
-                id: tableModel._id,
-              }),
-            }
-          ) as TableNode)
+        ? (this.decode(tableModel) as TableNode)
         : (schema.nodes.placeholder.create({
             id: model.containedObjectID,
             label: 'A table',
@@ -663,12 +658,7 @@ export class Decoder {
         const listingModel = this.getModel<Listing>(model.listingID)
 
         const listing = listingModel
-          ? (schema.nodes.listing.create({
-              id: listingModel._id,
-              contents: listingModel.contents,
-              language: listingModel.language,
-              languageKey: listingModel.languageKey,
-            }) as ListingNode)
+          ? (this.decode(listingModel) as ListingNode)
           : (schema.nodes.placeholder.create({
               id: model.listingID,
               label: 'A listing',
